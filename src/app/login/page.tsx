@@ -83,6 +83,15 @@ export default function LoginPage() {
               <p className="text-red-500 text-sm text-center">{error}</p>
             )}
 
+            <p className="text-sm text-gray-600">
+              <Link
+                href="/forgot-password"
+                className="text-[#E61E4D] hover:text-[#ff6a88] font-medium transition"
+              >
+                Forgot Password?
+              </Link>
+            </p>
+
             {/* Login Button */}
             <button
               type="submit"
