@@ -122,16 +122,31 @@ export default function ProductDetailPage({
           <p className="text-gray-600 mt-3">Xem đánh giá</p>
           {/* 🎁 Quà tặng khuyến mãi */}
           {product.promotions && product.promotions.length > 0 && (
-            <div className="mt-6 bg-[#ffe9e9ff] border border-pink-200 rounded-xl p-4">
-              <div className="flex items-center text-[#E61E4D] mb-3">
-                <FaGift className="mr-2" />
-                <h2 className="text-lg font-semibold">Quà tặng khuyến mãi</h2>
+            // <div className="mt-6 bg-[#ffe9e9ff] border border-pink-200 rounded-xl p-4">
+            //   <div className="flex items-center text-[#E61E4D] mb-3">
+            //     <FaGift className="mr-2" />
+            //     <h2 className="text-lg font-semibold">Quà tặng khuyến mãi</h2>
+            //   </div>
+            //   <ul className="list-disc list-inside space-y-2 text-gray-700">
+            //     {product.promotions.map((gift, idx) => (
+            //       <li key={idx}>{gift}</li>
+            //     ))}
+            //   </ul>
+            // </div>
+
+            <div className=" mt-6 col-span-2 bg-white border border-pink-200 rounded-lg shadow overflow-hidden">
+              <div className="flex items-center  text-[#E61E4D] bg-[#ffe9e9ff] text-white font-semibold py-3 px-6">
+                <FaGift className="mr-2 text-[#E61E4D]" />
+                <span className="text-lg font-semibold text-[#E61E4D]">Quà tặng khuyến mãi</span>
               </div>
-              <ul className="list-disc list-inside space-y-2 text-gray-700">
-                {product.promotions.map((gift, idx) => (
-                  <li key={idx}>{gift}</li>
-                ))}
-              </ul>
+
+              <div>
+                <ul className="list-disc list-inside space-y-2 text-gray-700 p-4">
+                  {product.promotions.map((gift, idx) => (
+                    <li key={idx}>{gift}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
           )}
 
@@ -194,16 +209,30 @@ export default function ProductDetailPage({
 
           {/* 🎁 Khuyến mãi */}
           {product.promotions && product.promotions.length > 0 && (
-            <div className="mt-6  bg-grey-100 border border-[#E61E4D] rounded-xl p-4">
-              <div className="flex items-center text-[#E61E4D] mb-3">
+            // <div className="mt-6  bg-grey-100 border border-[#E61E4D] rounded-xl p-4">
+            //   <div className="flex items-center text-[#E61E4D] mb-3">
+            //     <FaGift className="mr-2" />
+            //     <h2 className="text-lg font-semibold">Khuyến mãi</h2>
+            //   </div>
+            //   <ul className="list-disc list-inside space-y-2 text-gray-700">
+            //     {product.promotions.map((gift, idx) => (
+            //       <li key={idx}>{gift}</li>
+            //     ))}
+            //   </ul>
+            // </div>
+            <div className=" mt-6 col-span-2 bg-white border border-gray-400 rounded-lg shadow overflow-hidden">
+              <div className="flex items-center bg-gray-100 font-semibold py-3 px-6">
                 <FaGift className="mr-2" />
-                <h2 className="text-lg font-semibold">Khuyến mãi</h2>
+                <span className="text-lg font-semibold">Khuyến mãi</span>
               </div>
-              <ul className="list-disc list-inside space-y-2 text-gray-700">
-                {product.promotions.map((gift, idx) => (
-                  <li key={idx}>{gift}</li>
-                ))}
-              </ul>
+
+              <div>
+                <ul className="list-disc list-inside space-y-2 text-gray-700 p-4">
+                  {product.promotions.map((gift, idx) => (
+                    <li key={idx}>{gift}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
           )}
 

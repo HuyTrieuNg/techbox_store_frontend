@@ -53,14 +53,22 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { FaShoppingCart, FaUser, FaChevronDown, FaSearch, FaChevronRight } from "react-icons/fa";
+import { FaShoppingCart, FaUser, FaChevronDown, FaSearch, FaChevronRight, FaSignOutAlt, FaBox, FaMapMarkerAlt } from "react-icons/fa";
 import CategoryMenu from "./Category";
+import { useAuthContext } from "@/contexts/AuthContext";
+import { useCart } from "@/contexts/CartContext";
+import { CartItems } from "@/features/CartItem";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
-
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
+  const { accessToken, handleLogout } = useAuthContext();
+  const isLoggedIn = !!accessToken;
   const toggleMenu = () => setIsOpen(!isOpen);
-
+  const toggleAccount = () => setIsAccountOpen(!isAccountOpen);
+  const { cartItems } = useCart();
+// In Header.tsx, update the cartCount line:
+const cartCount = cartItems.reduce((sum: number, item: CartItems) => sum + item.quantity, 0) || 0;
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
@@ -82,37 +90,10 @@ export default function Header() {
             </button>
 
             {isOpen && (
-              // <div className="absolute top-14 left-0 bg-white border border-gray-200 rounded-xl shadow-xl w-72 z-10 transition-all duration-300 ease-in-out">
-              //   <ul className="flex flex-col py-3">
-              //     <li className="group relative">
-              //       <button className="group w-full text-left px-6 py-4 text-gray-700 hover:bg-[#E61E4D] hover:text-white font-medium transition-colors duration-150 flex items-center justify-between cursor-pointer">
-              //         Điện thoại <FaChevronRight size={12} className="text-gray-500 group-hover:text-white" />
-              //       </button>
-              //       <ul className="absolute left-[calc(100%+0.5rem)] top-0 bg-white border border-gray-200 rounded-xl shadow-xl hidden group-hover:block w-64 transition-all duration-200 ease-in-out">
-              //         <li className="px-6 py-4 text-gray-700 hover:bg-[#E61E4D] hover:text-white transition-colors duration-150 cursor-pointer">iPhone</li>
-              //         <li className="px-6 py-4 text-gray-700 hover:bg-[#E61E4D] hover:text-white transition-colors duration-150 cursor-pointer">Samsung</li>
-              //         <li className="px-6 py-4 text-gray-700 hover:bg-[#E61E4D] hover:text-white transition-colors duration-150 cursor-pointer">Xiaomi</li>
-              //       </ul>
-              //     </li>
-              //     <li className="group relative">
-              //       <button className="group w-full text-left px-6 py-4 text-gray-700 hover:bg-[#E61E4D] hover:text-white font-medium transition-colors duration-150 flex items-center justify-between cursor-pointer">
-              //         Laptop <FaChevronRight size={12} className="text-gray-500 group-hover:text-white" />
-              //       </button>
-              //       <ul className="absolute left-[calc(100%+0.5rem)] top-0 bg-white border border-gray-200 rounded-xl shadow-xl hidden group-hover:block w-64 transition-all duration-200 ease-in-out">
-              //         <li className="px-6 py-4 text-gray-700 hover:bg-[#E61E4D] hover:text-white transition-colors duration-150 cursor-pointer">Macbook</li>
-              //         <li className="px-6 py-4 text-gray-700 hover:bg-[#E61E4D] hover:text-white transition-colors duration-150 cursor-pointer">Dell</li>
-              //         <li className="px-6 py-4 text-gray-700 hover:bg-[#E61E4D] hover:text-white transition-colors duration-150 cursor-pointer">Asus</li>
-              //       </ul>
-              //     </li>
-              //     <li className="px-6 py-4 text-gray-700 hover:bg-[#E61E4D] hover:text-white font-medium transition-colors duration-150 cursor-pointer">
-              //       Phụ kiện
-              //     </li>
-              //   </ul>
-              // </div>
-              <CategoryMenu type="menu"/>
+              <CategoryMenu type="menu" />
             )}
           </div>
-          
+
         </div>
 
 
@@ -128,17 +109,79 @@ export default function Header() {
 
         {/* Giỏ hàng + Đăng nhập */}
         <div className="flex items-center gap-4">
-          <button className="relative">
-            <FaShoppingCart size={22} />
-            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1">
-              2
-            </span>
-          </button>
-          <Link href="/login">
-            <button className="flex items-center gap-1 bg-[#E61E4D] text-white px-4 py-2 rounded-full hover:bg-[#d41b46ff] cursor-pointer transition-colors duration-200">
-              <FaUser /> Đăng nhập
-            </button>
-          </Link>
+          
+            {/* <button className="relative"> */}
+              <Link href="/cart" className="relative">
+              <FaShoppingCart size={22} />
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1">
+                {cartCount}
+              </span>
+              </Link>
+            {/* </button> */}
+          
+          {!isLoggedIn ? (
+            <Link href="/login">
+              <button className="flex items-center gap-1 bg-[#E61E4D] text-white px-4 py-2 rounded-full hover:bg-[#d41b46ff] cursor-pointer transition-colors duration-200">
+                <FaUser /> Đăng nhập
+              </button>
+            </Link>
+          ) : (
+            // Phần hiển thị khi đã đăng nhập (tùy chỉnh theo nhu cầu)
+            // <button
+            //   onClick={handleLogout}
+            //   className="flex items-center gap-1 bg-gray-500 text-white px-4 py-2 rounded-full hover:bg-gray-600 cursor-pointer transition-colors duration-200"
+            // >
+            //   <FaUser /> Xin chào
+            //   <FaSignOutAlt className="ml-1" size={12} />
+            // </button>
+            <div
+              className="relative"
+              onMouseEnter={() => setIsAccountOpen(true)}
+              onMouseLeave={() => setIsAccountOpen(false)}
+            >
+              <button
+                onClick={toggleAccount}
+                className="flex items-center gap-2 bg-[#E61E4D] text-white px-4 py-2 rounded-full hover:bg-[#d41b46ff] transition-colors duration-200 cursor-pointer"
+              >
+                <FaUser /> Xin chào
+                <FaChevronDown
+                  size={12}
+                  className={`transition-transform duration-200 ${isAccountOpen ? "rotate-180" : ""
+                    }`}
+                />
+              </button>
+
+              {/* Dropdown menu */}
+              {isAccountOpen && (
+                <div className="absolute right-0 mt-2 w-60 bg-white rounded-md shadow-lg border border-gray-300 py-2 z-50">
+                  <Link
+                    href="/account"
+                    className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                  >
+                    <FaUser /> Thông tin tài khoản
+                  </Link>
+                  <Link
+                    href="/account/address"
+                    className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                  >
+                    <FaMapMarkerAlt /> Sổ địa chỉ
+                  </Link>
+                  <Link
+                    href="/account/orders"
+                    className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                  >
+                    <FaBox /> Quản lý đơn hàng
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center gap-2 cursor-pointer"
+                  >
+                    <FaSignOutAlt /> Đăng xuất
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </header>

@@ -10,10 +10,20 @@ export interface RegisterPayload {
 }
 
 export interface AuthResponse {
-  token: string;
-  user: {
-    id: number;
-    username: string;
-    email: string;
-  };
+  accessToken: string;
+  refreshToken: string;
+  tokenType: string;
+  expiresIn: number;
+}
+
+export interface DecodedToken {
+  sub: string;   // username
+  type: string;
+  iat: number;
+  exp: number;
+}
+
+
+export interface User {
+  username: string;
 }

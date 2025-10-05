@@ -37,6 +37,8 @@ import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import "./globals.css"; // import TailwindCSS hoặc CSS global
+import { AuthProvider } from "@/contexts/AuthContext";
+import { CartProvider } from "@/contexts/CartContext";
 
 export const metadata: Metadata = {
   title: "My Store",
@@ -51,14 +53,13 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <body className="bg-gray-50 text-gray-900">
-        {/* Header chung */}
-        <Header />
-
-        {/* Nội dung chính, có lề trái phải */}
-        <main className="max-w-7xl mx-auto px-6 py-6">{children}</main>
-
-        {/* Footer chung */}
-        <Footer />
+        <AuthProvider>
+          <CartProvider>
+            <Header />
+            <main className="max-w-7xl mx-auto px-6 py-6">{children}</main>
+            <Footer />
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

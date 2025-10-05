@@ -3,22 +3,23 @@
 import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { FaUserAlt, FaLock } from "react-icons/fa";
-import router from "next/router";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuthContext } from "@/contexts/AuthContext";
 
 export default function LoginPage() {
-  const { handleLogin } = useAuth();
+  const { handleLogin } = useAuthContext();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
+  const router = useRouter();
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     try {
       await handleLogin({ username, password });
       alert("Login successful!");
-      router.push("/dashboard");
+      router.push("/"); // chuyển hướng client-side
     } catch (err: any) {
       alert(err.message || "Login failed");
     }
