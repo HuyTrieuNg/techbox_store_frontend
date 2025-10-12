@@ -74,11 +74,11 @@ export function useAuth() {
   async function handleRegister(payload: RegisterPayload) {
     const res = await register(payload);
 
-    setAccessToken(res.accessToken);
-    setRefreshToken(res.refreshToken);
+    // setAccessToken(res.accessToken);
+    // setRefreshToken(res.refreshToken);
 
-    localStorage.setItem("accessToken", res.accessToken);
-    localStorage.setItem("refreshToken", res.refreshToken);
+    // localStorage.setItem("accessToken", res.accessToken);
+    // localStorage.setItem("refreshToken", res.refreshToken);
 
     return res;
   }

@@ -12,7 +12,7 @@ export async function login(payload: LoginPayload): Promise<AuthResponse> {
 }
 
 export async function register(payload: RegisterPayload): Promise<AuthResponse> {
-  const res = await fetch("http://localhost:8081/api/register", {
+  const res = await fetch("http://localhost:8080/api/auth/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),

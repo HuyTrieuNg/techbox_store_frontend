@@ -32,10 +32,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const handleRegister = async (payload: RegisterPayload) => {
     const res = await register(payload);
-    setAccessToken(res.accessToken);
-    setRefreshToken(res.refreshToken);
-    localStorage.setItem("accessToken", res.accessToken);
-    localStorage.setItem("refreshToken", res.refreshToken);
+    // setAccessToken(res.accessToken);
+    // setRefreshToken(res.refreshToken);
+    // localStorage.setItem("accessToken", res.accessToken);
+    // localStorage.setItem("refreshToken", res.refreshToken);
   };
 
   const handleLogout = () => {

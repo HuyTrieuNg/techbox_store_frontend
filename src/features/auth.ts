@@ -4,9 +4,14 @@ export interface LoginPayload {
 }
 
 export interface RegisterPayload {
-  username: string;
   email: string;
   password: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  address: string;
+  dateOfBirth: Date;
+  roleNames: string[];
 }
 
 export interface AuthResponse {

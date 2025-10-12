@@ -2,17 +2,22 @@
 
 import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
-import { FaUserAlt, FaLock, FaEnvelope } from "react-icons/fa";
-import router from "next/router";
+import { FaUserAlt, FaLock, FaEnvelope, FaCalendarAlt, FaMapMarkerAlt, FaPhoneAlt } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function RegisterPage() {
     const { handleRegister } = useAuth();
-    const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [phone, setPhone] = useState("");
+    const [address, setAddress] = useState("");
+    const [dateOfBirth, setDateOfBirth] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
+    const router = useRouter();
 
     async function onSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -23,7 +28,7 @@ export default function RegisterPage() {
         }
 
         try {
-            await handleRegister({ username, email, password });
+            await handleRegister({email, password, firstName, lastName, phone, address, dateOfBirth: new Date(dateOfBirth), roleNames: ["ROLE_CUSTOMER"]});
             alert("Register successful!");
             router.push("/login");
         } catch (err: any) {
@@ -32,7 +37,7 @@ export default function RegisterPage() {
     }
 
     return (
-        <div className="h-screen flex">
+        <div className="min-h-screen flex">
             {/* Left: image */}
             <div className="hidden md:flex w-1/2 bg-gradient-to-br from-indigo-500 to-red-500 items-center justify-center p-10">
                 <img
@@ -54,20 +59,6 @@ export default function RegisterPage() {
                     </div>
 
                     <form onSubmit={onSubmit} className="space-y-6">
-                        {/* Username Input */}
-                        <div className="relative">
-                            <div className="flex items-center border border-gray-300 rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-[#ff6a88] transition">
-                                <FaUserAlt className="text-gray-400 mr-3" />
-                                <input
-                                    type="text"
-                                    placeholder="Username"
-                                    className="w-full text-gray-700 placeholder-gray-400 focus:outline-none"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    required
-                                />
-                            </div>
-                        </div>
                         {/* Email Input */}
                         <div className="relative">
                             <div className="flex items-center border border-gray-300 rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-[#ff6a88] transition">
@@ -78,6 +69,77 @@ export default function RegisterPage() {
                                     className="w-full text-gray-700 placeholder-gray-400 focus:outline-none"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        {/* Firstname Input */}
+                        <div className="relative">
+                            <div className="flex items-center border border-gray-300 rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-[#ff6a88] transition">
+                                <FaUserAlt className="text-gray-400 mr-3" />
+                                <input
+                                    type="text"
+                                    placeholder="First Name"
+                                    className="w-full text-gray-700 placeholder-gray-400 focus:outline-none"
+                                    value={firstName}
+                                    onChange={(e) => setFirstName(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="relative">
+                            <div className="flex items-center border border-gray-300 rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-[#ff6a88] transition">
+                                <FaUserAlt className="text-gray-400 mr-3" />
+                                <input
+                                    type="text"
+                                    placeholder="Last Name"
+                                    className="w-full text-gray-700 placeholder-gray-400 focus:outline-none"
+                                    value={lastName}
+                                    onChange={(e) => setLastName(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="relative">
+                            <div className="flex items-center border border-gray-300 rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-[#ff6a88] transition">
+                                <FaPhoneAlt className="text-gray-400 mr-3" />
+                                <input
+                                    type="text"
+                                    placeholder="Phone"
+                                    className="w-full text-gray-700 placeholder-gray-400 focus:outline-none"
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="relative">
+                            <div className="flex items-center border border-gray-300 rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-[#ff6a88] transition">
+                                <FaMapMarkerAlt className="text-gray-400 mr-3" />
+                                <input
+                                    type="text"
+                                    placeholder="Address"
+                                    className="w-full text-gray-700 placeholder-gray-400 focus:outline-none"
+                                    value={address}
+                                    onChange={(e) => setAddress(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        {/* Date of Birth Input */}
+                        <div className="relative">
+                            <div className="flex items-center border border-gray-300 rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-[#ff6a88] transition">
+                                <FaCalendarAlt className="text-gray-400 mr-3" />
+                                <input
+                                    type="date"
+                                    className="w-full text-gray-700 focus:outline-none"
+                                    value={dateOfBirth}
+                                    onChange={(e) => setDateOfBirth(e.target.value)}
                                     required
                                 />
                             </div>
