@@ -1,7 +1,7 @@
 import { LoginPayload, RegisterPayload, AuthResponse } from "../features/auth";
 
 export async function login(payload: LoginPayload): Promise<AuthResponse> {
-  const res = await fetch("http://localhost:8081/login", {
+  const res = await fetch("http://localhost:8080/api/auth/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),

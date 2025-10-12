@@ -17,7 +17,7 @@ const ProductCard: React.FC<Props> = ({ product }) => {
 
   const shortSpecs = product.specs ?? ["i5 12400F", "16GB", "15.6 inch FHD", "RTX 3050", "144 Hz"];
   return (
-    <div className="bg-white border border-gray-300 rounded-xl shadow-md p-6 flex flex-col hover:shadow-lg transition cursor-pointer">
+    <div className="bg-white border border-gray-300 rounded-xl shadow-md p-3 flex flex-col hover:shadow-lg transition cursor-pointer">
       <Link href={`/product/${product.slug}`}>
       <img
         src={product.image_url}

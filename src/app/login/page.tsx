@@ -9,7 +9,7 @@ import { useAuthContext } from "@/contexts/AuthContext";
 
 export default function LoginPage() {
   const { handleLogin } = useAuthContext();
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
@@ -17,7 +17,7 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     try {
-      await handleLogin({ username, password });
+      await handleLogin({ email, password });
       alert("Login successful!");
       router.push("/"); // chuyển hướng client-side
     } catch (err: any) {
@@ -57,8 +57,8 @@ export default function LoginPage() {
                   type="text"
                   placeholder="Username"
                   className="w-full text-gray-700 placeholder-gray-400 focus:outline-none"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>

@@ -6,10 +6,15 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
 import React, { useState } from "react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaTruck } from "react-icons/fa";
 import { products } from "@/data/products";
 import ProductList from "@/components/ProductList";
 import Link from "next/link";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import FlashSaleSection from "@/components/FlashSale";
 
 // export default function Home() {
 //   return (
@@ -168,55 +173,138 @@ const HomePage = () => {
       {/* <Header /> */}
       {/* <main className="max-w-7xl mx-auto px-6 py-6"> */}
       {/* Banner + danh mục */}
-      <div className="grid grid-cols-4 gap-6 mb-10">
+      <div className="grid grid-cols-5 gap-2 mb-10">
         {/* Cột trái: Danh mục */}
         <div className="col-span-1">
           <CategoryMenu type="grid" />
         </div>
 
         {/* Cột phải: Banner quảng cáo */}
-        <div className="col-span-3 relative">
-          <div className="w-full h-[400px] rounded-xl overflow-hidden shadow-lg">
+        <div className="col-span-4 grid grid-cols-3 grid-rows-2 gap-2">
+          {/* Ảnh lớn chiếm 2 cột và 2 hàng */}
+          {/* <div className="col-span-2 row-span-2 rounded-xl overflow-hidden shadow-lg">
             <img
-              src={images[current]}
-              alt={`Banner ${current + 1}`}
-              className="w-full h-full object-cover transition-all duration-500"
+              src="https://cdn.hstatic.net/files/200000722513/file/gearvn-pc-gvn-t9-slider.png"
+              alt="Laptop Office"
+              className="w-full h-full object-cover"
+            />
+          </div> */}
+          <div className="col-span-2 row-span-2 rounded-xl overflow-hidden shadow-lg">
+            <Swiper
+              modules={[Autoplay, Pagination]}
+              spaceBetween={0}
+              slidesPerView={1}
+              autoplay={{
+                delay: 3000, // Chuyển slide sau 3 giây
+                disableOnInteraction: false, // Tiếp tục autoplay sau khi user tương tác
+              }}
+              loop={true} // Loop vô tận
+              pagination={{
+                clickable: true,
+                dynamicBullets: true,
+              }}
+              className="h-full" // Đảm bảo swiper full height
+            >
+              <SwiperSlide>
+                <img
+                  src="https://cdn.hstatic.net/files/200000722513/file/gearvn-pc-gvn-t9-slider.png"
+                  alt="Slide 1"
+                  className="w-full h-full object-cover"
+                />
+              </SwiperSlide>
+              <SwiperSlide>
+                <img
+                  src="https://cdn.hstatic.net/files/200000722513/file/gearvn-laptop-van-phong-slider-t10.jpg" // Thay bằng hình slide 2 của bạn
+                  alt="Slide 2"
+                  className="w-full h-full object-cover"
+                />
+              </SwiperSlide>
+              <SwiperSlide>
+                <img
+                  src="https://cdn.hstatic.net/files/200000722513/file/gearvn-man-hinh-t10-slider.jpg" // Thay bằng hình slide 3 của bạn
+                  alt="Slide 3"
+                  className="w-full h-full object-cover"
+                />
+              </SwiperSlide>
+              <SwiperSlide>
+                <img
+                  src="https://cdn.hstatic.net/files/200000722513/file/gearvn-laptop-msi-slider-t10.jpeg" // Thay bằng hình slide 3 của bạn
+                  alt="Slide 4"
+                  className="w-full h-full object-cover"
+                />
+              </SwiperSlide>
+              <SwiperSlide>
+                <img
+                  src="https://file.hstatic.net/200000722513/file/gearvn-gaming-gear-deal-hoi-slider-t8-jpg.jpg" // Thay bằng hình slide 3 của bạn
+                  alt="Slide 5"
+                  className="w-full h-full object-cover"
+                />
+              </SwiperSlide>
+            </Swiper>
+          </div>
+          {/* Ảnh nhỏ 1 */}
+          <div className="rounded-xl overflow-hidden shadow-lg">
+            <img
+              src="https://cdn.hstatic.net/files/200000722513/file/gearvn-pc-gvn-t9-slider.png"
+              alt="Build PC"
+              className="w-full h-full object-cover"
             />
           </div>
 
-          {/* Nút điều hướng */}
-          <button
-            onClick={prevSlide}
-            className="absolute top-1/2 left-4 -translate-y-1/2 bg-black/40 text-white p-2 rounded-full hover:bg-black/60 transition"
-          >
-            <FaChevronLeft size={20} />
-          </button>
+          {/* Ảnh nhỏ 2 */}
+          <div className="rounded-xl overflow-hidden shadow-lg">
+            <img
+              src="https://cdn.hstatic.net/files/200000722513/file/gearvn-pc-gvn-t9-slider.png"
+              alt="Phím cơ"
+              className="w-full h-full object-cover"
+            />
+          </div>
 
-          <button
-            onClick={nextSlide}
-            className="absolute top-1/2 right-4 -translate-y-1/2 bg-black/40 text-white p-2 rounded-full hover:bg-black/60 transition"
-          >
-            <FaChevronRight size={20} />
-          </button>
+          {/* Ảnh nhỏ 3 */}
+          <div className="rounded-xl overflow-hidden shadow-lg">
+            <img
+              src="https://cdn.hstatic.net/files/200000722513/file/gearvn-pc-gvn-t9-slider.png"
+              alt="Laptop Gaming"
+              className="w-full h-full object-cover"
+            />
+          </div>
 
-          {/* Dấu chấm (pagination) */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-            {images.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrent(index)}
-                className={`w-3 h-3 rounded-full ${current === index ? "bg-[#E61E4D]" : "bg-gray-300"
-                  }`}
-              ></button>
-            ))}
+          {/* Ảnh nhỏ 4 */}
+          <div className="rounded-xl overflow-hidden shadow-lg">
+            <img
+              src="https://cdn.hstatic.net/files/200000722513/file/gearvn-pc-gvn-t9-slider.png"
+              alt="PC giảm giá"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          {/* Ảnh nhỏ 4 */}
+          <div className="rounded-xl overflow-hidden shadow-lg">
+            <img
+              src="https://cdn.hstatic.net/files/200000722513/file/gearvn-pc-gvn-t9-slider.png"
+              alt="PC giảm giá"
+              className="w-full h-full object-cover"
+            />
           </div>
         </div>
+      </div>
+
+      {/* Flash Sale */}
+      <div className="mb-10">
+        <FlashSaleSection products={products} />
       </div>
 
       {/* Danh sách sản phẩm */}
       <section className="mb-10">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">Laptop bán chạy</h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-2xl font-bold">Laptop gaming bán chạy</h2>
+            <div className="flex items-center text-gray-700 text-lg font-medium">
+              <span className="mx-2 text-gray-300">|</span>
+              <FaTruck className="text-[#E61E4D] mr-3 ml-3" />
+              <span>Miễn phí giao hàng</span>
+            </div>
+          </div>
+          {/* <h2 className="text-2xl font-bold">Laptop bán chạy</h2> */}
           <div className="flex gap-8 text-gray-600 font-semibold">
             {brands.map((brand, index) => (
               <Link
@@ -243,7 +331,15 @@ const HomePage = () => {
       </section>
       <section className="mb-10">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">Máy tính bán chạy</h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-2xl font-bold">Máy tính bán chạy</h2>
+            <div className="flex items-center text-gray-700 text-lg font-medium">
+              <span className="mx-2 text-gray-300">|</span>
+              <FaTruck className="text-[#E61E4D] mr-3 ml-3" />
+              <span>Giao hàng toàn quốc</span>
+            </div>
+          </div>
+          {/* <h2 className="text-2xl font-bold">Máy tính bán chạy</h2> */}
           {/* Nhóm các link thương hiệu */}
           <div className="flex gap-8 text-gray-600 font-semibold">
             {brands.map((brand, index) => (
@@ -267,7 +363,15 @@ const HomePage = () => {
       </section>
       <section className="mb-10">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">Điện thoại bán chạy</h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-2xl font-bold">Điện thoại bán chạy</h2>
+            <div className="flex items-center text-gray-700 text-lg font-medium">
+              <span className="mx-2 text-gray-300">|</span>
+              <FaTruck className="text-[#E61E4D] mr-3 ml-3" />
+              <span>Giao hàng toàn quốc</span>
+            </div>
+          </div>
+          {/* <h2 className="text-2xl font-bold">Điện thoại bán chạy</h2> */}
           <div className="flex gap-8 text-gray-600 font-semibold">
             {brands.map((brand, index) => (
               <Link

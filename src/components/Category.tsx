@@ -96,7 +96,7 @@ import { FaChevronRight } from 'react-icons/fa';
 const CategoryMenu = ({ type = "menu" }) => {
     if (type === "menu") {
         return (
-            <div className="absolute top-14 left-0 bg-white border border-gray-200 rounded-xl w-72 z-10 transition-all duration-300 ease-in-out">
+            <div className="absolute top-14 left-0 bg-white border border-gray-200 rounded-xl w-60 z-10 transition-all duration-300 ease-in-out">
                 <ul className="flex flex-col py-3">
                     <li className="group relative">
                         <button className="group w-full text-left px-6 py-2 text-gray-700 hover:bg-[#E61E4D] hover:text-white font-medium transition-colors duration-150 flex items-center justify-between cursor-pointer">
@@ -360,7 +360,7 @@ const CategoryMenu = ({ type = "menu" }) => {
     }
     if (type === "grid") {
         return (
-            <div className="top-14 left-0 bg-white border border-gray-300 rounded-xl w-72 z-10 transition-all duration-300 ease-in-out">
+            <div className="top-14 left-0 bg-white border border-gray-300 rounded-xl w-60 z-10 transition-all duration-300 ease-in-out">
                 <ul className="flex flex-col py-3">
                     <li className="group relative">
                         <button className="group w-full text-left px-6 py-2 text-gray-700 hover:bg-[#E61E4D] hover:text-white font-medium transition-colors duration-150 flex items-center justify-between cursor-pointer">

@@ -57,7 +57,7 @@ const ProductList: React.FC<Props> = ({ category_id }) => {
   );
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
       {filteredProducts.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
