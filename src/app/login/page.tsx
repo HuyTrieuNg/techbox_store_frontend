@@ -55,7 +55,7 @@ export default function LoginPage() {
                 <FaUserAlt className="text-gray-400 mr-3" />
                 <input
                   type="text"
-                  placeholder="Username"
+                  placeholder="Email"
                   className="w-full text-gray-700 placeholder-gray-400 focus:outline-none"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
