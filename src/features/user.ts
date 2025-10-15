@@ -17,8 +17,15 @@ export interface Address {
 }
 
 export interface User {
-  id: number;
-  username: string;
+  // id: number;
+  // username: string;
+  // email: string;
+  // addresses?: Address[];
   email: string;
-  addresses?: Address[];
+  password: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  address: string;
+  dateOfBirth: Date;
 }
