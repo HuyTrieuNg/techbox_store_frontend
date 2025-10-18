@@ -34,7 +34,7 @@ export default function CategoryPage({
     <h1 className="text-2xl font-bold mb-6 capitalize">{category}</h1>
 
     {/* Danh sách sản phẩm */}
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
       {filteredProducts.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}

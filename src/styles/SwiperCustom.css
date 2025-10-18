@@ -1,0 +1,36 @@
+.swiper-button-prev,
+.swiper-button-next {
+  background-color: #e5e7eb; /* Xám nhạt */
+  color: #333;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.swiper-button-prev::after,
+.swiper-button-next::after {
+  font-size: 16px;
+  font-weight: 700;
+  transform: translateY(1px);
+}
+
+/* Khi hover: nền đỏ, mũi tên trắng */
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+  color: #ef4444;
+  transform: scale(1.1);
+}
+
+/* Canh hai bên */
+.swiper-button-prev {
+  left: 12px;
+}
+
+.swiper-button-next {
+  right: 12px;
+}

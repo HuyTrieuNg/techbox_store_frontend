@@ -18,13 +18,13 @@
 //             </button>
 
 //             {isOpen && (
-//                 <div className="absolute top-14 left-0 bg-white border border-gray-200 rounded-xl shadow-xl w-72 z-10 transition-all duration-300 ease-in-out">
+//                 <div className="absolute top-14 left-0 bg-white border border-gray-200 rounded-md shadow-md w-72 z-10 transition-all duration-300 ease-in-out">
 //                     <ul className="flex flex-col py-3">
 //                         <li className="group relative">
 //                             <button className="group w-full text-left px-6 py-2 text-gray-700 hover:bg-[#E61E4D] hover:text-white font-medium transition-colors duration-150 flex items-center justify-between cursor-pointer">
 //                                 Điện thoại <FaChevronRight size={12} className="text-gray-500 group-hover:text-white" />
 //                             </button>
-//                             <ul className="absolute left-[calc(100%+0.5rem)] top-0 bg-white border border-gray-200 rounded-xl shadow-xl hidden group-hover:block w-64 transition-all duration-200 ease-in-out">
+//                             <ul className="absolute left-[calc(100%+0.5rem)] top-0 bg-white border border-gray-200 rounded-md shadow-md hidden group-hover:block w-64 transition-all duration-200 ease-in-out">
 //                                 <li className="px-6 py-2 text-gray-700 hover:bg-[#E61E4D] hover:text-white transition-colors duration-150 cursor-pointer">iPhone</li>
 //                                 <li className="px-6 py-2 text-gray-700 hover:bg-[#E61E4D] hover:text-white transition-colors duration-150 cursor-pointer">Samsung</li>
 //                                 <li className="px-6 py-2 text-gray-700 hover:bg-[#E61E4D] hover:text-white transition-colors duration-150 cursor-pointer">Xiaomi</li>
@@ -34,7 +34,7 @@
 //                             <button className="group w-full text-left px-6 py-2 text-gray-700 hover:bg-[#E61E4D] hover:text-white font-medium transition-colors duration-150 flex items-center justify-between cursor-pointer">
 //                                 Laptop <FaChevronRight size={12} className="text-gray-500 group-hover:text-white" />
 //                             </button>
-//                             <ul className="absolute left-[calc(100%+0.5rem)] top-0 bg-white border border-gray-200 rounded-xl shadow-xl hidden group-hover:block w-64 transition-all duration-200 ease-in-out">
+//                             <ul className="absolute left-[calc(100%+0.5rem)] top-0 bg-white border border-gray-200 rounded-md shadow-md hidden group-hover:block w-64 transition-all duration-200 ease-in-out">
 //                                 <li className="px-6 py-2 text-gray-700 hover:bg-[#E61E4D] hover:text-white transition-colors duration-150 cursor-pointer">Macbook</li>
 //                                 <li className="px-6 py-2 text-gray-700 hover:bg-[#E61E4D] hover:text-white transition-colors duration-150 cursor-pointer">Dell</li>
 //                                 <li className="px-6 py-2 text-gray-700 hover:bg-[#E61E4D] hover:text-white transition-colors duration-150 cursor-pointer">Asus</li>
@@ -57,13 +57,13 @@
 
 // const CategoryMenu = () => {
 //     return (
-//         <div className="absolute top-14 left-0 bg-white border border-gray-200 rounded-xl shadow-xl w-72 z-10 transition-all duration-300 ease-in-out">
+//         <div className="absolute top-14 left-0 bg-white border border-gray-200 rounded-md shadow-md w-72 z-10 transition-all duration-300 ease-in-out">
 //             <ul className="flex flex-col py-3">
 //                 <li className="group relative">
 //                     <button className="group w-full text-left px-6 py-2 text-gray-700 hover:bg-[#E61E4D] hover:text-white font-medium transition-colors duration-150 flex items-center justify-between cursor-pointer">
 //                         Điện thoại <FaChevronRight size={12} className="text-gray-500 group-hover:text-white" />
 //                     </button>
-//                     <ul className="absolute left-[calc(100%+0.5rem)] top-0 bg-white border border-gray-200 rounded-xl shadow-xl hidden group-hover:block w-64 transition-all duration-200 ease-in-out">
+//                     <ul className="absolute left-[calc(100%+0.5rem)] top-0 bg-white border border-gray-200 rounded-md shadow-md hidden group-hover:block w-64 transition-all duration-200 ease-in-out">
 //                         <li className="px-6 py-2 text-gray-700 hover:bg-[#E61E4D] hover:text-white transition-colors duration-150 cursor-pointer">iPhone</li>
 //                         <li className="px-6 py-2 text-gray-700 hover:bg-[#E61E4D] hover:text-white transition-colors duration-150 cursor-pointer">Samsung</li>
 //                         <li className="px-6 py-2 text-gray-700 hover:bg-[#E61E4D] hover:text-white transition-colors duration-150 cursor-pointer">Xiaomi</li>
@@ -73,7 +73,7 @@
 //                     <button className="group w-full text-left px-6 py-2 text-gray-700 hover:bg-[#E61E4D] hover:text-white font-medium transition-colors duration-150 flex items-center justify-between cursor-pointer">
 //                         Laptop <FaChevronRight size={12} className="text-gray-500 group-hover:text-white" />
 //                     </button>
-//                     <ul className="absolute left-[calc(100%+0.5rem)] top-0 bg-white border border-gray-200 rounded-xl shadow-xl hidden group-hover:block w-64 transition-all duration-200 ease-in-out">
+//                     <ul className="absolute left-[calc(100%+0.5rem)] top-0 bg-white border border-gray-200 rounded-md shadow-md hidden group-hover:block w-64 transition-all duration-200 ease-in-out">
 //                         <li className="px-6 py-2 text-gray-700 hover:bg-[#E61E4D] hover:text-white transition-colors duration-150 cursor-pointer">Macbook</li>
 //                         <li className="px-6 py-2 text-gray-700 hover:bg-[#E61E4D] hover:text-white transition-colors duration-150 cursor-pointer">Dell</li>
 //                         <li className="px-6 py-2 text-gray-700 hover:bg-[#E61E4D] hover:text-white transition-colors duration-150 cursor-pointer">Asus</li>
@@ -96,7 +96,7 @@ import { FaChevronRight } from 'react-icons/fa';
 const CategoryMenu = ({ type = "menu" }) => {
     if (type === "menu") {
         return (
-            <div className="absolute top-14 left-0 bg-white border border-gray-200 rounded-xl w-60 z-10 transition-all duration-300 ease-in-out">
+            <div className="absolute top-14 left-0 bg-white border border-gray-200 rounded-md w-60 z-10 transition-all duration-300 ease-in-out">
                 <ul className="flex flex-col py-3">
                     <li className="group relative">
                         <button className="group w-full text-left px-6 py-2 text-gray-700 hover:bg-[#E61E4D] hover:text-white font-medium transition-colors duration-150 flex items-center justify-between cursor-pointer">
@@ -104,7 +104,7 @@ const CategoryMenu = ({ type = "menu" }) => {
                         </button>
 
                         {/* Mega menu */}
-                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-xl hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
+                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-md hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
                             {/* Cột 1 */}
                             <ul className="flex-1">
                                 <h3 className="font-semibold text-gray-900 mb-2">Thương hiệu</h3>
@@ -136,7 +136,7 @@ const CategoryMenu = ({ type = "menu" }) => {
                         </button>
 
                         {/* Mega menu */}
-                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-xl hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
+                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-md hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
                             {/* Cột 1 */}
                             <ul className="flex-1">
                                 <h3 className="font-semibold text-gray-900 mb-2">Thương hiệu</h3>
@@ -168,7 +168,7 @@ const CategoryMenu = ({ type = "menu" }) => {
                         </button>
 
                         {/* Mega menu */}
-                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-xl hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
+                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-md hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
                             {/* Cột 1 */}
                             <ul className="flex-1">
                                 <h3 className="font-semibold text-gray-900 mb-2">Thương hiệu</h3>
@@ -200,7 +200,7 @@ const CategoryMenu = ({ type = "menu" }) => {
                         </button>
 
                         {/* Mega menu */}
-                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-xl hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
+                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-md hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
                             {/* Cột 1 */}
                             <ul className="flex-1">
                                 <h3 className="font-semibold text-gray-900 mb-2">Thương hiệu</h3>
@@ -232,7 +232,7 @@ const CategoryMenu = ({ type = "menu" }) => {
                         </button>
 
                         {/* Mega menu */}
-                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-xl hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
+                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-md hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
                             {/* Cột 1 */}
                             <ul className="flex-1">
                                 <h3 className="font-semibold text-gray-900 mb-2">Thương hiệu</h3>
@@ -264,7 +264,7 @@ const CategoryMenu = ({ type = "menu" }) => {
                         </button>
 
                         {/* Mega menu */}
-                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-xl hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
+                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-md hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
                             {/* Cột 1 */}
                             <ul className="flex-1">
                                 <h3 className="font-semibold text-gray-900 mb-2">Thương hiệu</h3>
@@ -296,7 +296,7 @@ const CategoryMenu = ({ type = "menu" }) => {
                         </button>
 
                         {/* Mega menu */}
-                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-xl hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
+                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-md hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
                             {/* Cột 1 */}
                             <ul className="flex-1">
                                 <h3 className="font-semibold text-gray-900 mb-2">Thương hiệu</h3>
@@ -328,7 +328,7 @@ const CategoryMenu = ({ type = "menu" }) => {
                         </button>
 
                         {/* Mega menu */}
-                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-xl hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
+                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-md hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
                             {/* Cột 1 */}
                             <ul className="flex-1">
                                 <h3 className="font-semibold text-gray-900 mb-2">Thương hiệu</h3>
@@ -360,7 +360,7 @@ const CategoryMenu = ({ type = "menu" }) => {
     }
     if (type === "grid") {
         return (
-            <div className="top-14 left-0 bg-white border border-gray-300 rounded-xl w-60 z-10 transition-all duration-300 ease-in-out">
+            <div className="top-14 left-0 bg-white border border-gray-300 rounded-md w-60 z-10 transition-all duration-300 ease-in-out">
                 <ul className="flex flex-col py-3">
                     <li className="group relative">
                         <button className="group w-full text-left px-6 py-2 text-gray-700 hover:bg-[#E61E4D] hover:text-white font-medium transition-colors duration-150 flex items-center justify-between cursor-pointer">
@@ -368,7 +368,7 @@ const CategoryMenu = ({ type = "menu" }) => {
                         </button>
 
                         {/* Mega menu */}
-                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-xl hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
+                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-md hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
                             {/* Cột 1 */}
                             <ul className="flex-1">
                                 <h3 className="font-semibold text-gray-900 mb-2">Thương hiệu</h3>
@@ -400,7 +400,7 @@ const CategoryMenu = ({ type = "menu" }) => {
                         </button>
 
                         {/* Mega menu */}
-                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-xl hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
+                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-md hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
                             {/* Cột 1 */}
                             <ul className="flex-1">
                                 <h3 className="font-semibold text-gray-900 mb-2">Thương hiệu</h3>
@@ -432,7 +432,7 @@ const CategoryMenu = ({ type = "menu" }) => {
                         </button>
 
                         {/* Mega menu */}
-                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-xl hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
+                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-md hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
                             {/* Cột 1 */}
                             <ul className="flex-1">
                                 <h3 className="font-semibold text-gray-900 mb-2">Thương hiệu</h3>
@@ -464,7 +464,7 @@ const CategoryMenu = ({ type = "menu" }) => {
                         </button>
 
                         {/* Mega menu */}
-                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-xl hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
+                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-md hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
                             {/* Cột 1 */}
                             <ul className="flex-1">
                                 <h3 className="font-semibold text-gray-900 mb-2">Thương hiệu</h3>
@@ -496,7 +496,7 @@ const CategoryMenu = ({ type = "menu" }) => {
                         </button>
 
                         {/* Mega menu */}
-                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-xl hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
+                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-md hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
                             {/* Cột 1 */}
                             <ul className="flex-1">
                                 <h3 className="font-semibold text-gray-900 mb-2">Thương hiệu</h3>
@@ -528,7 +528,7 @@ const CategoryMenu = ({ type = "menu" }) => {
                         </button>
 
                         {/* Mega menu */}
-                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-xl hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
+                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-md hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
                             {/* Cột 1 */}
                             <ul className="flex-1">
                                 <h3 className="font-semibold text-gray-900 mb-2">Thương hiệu</h3>
@@ -560,7 +560,7 @@ const CategoryMenu = ({ type = "menu" }) => {
                         </button>
 
                         {/* Mega menu */}
-                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-xl hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
+                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-md hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
                             {/* Cột 1 */}
                             <ul className="flex-1">
                                 <h3 className="font-semibold text-gray-900 mb-2">Thương hiệu</h3>
@@ -592,7 +592,7 @@ const CategoryMenu = ({ type = "menu" }) => {
                         </button>
 
                         {/* Mega menu */}
-                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-xl hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
+                        <div className="absolute left-full top-0 bg-white border border-gray-200 rounded-md hidden group-hover:flex w-[950px] h-[400px] p-6 gap-8 transition-all duration-200 ease-in-out z-50">
                             {/* Cột 1 */}
                             <ul className="flex-1">
                                 <h3 className="font-semibold text-gray-900 mb-2">Thương hiệu</h3>

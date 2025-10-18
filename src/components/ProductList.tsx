@@ -26,42 +26,42 @@ import React, { useEffect, useState } from "react";
 import ProductCard from "@/components/ProductCard";
 import { products } from "@/data/products"; // dữ liệu mẫu
 import { Product } from "@/features/product";
-
-// const ProductList: React.FC = () => {
-//   return (
-//     <div className="grid grid-cols-4 gap-4">
-//       {products.map((product) => (
-//         <ProductCard key={product.id} product={product} />
-//       ))}
-//     </div>
-//   );
-// };
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "@/styles/SwiperCustom.css";
 
 interface Props {
   category_id: number;
 }
 
 const ProductList: React.FC<Props> = ({ category_id }) => {
-  // const [products, setProducts] = useState<Product[]>([]);
-
-  // useEffect(() => {
-  //   // Gọi API theo category
-  //   fetch(`/api/products?category=${category}`)
-  //     .then((res) => res.json())
-  //     .then((data) => setProducts(data))
-  //     .catch((err) => console.error(err));
-  // }, [category]);
-  // Lọc sản phẩm theo category
   const filteredProducts = products.filter(
     (p: Product) => p.category_id === category_id
   );
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+    // <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+    //   {filteredProducts.map((product) => (
+    //     <ProductCard key={product.id} product={product} />
+    //   ))}
+    // </div>
+
+    <Swiper
+      modules={[Navigation]}
+      slidesPerView={5}
+      spaceBetween={10}
+      navigation={true }
+      loop={true}
+      autoplay={false}
+    >
       {filteredProducts.map((product) => (
-        <ProductCard key={product.id} product={product} />
+        <SwiperSlide key={product.id}>
+          <ProductCard product={product} />
+        </SwiperSlide>
       ))}
-    </div>
+    </Swiper>
   );
 };
 

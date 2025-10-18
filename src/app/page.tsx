@@ -15,6 +15,8 @@ import { Autoplay, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import FlashSaleSection from "@/components/FlashSale";
+import ArenaWeekSection from "@/components/ArenaWeek";
+import CategorySection from "@/components/CategorySection";
 
 // export default function Home() {
 //   return (
@@ -189,7 +191,7 @@ const HomePage = () => {
               className="w-full h-full object-cover"
             />
           </div> */}
-          <div className="col-span-2 row-span-2 rounded-xl overflow-hidden shadow-lg">
+          <div className="col-span-2 row-span-2 rounded-md overflow-hidden shadow-lg">
             <Swiper
               modules={[Autoplay, Pagination]}
               spaceBetween={0}
@@ -243,7 +245,7 @@ const HomePage = () => {
             </Swiper>
           </div>
           {/* Ảnh nhỏ 1 */}
-          <div className="rounded-xl overflow-hidden shadow-lg">
+          <div className="rounded-md overflow-hidden shadow-lg">
             <img
               src="https://cdn.hstatic.net/files/200000722513/file/gearvn-pc-gvn-t9-slider.png"
               alt="Build PC"
@@ -252,7 +254,7 @@ const HomePage = () => {
           </div>
 
           {/* Ảnh nhỏ 2 */}
-          <div className="rounded-xl overflow-hidden shadow-lg">
+          <div className="rounded-md overflow-hidden shadow-lg">
             <img
               src="https://cdn.hstatic.net/files/200000722513/file/gearvn-pc-gvn-t9-slider.png"
               alt="Phím cơ"
@@ -261,7 +263,7 @@ const HomePage = () => {
           </div>
 
           {/* Ảnh nhỏ 3 */}
-          <div className="rounded-xl overflow-hidden shadow-lg">
+          <div className="rounded-md overflow-hidden shadow-lg">
             <img
               src="https://cdn.hstatic.net/files/200000722513/file/gearvn-pc-gvn-t9-slider.png"
               alt="Laptop Gaming"
@@ -270,7 +272,7 @@ const HomePage = () => {
           </div>
 
           {/* Ảnh nhỏ 4 */}
-          <div className="rounded-xl overflow-hidden shadow-lg">
+          <div className="rounded-md overflow-hidden shadow-lg">
             <img
               src="https://cdn.hstatic.net/files/200000722513/file/gearvn-pc-gvn-t9-slider.png"
               alt="PC giảm giá"
@@ -278,7 +280,7 @@ const HomePage = () => {
             />
           </div>
           {/* Ảnh nhỏ 4 */}
-          <div className="rounded-xl overflow-hidden shadow-lg">
+          <div className="rounded-md overflow-hidden shadow-lg">
             <img
               src="https://cdn.hstatic.net/files/200000722513/file/gearvn-pc-gvn-t9-slider.png"
               alt="PC giảm giá"
@@ -291,6 +293,11 @@ const HomePage = () => {
       {/* Flash Sale */}
       <div className="mb-10">
         <FlashSaleSection products={products} />
+      </div>
+
+      {/* Arena Week */}
+      <div className="mb-10">
+        <ArenaWeekSection products={products} />
       </div>
 
       {/* Danh sách sản phẩm */}
@@ -390,6 +397,8 @@ const HomePage = () => {
         </div>
         <ProductList category_id={1} />
       </section>
+
+      <CategorySection />
       {/* </main> */}
       {/* <Footer /> */}
     </>
