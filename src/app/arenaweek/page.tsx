@@ -4,8 +4,9 @@ import { FaChevronRight, FaHome } from "react-icons/fa";
 import Link from "next/link";
 import ProductCardFlashSale from "@/components/ProductCartFlashSale";
 import { products } from "@/data/products";
+import ProductCard from "@/components/ProductCard";
 
-export default function FlashSalePage() {
+export default function ArenaWeekPage() {
 
   return (
     <>
@@ -15,13 +16,13 @@ export default function FlashSalePage() {
           Trang chủ
         </Link>
         <FaChevronRight className="mx-2 text-gray-400" />
-        <span className="font-medium text-gray-800 capitalize">Flash Sale</span>
+        <span className="font-medium text-gray-800 capitalize">Gaming giá hời - Deal mới mỗi tuần</span>
       </div>
 
       {/* Danh sách sản phẩm */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
         {products.map((p) => (
-          <ProductCardFlashSale key={p.id} product={p} variant="default"/>
+          <ProductCard key={p.id} product={p}/>
         ))}
       </div>
     </>
