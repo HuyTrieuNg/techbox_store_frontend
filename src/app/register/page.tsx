@@ -51,10 +51,10 @@ export default function RegisterPage() {
                 <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 sm:p-10 space-y-8">
                     <div className="text-center">
                         <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-                            Create Account
+                            Đăng ký
                         </h1>
                         <p className="mt-2 text-sm text-gray-600">
-                            Join us and start your journey
+                            Tham gia cùng chúng tôi và bắt đầu hành trình của bạn
                         </p>
                     </div>
 
@@ -74,13 +74,27 @@ export default function RegisterPage() {
                             </div>
                         </div>
 
+                        <div className="relative">
+                            <div className="flex items-center border border-gray-300 rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-[#ff6a88] transition">
+                                <FaUserAlt className="text-gray-400 mr-3" />
+                                <input
+                                    type="text"
+                                    placeholder="Họ"
+                                    className="w-full text-gray-700 placeholder-gray-400 focus:outline-none"
+                                    value={lastName}
+                                    onChange={(e) => setLastName(e.target.value)}
+                                    required
+                                />
+                            </div>
+                        </div>
+
                         {/* Firstname Input */}
                         <div className="relative">
                             <div className="flex items-center border border-gray-300 rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-[#ff6a88] transition">
                                 <FaUserAlt className="text-gray-400 mr-3" />
                                 <input
                                     type="text"
-                                    placeholder="First Name"
+                                    placeholder="Tên"
                                     className="w-full text-gray-700 placeholder-gray-400 focus:outline-none"
                                     value={firstName}
                                     onChange={(e) => setFirstName(e.target.value)}
@@ -91,24 +105,10 @@ export default function RegisterPage() {
 
                         <div className="relative">
                             <div className="flex items-center border border-gray-300 rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-[#ff6a88] transition">
-                                <FaUserAlt className="text-gray-400 mr-3" />
-                                <input
-                                    type="text"
-                                    placeholder="Last Name"
-                                    className="w-full text-gray-700 placeholder-gray-400 focus:outline-none"
-                                    value={lastName}
-                                    onChange={(e) => setLastName(e.target.value)}
-                                    required
-                                />
-                            </div>
-                        </div>
-
-                        <div className="relative">
-                            <div className="flex items-center border border-gray-300 rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-[#ff6a88] transition">
                                 <FaPhoneAlt className="text-gray-400 mr-3" />
                                 <input
                                     type="text"
-                                    placeholder="Phone"
+                                    placeholder="Số điện thoại"
                                     className="w-full text-gray-700 placeholder-gray-400 focus:outline-none"
                                     value={phone}
                                     onChange={(e) => setPhone(e.target.value)}
@@ -122,7 +122,7 @@ export default function RegisterPage() {
                                 <FaMapMarkerAlt className="text-gray-400 mr-3" />
                                 <input
                                     type="text"
-                                    placeholder="Address"
+                                    placeholder="Địa chỉ"
                                     className="w-full text-gray-700 placeholder-gray-400 focus:outline-none"
                                     value={address}
                                     onChange={(e) => setAddress(e.target.value)}
@@ -151,7 +151,7 @@ export default function RegisterPage() {
                                 <FaLock className="text-gray-400 mr-3" />
                                 <input
                                     type="password"
-                                    placeholder="Password"
+                                    placeholder="Mật khẩu"
                                     className="w-full text-gray-700 placeholder-gray-400 focus:outline-none"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
@@ -165,7 +165,7 @@ export default function RegisterPage() {
                                 <FaLock className="text-gray-400 mr-3" />
                                 <input
                                     type="password"
-                                    placeholder="Confirm Password"
+                                    placeholder="Xác nhận mật khẩu"
                                     className="w-full text-gray-700 placeholder-gray-400 focus:outline-none"
                                     value={confirmPassword}
                                     onChange={(e) => setConfirmPassword(e.target.value)}
@@ -184,14 +184,14 @@ export default function RegisterPage() {
                             type="submit"
                             className="w-full bg-gradient-to-r from-[#E61E4D] to-[#ff6a88] hover:opacity-90 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
                         >
-                            Register
+                            Đăng ký
                         </button>
 
                         {/* Login Link */}
                         <p className="text-sm text-center text-gray-500">
-                            Already have an account?{" "}
+                            Bạn đã có tài khoản?{" "}
                             <Link href="/login" className="text-[#E61E4D] hover:text-[#ff6a88] font-medium transition">
-                                Login
+                                Đăng nhập
                             </Link>
                         </p>
                     </form>

@@ -29,3 +29,9 @@ export interface User {
   address: string;
   dateOfBirth: Date;
 }
+
+export interface UpdatePasswordData {
+  email: string;
+  password: string;
+  newPassword: string;
+}

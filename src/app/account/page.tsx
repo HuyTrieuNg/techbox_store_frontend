@@ -3,7 +3,7 @@ import SidebarAccount from "@/components/SidebarAccount";
 import { useUser } from "@/hooks/useUser";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { FaUser, FaMapMarkerAlt, FaBox, FaEye, FaSignOutAlt, FaHome, FaChevronRight } from "react-icons/fa";
+import { FaHome, FaChevronRight } from "react-icons/fa";
 
 export default function AccountPage() {
     // const [gender, setGender] = useState("Nam");
@@ -95,15 +95,16 @@ export default function AccountPage() {
                                 {/* <span className="ml-2 text-green-600 font-bold">✔</span> */}
                             </div>
                         </div>
+
                         {/* Họ tên */}
                         <div className="flex items-center gap-4">
                             <label className="w-32 text-gray-700 font-medium text-right">
-                                Firstname
+                                Họ
                             </label>
                             <input
                                 type="text"
-                                name="firstName"
-                                value={formData.firstName}
+                                name="lastName"
+                                value={formData.lastName}
                                 onChange={handleInputChange}
                                 className="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#E61E4D]"
                             />
@@ -111,12 +112,12 @@ export default function AccountPage() {
 
                         <div className="flex items-center gap-4">
                             <label className="w-32 text-gray-700 font-medium text-right">
-                                Lastname
+                                Tên
                             </label>
                             <input
                                 type="text"
-                                name="lastName"
-                                value={formData.lastName}
+                                name="firstName"
+                                value={formData.firstName}
                                 onChange={handleInputChange}
                                 className="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#E61E4D]"
                             />
@@ -165,7 +166,7 @@ export default function AccountPage() {
 
                         <div className="flex items-center gap-4">
                             <label className="w-32 text-gray-700 font-medium text-right">
-                                Address
+                                Địa chỉ
                             </label>
                             <div className="flex items-center gap-3 flex-1">
                                 <input
@@ -199,7 +200,7 @@ export default function AccountPage() {
                             <button
                                 type="submit"
                                 disabled={updateLoading}
-                                className={`bg-[#E61E4D] text-white px-6 py-2 rounded-md font-semibold hover:bg-[#c71a44] transition ${updateLoading ? "opacity-50 cursor-not-allowed" : ""
+                                className={`bg-[#E61E4D] text-white px-6 py-2 rounded-md font-semibold hover:bg-[#c71a44] transition cursor-pointer ${updateLoading ? "opacity-50 cursor-not-allowed" : ""
                                     }`}
                             >
                                 {updateLoading ? "Đang lưu..." : "LƯU THAY ĐỔI"}
