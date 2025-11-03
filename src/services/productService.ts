@@ -1,130 +1,105 @@
 // import { Category } from "@/features/category";
-// import axios from "axios";
-// const API_BASE_URL = "http://localhost:8080/api/categories";
+// import { ProductDetail } from "@/features/product";
+// import axios, { AxiosInstance } from "axios";
+
+// const API_BASE_URL = "http://localhost:8080/api/";
+
+// const getAuthToken = (): string | null => {
+//   return localStorage.getItem("accessToken");
+// };
+
+// const axiosInstance: AxiosInstance = axios.create({
+//   baseURL: API_BASE_URL,
+//   headers: {
+//     "Content-Type": "application/json",
+//   },
+// });
+
+// // Interceptor để thêm token vào mọi request
+// axiosInstance.interceptors.request.use(
+//   (config) => {
+//     const token = getAuthToken();
+//     if (token) {
+//       config.headers.Authorization = `Bearer ${token}`;
+//     }
+//     return config;
+//   },
+//   (error) => {
+//     return Promise.reject(error);
+//   }
+// );
 
 // export class ProductService {
 //   // Lấy tất cả categories
 //   static async getAllCategories(): Promise<Category[]> {
 //     try {
-//       const response = await axios.get(`${API_BASE_URL}/categories`);
+//       const response = await axiosInstance.get("categories");
 //       return response.data;
 //     } catch (error) {
-//       console.error('Error fetching all categories:', error);
+//       console.error("Error fetching all categories:", error);
 //       throw error;
 //     }
 //   }
 
-//   // Lấy danh sách root categories (không có parent)
-//   static async getRootCategories(): Promise<Category[]> {
+//   // Lấy sản phẩm theo ID
+//   static async getProductById(id: number): Promise<ProductDetail> {
 //     try {
-//       const response = await axios.get(`${API_BASE_URL}/categories/root`);
+//       const response = await axiosInstance.get<ProductDetail>(`products/${id}`);
 //       return response.data;
-//     } catch (error) {
-//       console.error('Error fetching root categories:', error);
-//       throw error;
-//     }
-//   }
-
-//   // Lấy danh sách child categories theo parentId
-//   static async getChildCategories(parentId: number): Promise<Category[]> {
-//     try {
-//       const response = await axios.get(`${API_BASE_URL}/categories/${parentId}/children`);
-//       return response.data;
-//     } catch (error) {
-//       console.error(`Error fetching child categories for parentId ${parentId}:`, error);
-//       throw error;
-//     }
-//   }
-
-//   // Kiểm tra xem tên category có tồn tại không
-//   static async checkCategoryNameExists(name: string): Promise<boolean> {
-//     try {
-//       const response = await axios.get(`${API_BASE_URL}/categories/exists`, {
-//         params: { name },
-//       });
-//       return response.data;
-//     } catch (error) {
-//       console.error('Error checking category name exists:', error);
-//       throw error;
+//     } catch (error: any) {
+//       if (error.response?.status === 404) {
+//         throw new Error("Sản phẩm không tồn tại");
+//       }
+//       if (error.response?.data?.message) {
+//         throw new Error(error.response.data.message);
+//       }
+//       throw new Error("Không thể tải thông tin sản phẩm");
 //     }
 //   }
 // }
 
 
+import axiosClient from "@/api/client";
 import { Category } from "@/features/category";
-import axios, { AxiosInstance } from "axios";
-
-const API_BASE_URL = "http://localhost:8080/api/categories";
-
-const getAuthToken = (): string | null => {
-  return localStorage.getItem("accessToken");
-};
-
-const axiosInstance: AxiosInstance = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
-
-// Interceptor để thêm token vào mọi request
-axiosInstance.interceptors.request.use(
-  (config) => {
-    const token = getAuthToken();
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+import { ProductDetail } from "@/features/product";
 
 export class ProductService {
-  // Lấy tất cả categories
   static async getAllCategories(): Promise<Category[]> {
+    const response = await axiosClient.get("categories");
+    return response.data;
+  }
+
+  static async getProductById(id: number): Promise<ProductDetail> {
     try {
-      const response = await axiosInstance.get("");
+      const response = await axiosClient.get<ProductDetail>(`products/${id}`);
       return response.data;
-    } catch (error) {
-      console.error("Error fetching all categories:", error);
-      throw error;
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        throw new Error("Sản phẩm không tồn tại");
+      }
+      throw new Error(error.response?.data?.message || "Không thể tải sản phẩm");
     }
   }
 
-  // Lấy danh sách root categories (không có parent)
-  static async getRootCategories(): Promise<Category[]> {
-    try {
-      const response = await axiosInstance.get("/categories/root");
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching root categories:", error);
-      throw error;
-    }
-  }
+  static async getProducts(params?: {
+    categoryId?: number | string;
+    sortBy?: string;
+    sortDirection?: "ASC" | "DESC";
+    page?: number;
+    size?: number;
+  }): Promise<{ content: ProductDetail[]; totalPages: number; totalElements: number }> {
+    const {
+      categoryId = "",
+      sortBy = "id",
+      sortDirection = "ASC",
+      page = 0,
+      size = 20,
+    } = params || {};
 
-  // Lấy danh sách child categories theo parentId
-  static async getChildCategories(parentId: number): Promise<Category[]> {
-    try {
-      const response = await axiosInstance.get(`/categories/${parentId}/children`);
-      return response.data;
-    } catch (error) {
-      console.error(`Error fetching child categories for parentId ${parentId}:`, error);
-      throw error;
-    }
-  }
+    const response = await axiosClient.get("products/search", {
+      params: { categoryId, sortBy, sortDirection, page, size },
+    });
 
-  // Kiểm tra xem tên category có tồn tại không
-  static async checkCategoryNameExists(name: string): Promise<boolean> {
-    try {
-      const response = await axiosInstance.get("/categories/exists", {
-        params: { name },
-      });
-      return response.data;
-    } catch (error) {
-      console.error("Error checking category name exists:", error);
-      throw error;
-    }
+    return response.data;
   }
 }

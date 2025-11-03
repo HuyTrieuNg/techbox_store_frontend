@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { useCategories } from '@/hooks/useProduct';
+import { useCategories } from '@/hooks/useCategory';
 
 const CategorySection = () => {
     const { categories, error } = useCategories();

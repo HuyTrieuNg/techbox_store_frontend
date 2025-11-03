@@ -169,27 +169,118 @@
 //   );
 // }
 
+// "use client";
+
+// import { useCart } from "@/contexts/CartContext";
+// import CartItem from "@/components/CartItem";
+// import Link from "next/link";
+// import { CartItems } from "@/features/CartItem";
+// import { FaChevronRight, FaHome } from "react-icons/fa";
+// import { useRouter } from "next/navigation";
+
+// export default function CartPage() {
+//     const { cartItems, totalPrice } = useCart();
+//     const router = useRouter();
+//     if (cartItems.length === 0) {
+//         return (
+//             <div className="text-center py-20">
+//                 <h2 className="text-2xl font-semibold mb-4">Your cart is empty</h2>
+//                 <Link
+//                     href="/"
+//                     className="text-red-500 font-semibold hover:underline"
+//                 >
+//                     Continue shopping
+//                 </Link>
+//             </div>
+//         );
+//     }
+
+//     return (
+//         <>
+//             <div className="flex items-center text-gray-600 text-base mb-6">
+//                 <FaHome className="mr-2 text-gray-500" />
+//                 <Link href="/" className="hover:text-[#E61E4D] transition">
+//                     Trang chủ
+//                 </Link>
+//                 <FaChevronRight className="mx-2 text-gray-400" />
+//                 <span className="font-medium text-gray-800">Giỏ hàng</span>
+//             </div>
+//             <div className="max-w-7xl mx-auto grid grid-cols-3 gap-8 m-10">
+//                 {/* Bảng sản phẩm */}
+//                 <div className="col-span-2 bg-white rounded-lg shadow overflow-hidden">
+//                     <div className="bg-[#E61E4D] text-white grid grid-cols-4 font-semibold py-3 px-6">
+//                         <span>Sản phẩm</span>
+//                         <span className="text-center">Giá</span>
+//                         <span className="text-center">Số lượng</span>
+//                         <span className="text-right">Tổng</span>
+//                     </div>
+
+//                     <div>
+//                         {cartItems.map((item: CartItems) => (
+//                             <CartItem key={item.id} item={item} />
+//                         ))}
+//                     </div>
+//                 </div>
+
+//                 {/* Cart Total */}
+//                 <div className="bg-white rounded-lg shadow overflow-hidden h-fit">
+//                     <div className="bg-[#E61E4D] text-white font-semibold py-3 px-6">
+//                         Tổng đơn hàng
+//                     </div>
+//                     <div className="p-6 space-y-3">
+//                         <div className="flex justify-between">
+//                             <span>Tạm tính:</span>
+//                             <span>{totalPrice.toLocaleString()} ₫</span>
+//                         </div>
+//                         <div className="flex justify-between border-b pb-3">
+//                             <span>Giảm giá:</span>
+//                             <span>---</span>
+//                         </div>
+//                         <div className="flex justify-between font-semibold text-lg">
+//                             <span>Tổng cộng:</span>
+//                             <span className="text-[#E61E4D]">
+//                                 {totalPrice.toLocaleString()} ₫
+//                             </span>
+//                         </div>
+//                         <button
+//                             className="mt-6 w-full bg-black text-white py-3 rounded-lg font-medium hover:bg-gray-800 transition cursor-pointer"
+//                             onClick={() => router.push("/checkout")}
+//                         >
+//                             Tiến hành thanh toán
+//                         </button>
+//                     </div>
+//                 </div>
+
+//             </div>
+//         </>
+//     );
+// }
+
+
 "use client";
 
-import { useCart } from "@/contexts/CartContext";
+// import { useCart } from "@/contexts/CartContext";
 import CartItem from "@/components/CartItem";
 import Link from "next/link";
-import { CartItems } from "@/features/CartItem";
 import { FaChevronRight, FaHome } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import { useCart } from "@/hooks/useCart";
 
 export default function CartPage() {
-    const { cartItems, totalPrice } = useCart();
     const router = useRouter();
-    if (cartItems.length === 0) {
+    const { cart, isLoading, isError, totalAmount } = useCart();
+    if (isLoading) return <p>Đang tải giỏ hàng...</p>;
+    if (isError) return <p>Lỗi khi tải giỏ hàng.</p>;
+    // const router = useRouter();
+    if (cart?.empty) {
         return (
             <div className="text-center py-20">
-                <h2 className="text-2xl font-semibold mb-4">Your cart is empty</h2>
+                <h2 className="text-2xl font-semibold mb-4">Giỏ hàng của bạn đang trống</h2>
                 <Link
                     href="/"
                     className="text-red-500 font-semibold hover:underline"
                 >
-                    Continue shopping
+                    Tiếp tục mua sắm
                 </Link>
             </div>
         );
@@ -216,7 +307,7 @@ export default function CartPage() {
                     </div>
 
                     <div>
-                        {cartItems.map((item: CartItems) => (
+                        {cart?.items.map((item) => (
                             <CartItem key={item.id} item={item} />
                         ))}
                     </div>
@@ -230,7 +321,7 @@ export default function CartPage() {
                     <div className="p-6 space-y-3">
                         <div className="flex justify-between">
                             <span>Tạm tính:</span>
-                            <span>{totalPrice.toLocaleString()} ₫</span>
+                            <span>{cart?.subtotal.toLocaleString()} ₫</span>
                         </div>
                         <div className="flex justify-between border-b pb-3">
                             <span>Giảm giá:</span>
@@ -239,7 +330,7 @@ export default function CartPage() {
                         <div className="flex justify-between font-semibold text-lg">
                             <span>Tổng cộng:</span>
                             <span className="text-[#E61E4D]">
-                                {totalPrice.toLocaleString()} ₫
+                                {totalAmount.toLocaleString()} ₫
                             </span>
                         </div>
                         <button

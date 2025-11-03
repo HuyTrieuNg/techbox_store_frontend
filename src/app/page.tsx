@@ -199,12 +199,12 @@ const HomePage = () => {
               <ProductCard key={product.id} product={product} />
             ))}
           </div> */}
-        <ProductList category_id={1} />
+        <ProductList categoryId={2} />
       </section>
       <section className="mb-10">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
-            <h2 className="text-2xl font-bold">Máy tính bán chạy</h2>
+            <h2 className="text-2xl font-bold">Điện thoại bán chạy</h2>
             <div className="flex items-center text-gray-700 text-lg font-medium">
               <span className="mx-2 text-gray-300">|</span>
               <FaTruck className="text-[#E61E4D] mr-3 ml-3" />
@@ -231,12 +231,12 @@ const HomePage = () => {
 
 
         </div>
-        <ProductList category_id={1} />
+        <ProductList categoryId={1} />
       </section>
       <section className="mb-10">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
-            <h2 className="text-2xl font-bold">Điện thoại bán chạy</h2>
+            <h2 className="text-2xl font-bold">Tai nghe bán chạy</h2>
             <div className="flex items-center text-gray-700 text-lg font-medium">
               <span className="mx-2 text-gray-300">|</span>
               <FaTruck className="text-[#E61E4D] mr-3 ml-3" />
@@ -260,7 +260,7 @@ const HomePage = () => {
             </Link>
           </div>
         </div>
-        <ProductList category_id={1} />
+        <ProductList categoryId={4} />
       </section>
 
       <CategorySection />

@@ -39,6 +39,7 @@ import Footer from "@/components/Footer";
 import "./globals.css"; // import TailwindCSS hoặc CSS global
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "My Store",
@@ -56,7 +57,18 @@ export default function RootLayout({
         <AuthProvider>
           <CartProvider>
             <Header />
-            <main className="max-w-7xl mx-auto px-6 py-6">{children}</main>
+            <main className="max-w-7xl mx-auto px-6 py-6">{children}
+              {/* <Toaster position="top-right" reverseOrder={false} /> */}
+              <Toaster
+                position="top-right"
+                reverseOrder={false}
+                gutter={16}
+                containerStyle={{
+                  top: '6rem',
+                  right: '1rem',
+                }}
+              />
+            </main>
             <Footer />
           </CartProvider>
         </AuthProvider>

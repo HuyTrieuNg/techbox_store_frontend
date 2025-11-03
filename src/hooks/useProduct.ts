@@ -1,88 +1,36 @@
-import { useState, useEffect } from 'react';
-import { ProductService } from '@/services/productService';
-import { Category } from '@/features/category';
+import useSWR from "swr";
+import { ProductService } from "@/services/productService";
+import { ProductDetail } from "@/features/product";
 
-interface UseProductResult {
-  categories: Category[] | null;
-  isLoading: boolean;
-  error: any;
+interface UseProductsParams {
+  categoryId?: number | string;
+  sortBy?: string;
+  sortDirection?: "ASC" | "DESC";
+  page?: number;
+  size?: number;
 }
 
-// Hook để lấy tất cả categories
-export function useCategories(): UseProductResult {
-  const [categories, setCategories] = useState<Category[] | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<any>(null);
+export function useProducts(params?: UseProductsParams) {
+  // Dùng key động để SWR tự cache theo điều kiện
+  const key = params
+    ? ["products/search", params]
+    : ["products/search", {}];
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      setIsLoading(true);
-      try {
-        const data = await ProductService.getAllCategories();
-        setCategories(data);
-      } catch (err) {
-        setError(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const fetcher = async () => {
+    const res = await ProductService.getProducts(params);
+    return res;
+  };
 
-    fetchCategories();
-  }, []);
+  const { data, error, isLoading } = useSWR(key, fetcher, {
+    revalidateOnFocus: false, // tránh refetch khi chuyển tab
+    keepPreviousData: true, // giữ data cũ khi đổi trang
+  });
 
-  return { categories, isLoading, error };
-}
-
-// Hook để lấy root categories
-export function useRootCategories(): UseProductResult {
-  const [categories, setCategories] = useState<Category[] | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<any>(null);
-
-  useEffect(() => {
-    const fetchRootCategories = async () => {
-      setIsLoading(true);
-      try {
-        const data = await ProductService.getRootCategories();
-        setCategories(data);
-      } catch (err) {
-        setError(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchRootCategories();
-  }, []);
-
-  return { categories, isLoading, error };
-}
-
-// Hook để lấy child categories theo parentId
-export function useChildCategories(parentId: number | null): UseProductResult {
-  const [categories, setCategories] = useState<Category[] | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<any>(null);
-
-  useEffect(() => {
-    const fetchChildCategories = async () => {
-      if (!parentId) {
-        setCategories([]);
-        return;
-      }
-      setIsLoading(true);
-      try {
-        const data = await ProductService.getChildCategories(parentId);
-        setCategories(data);
-      } catch (err) {
-        setError(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchChildCategories();
-  }, [parentId]);
-
-  return { categories, isLoading, error };
+  return {
+    products: data?.content || [],
+    totalPages: data?.totalPages || 0,
+    totalElements: data?.totalElements || 0,
+    isLoading,
+    error,
+  };
 }

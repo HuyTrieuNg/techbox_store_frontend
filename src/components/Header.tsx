@@ -5,8 +5,9 @@ import Link from "next/link";
 import { FaShoppingCart, FaUser, FaChevronDown, FaSearch, FaChevronRight, FaSignOutAlt, FaBox, FaMapMarkerAlt, FaLock } from "react-icons/fa";
 import CategoryMenu from "./Category";
 import { useAuthContext } from "@/contexts/AuthContext";
-import { useCart } from "@/contexts/CartContext";
-import { CartItems } from "@/features/CartItem";
+import { useCart } from "@/hooks/useCart";
+// import { useCart } from "@/contexts/CartContext";
+// import { CartItems } from "@/features/CartItem";
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,9 +16,10 @@ export default function Header() {
   const isLoggedIn = !!accessToken;
   const toggleMenu = () => setIsOpen(!isOpen);
   const toggleAccount = () => setIsAccountOpen(!isAccountOpen);
-  const { cartItems } = useCart();
+  // const { cartItems } = useCart();
+  const { totalQuantity, isLoading } = useCart();
 
-  const cartCount = cartItems.reduce((sum: number, item: CartItems) => sum + item.quantity, 0) || 0;
+  // const cartCount = cartItems.reduce((sum: number, item: CartItems) => sum + item.quantity, 0) || 0;
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
@@ -63,7 +65,7 @@ export default function Header() {
           <Link href="/cart" className="relative">
             <FaShoppingCart size={22} />
             <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1">
-              {cartCount}
+              {totalQuantity}
             </span>
           </Link>
           {/* </button> */}

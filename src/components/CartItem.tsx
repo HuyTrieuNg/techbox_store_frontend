@@ -112,68 +112,153 @@
 
 
 
-import { useCart } from "@/contexts/CartContext";
+// import { useCart } from "@/contexts/CartContext";
 
-export default function CartItem({ item }: { item: any }) {
-    const { updateQuantity, removeFromCart } = useCart();
+// export default function CartItem({ item }: { item: any }) {
+//     const { updateQuantity, removeFromCart } = useCart();
 
-    const handleDecrease = () => {
-        if (item.quantity > 1) {
-            updateQuantity(item.id, item.quantity - 1);
-        }
-    };
+//     const handleDecrease = () => {
+//         if (item.quantity > 1) {
+//             updateQuantity(item.id, item.quantity - 1);
+//         }
+//     };
 
-    const handleIncrease = () => {
-        updateQuantity(item.id, item.quantity + 1);
-    };
+//     const handleIncrease = () => {
+//         updateQuantity(item.id, item.quantity + 1);
+//     };
 
-    const itemTotal = item.price * item.quantity;
+//     const itemTotal = item.price * item.quantity;
 
-    return (
-        <div className="grid grid-cols-4 items-center py-4 px-6 border-b border-gray-300 hover:bg-gray-50 transition">
-            <div className="flex items-center space-x-3">
-                <button
-                    onClick={() => removeFromCart(item.id)}
-                    className="text-gray-400 hover:text-[#E61E4D] text-lg">
-                    ×
-                </button>
-                {/* <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center"> */}
-                {/* Placeholder for image */}
-                <div className="w-14 h-14 bg-gray-100 flex items-center justify-center overflow-hidden rounded">
-                    <img
-                        src={item.image}
-                        alt={item.name}
-                        className="object-cover"
-                    />
+//     return (
+//         <div className="grid grid-cols-4 items-center py-4 px-6 border-b border-gray-300 hover:bg-gray-50 transition">
+//             <div className="flex items-center space-x-3">
+//                 <button
+//                     onClick={() => removeFromCart(item.id)}
+//                     className="text-gray-400 hover:text-[#E61E4D] text-lg">
+//                     ×
+//                 </button>
+//                 {/* <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center"> */}
+//                 {/* Placeholder for image */}
+//                 <div className="w-14 h-14 bg-gray-100 flex items-center justify-center overflow-hidden rounded">
+//                     <img
+//                         src={item.image}
+//                         alt={item.name}
+//                         className="object-cover"
+//                     />
 
-                </div>
-                <span className="text-gray-800 font-medium">{item.name}</span>
-            </div>
+//                 </div>
+//                 <span className="text-gray-800 font-medium">{item.name}</span>
+//             </div>
 
-            {/* Giá */}
-            <div className="text-center text-gray-700">
-                {item.price.toLocaleString()} ₫
-            </div>
+//             {/* Giá */}
+//             <div className="text-center text-gray-700">
+//                 {item.price.toLocaleString()} ₫
+//             </div>
 
-            {/* Số lượng */}
-            <div className="flex items-center justify-center space-x-2">
-                <button
-                    onClick={handleDecrease}
-                    className="border rounded-full w-7 h-7 flex items-center justify-center hover:bg-gray-200 cursor-pointer">
-                    −
-                </button>
-                <span className="w-6 text-center">{item.quantity}</span>
-                <button
-                    onClick={handleIncrease}
-                    className="border rounded-full w-7 h-7 flex items-center justify-center hover:bg-gray-200 cursor-pointer">
-                    +
-                </button>
-            </div>
+//             {/* Số lượng */}
+//             <div className="flex items-center justify-center space-x-2">
+//                 <button
+//                     onClick={handleDecrease}
+//                     className="border rounded-full w-7 h-7 flex items-center justify-center hover:bg-gray-200 cursor-pointer">
+//                     −
+//                 </button>
+//                 <span className="w-6 text-center">{item.quantity}</span>
+//                 <button
+//                     onClick={handleIncrease}
+//                     className="border rounded-full w-7 h-7 flex items-center justify-center hover:bg-gray-200 cursor-pointer">
+//                     +
+//                 </button>
+//             </div>
 
-            {/* Tổng */}
-              <div className="text-right text-gray-800 font-semibold">
-                ${itemTotal.toLocaleString()} ₫
-              </div>
-        </div>
-    );
+//             {/* Tổng */}
+//               <div className="text-right text-gray-800 font-semibold">
+//                 ${itemTotal.toLocaleString()} ₫
+//               </div>
+//         </div>
+//     );
+// }
+
+
+
+"use client";
+
+import React from "react";
+import { CartItem as CartItemType } from "@/features/cart";
+import { useCart } from "@/hooks/useCart";
+import { CartService } from "@/services/cartService";
+
+interface Props {
+  item: CartItemType;
 }
+
+const CartItem: React.FC<Props> = ({ item }) => {
+  const { refreshCart } = useCart();
+
+  const handleDecrease = async () => {
+    if (item.quantity > 1) {
+      await CartService.updateItem(item.productVariationId, item.quantity - 1);
+      refreshCart(); // refresh lại dữ liệu SWR
+    }
+  };
+
+  const handleIncrease = async () => {
+    await CartService.updateItem(item.productVariationId, item.quantity + 1);
+    refreshCart();
+  };
+
+  const handleRemove = async () => {
+    await CartService.removeItem(item.productVariationId);
+    refreshCart();
+  };
+
+  return (
+    <div className="grid grid-cols-4 items-center py-4 px-6 border-b border-gray-200 hover:bg-gray-50 transition">
+      {/* Cột sản phẩm */}
+      <div className="flex items-center space-x-3">
+        <button
+          onClick={handleRemove}
+          className="text-gray-500 hover:text-[#E61E4D] text-2xl cursor-pointer"
+        >
+          ×
+        </button>
+        <div className="w-14 h-14 bg-gray-100 flex items-center justify-center overflow-hidden rounded">
+          <img
+            src={item.productImage}
+            alt={item.productName}
+            className="object-cover w-full h-full"
+          />
+        </div>
+        <span className="text-gray-800 font-medium">{item.productName}</span>
+      </div>
+
+      {/* Giá */}
+      <div className="text-center text-gray-700">
+        {item.unitPrice.toLocaleString("vi-VN")} ₫
+      </div>
+
+      {/* Số lượng */}
+      <div className="flex items-center justify-center space-x-2">
+        <button
+          onClick={handleDecrease}
+          className="border rounded-full w-7 h-7 flex items-center justify-center hover:bg-gray-200 cursor-pointer"
+        >
+          −
+        </button>
+        <span className="w-6 text-center">{item.quantity}</span>
+        <button
+          onClick={handleIncrease}
+          className="border rounded-full w-7 h-7 flex items-center justify-center hover:bg-gray-200 cursor-pointer"
+        >
+          +
+        </button>
+      </div>
+
+      {/* Tổng */}
+      <div className="text-right text-gray-800 font-semibold">
+        {(item.totalPrice).toLocaleString("vi-VN")} ₫
+      </div>
+    </div>
+  );
+};
+
+export default CartItem;

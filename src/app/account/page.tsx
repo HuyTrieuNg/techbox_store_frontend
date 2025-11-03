@@ -13,7 +13,7 @@ export default function AccountPage() {
         firstName: user?.firstName || "",
         lastName: user?.lastName || "",
         phone: user?.phone || "",
-        address: user?.address || "",
+        // address: user?.address || "",
         dateOfBirth: user?.dateOfBirth
             ? new Date(user.dateOfBirth).toISOString().split("T")[0]
             : "",
@@ -26,7 +26,7 @@ export default function AccountPage() {
                 firstName: user.firstName || "",
                 lastName: user.lastName || "",
                 phone: user.phone || "",
-                address: user.address || "",
+                // address: user.address || "",
                 dateOfBirth: user.dateOfBirth
                     ? new Date(user.dateOfBirth).toISOString().split("T")[0]
                     : "",
@@ -164,7 +164,7 @@ export default function AccountPage() {
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-4">
+                        {/* <div className="flex items-center gap-4">
                             <label className="w-32 text-gray-700 font-medium text-right">
                                 Địa chỉ
                             </label>
@@ -177,7 +177,7 @@ export default function AccountPage() {
                                     className="border border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none focus:ring-1 focus:ring-[#E61E4D]"
                                 />
                             </div>
-                        </div>
+                        </div> */}
 
 
                         {/* Ngày sinh */}
@@ -189,7 +189,7 @@ export default function AccountPage() {
                                     name="dateOfBirth"
                                     value={formData.dateOfBirth}
                                     onChange={handleInputChange}
-                                    className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-[#E61E4D]"
                                 />
                             </div>
                         </div>
