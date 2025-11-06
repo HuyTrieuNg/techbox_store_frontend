@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FaUser, FaMapMarkerAlt, FaBox, FaEye, FaSignOutAlt } from "react-icons/fa";
+import { FaUser, FaMapMarkerAlt, FaBox, FaLock, FaSignOutAlt } from "react-icons/fa";
 
 export default function SidebarAccount() {
   const pathname = usePathname();
@@ -11,7 +11,7 @@ export default function SidebarAccount() {
     { name: "Thông tin tài khoản", icon: <FaUser />, path: "/account" },
     { name: "Sổ địa chỉ", icon: <FaMapMarkerAlt />, path: "/account/address" },
     { name: "Quản lý đơn hàng", icon: <FaBox />, path: "/account/orders" },
-    { name: "Sản phẩm đã xem", icon: <FaEye />, path: "/account/viewed" },
+    { name: "Đặt lại mật khẩu", icon: <FaLock />, path: "/account/change-password" },
     { name: "Đăng xuất", icon: <FaSignOutAlt />, path: "/logout" },
   ];
 

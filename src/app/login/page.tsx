@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
-import { FaUserAlt, FaLock } from "react-icons/fa";
+import { FaLock, FaEnvelope } from "react-icons/fa";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/contexts/AuthContext";
+import { getRedirectPathByRole } from "@/utils/auth";
 
 export default function LoginPage() {
   const { handleLogin } = useAuthContext();
@@ -13,15 +14,25 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
+  
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     try {
-      await handleLogin({ email, password });
-      alert("Login successful!");
-      router.push("/"); // chuyển hướng client-side
+      // 1. Login và lấy fresh user data
+      const { user: freshUser } = await handleLogin({ email, password });
+      
+      console.log('✅ [LoginPage] Fresh user from login:', freshUser);
+      
+      // 2. Get redirect path using helper function
+      const redirectPath = getRedirectPathByRole(freshUser);
+      
+      console.log('🚀 [LoginPage] Redirecting to:', redirectPath);
+      
+      // 3. Redirect
+      router.push(redirectPath);
     } catch (err: any) {
-      alert(err.message || "Login failed");
+      setError(err.message || "Login failed");
     }
   }
 
@@ -41,10 +52,10 @@ export default function LoginPage() {
         <div className="w-full max-w-md bg-white rounded-3xl shadow-2xl p-8 sm:p-10 space-y-8">
           <div className="text-center">
             <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">
-              Welcome Back
+              Welcome
             </h1>
             <p className="mt-2 text-sm text-gray-600">
-              Sign in to your account to continue
+              Đăng nhập vào tài khoản của bạn để tiếp tục
             </p>
           </div>
 
@@ -52,7 +63,7 @@ export default function LoginPage() {
             {/* Username Input */}
             <div className="relative">
               <div className="flex items-center border border-gray-300 rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-[#ff6a88] transition">
-                <FaUserAlt className="text-gray-400 mr-3" />
+                <FaEnvelope className="text-gray-400 mr-3" />
                 <input
                   type="text"
                   placeholder="Email"
@@ -70,7 +81,7 @@ export default function LoginPage() {
                 <FaLock className="text-gray-400 mr-3" />
                 <input
                   type="password"
-                  placeholder="Password"
+                  placeholder="Mật khẩu"
                   className="w-full text-gray-700 placeholder-gray-400 focus:outline-none"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -89,7 +100,7 @@ export default function LoginPage() {
                 href="/forgot-password"
                 className="text-[#E61E4D] hover:text-[#ff6a88] font-medium transition"
               >
-                Forgot Password?
+                Quên mật khẩu?
               </Link>
             </p>
 
@@ -98,17 +109,17 @@ export default function LoginPage() {
               type="submit"
               className="w-full bg-gradient-to-r from-[#E61E4D] to-[#ff6a88] hover:opacity-90 text-white font-semibold py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
             >
-              Sign In
+              Đăng nhập
             </button>
 
             {/* Sign Up Link */}
             <p className="text-center text-sm text-gray-600">
-              Don’t have an account?{" "}
+              Bạn chưa có tài khoản?{" "}
               <Link
                 href="/register"
                 className="text-[#E61E4D] hover:text-[#ff6a88] font-medium transition"
               >
-                Sign up
+                Đăng ký ngay
               </Link>
             </p>
           </form>

@@ -1,19 +1,36 @@
-// src/hooks/useProducts.ts
-import { useEffect, useState } from "react";
-import { Product } from "@/features/product";
-import { productService } from "@/services/productService";
+import useSWR from "swr";
+import { ProductService } from "@/services/productService";
+import { ProductDetail } from "@/features/product";
 
-export function useProducts() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface UseProductsParams {
+  categoryId?: number | string;
+  sortBy?: string;
+  sortDirection?: "ASC" | "DESC";
+  page?: number;
+  size?: number;
+}
 
-  useEffect(() => {
-    productService.getProducts()
-      .then(setProducts)
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
+export function useProducts(params?: UseProductsParams) {
+  // Dùng key động để SWR tự cache theo điều kiện
+  const key = params
+    ? ["products", params]
+    : ["products", {}];
 
-  return { products, loading, error };
+  const fetcher = async () => {
+    const res = await ProductService.getProducts(params);
+    return res;
+  };
+
+  const { data, error, isLoading } = useSWR(key, fetcher, {
+    revalidateOnFocus: false, // tránh refetch khi chuyển tab
+    keepPreviousData: true, // giữ data cũ khi đổi trang
+  });
+
+  return {
+    products: data?.content || [],
+    totalPages: data?.totalPages || 0,
+    totalElements: data?.totalElements || 0,
+    isLoading,
+    error,
+  };
 }

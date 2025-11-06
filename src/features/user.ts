@@ -8,12 +8,13 @@
 
 export interface Address {
   id: number;
-  user_id: number;
-  street: string;
+  streetAddress: string;
+  ward: string;
+  district: string;
   city: string;
-  country: string;
-  postal_code: string;
-  is_default: boolean;
+  postalCode: string;
+  isDefault: boolean;
+  addressType: string;
 }
 
 export interface User {
@@ -21,11 +22,18 @@ export interface User {
   // username: string;
   // email: string;
   // addresses?: Address[];
+  id: number;
   email: string;
   password: string;
   firstName: string;
   lastName: string;
   phone: string;
-  address: string;
+  addresses?: Address[];
   dateOfBirth: Date;
+}
+
+export interface UpdatePasswordData {
+  email: string;
+  password: string;
+  newPassword: string;
 }

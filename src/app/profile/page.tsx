@@ -56,27 +56,87 @@
 //   );
 // }
 "use client";
-import { useState } from "react";
-import { useUser } from "@/hooks/useUser";
-import { userService } from "@/services/userService";
+import { useState, useEffect } from "react";
+import { useAuthContext } from "@/contexts/AuthContext";
+import { useRouter } from "next/navigation";
+import { api } from "@/lib/axios";
+
+interface Address {
+  id: number;
+  street: string;
+  city: string;
+  country: string;
+  postal_code?: string;
+  is_default: boolean;
+}
+
+interface UserProfile {
+  id: number;
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber?: string;
+  addresses?: Address[];
+}
 
 export default function ProfilePage() {
-  const userId = 1; // giả sử user đang đăng nhập có id = 1
-  const { user, loading, error, setUser } = useUser(userId);
+  const { user: authUser, isLoading: authLoading } = useAuthContext();
+  const router = useRouter();
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  if (loading) return <p className="p-4">Loading...</p>;
-  if (error || !user) return <p className="p-4 text-red-600">Error: {error}</p>;
+  // Redirect nếu chưa login
+  useEffect(() => {
+    if (!authLoading && !authUser) {
+      router.push('/login');
+    }
+  }, [authUser, authLoading, router]);
+
+  // Fetch user profile
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!authUser) return;
+      
+      try {
+        setLoading(true);
+        const profile = await api.get<UserProfile>('/users/me');
+        setUser(profile);
+      } catch (err: any) {
+        console.error('Error fetching profile:', err);
+        setError(err.message || 'Failed to load profile');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [authUser]);
+
+  if (authLoading || loading) {
+    return <p className="p-4">Loading...</p>;
+  }
+
+  if (error || !user) {
+    return <p className="p-4 text-red-600">Error: {error || 'User not found'}</p>;
+  }
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     try {
-      const updated = await userService.updateUser(user.id, user);
+      const updated = await api.put<UserProfile>('/users/me', {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phoneNumber: user.phoneNumber,
+      });
       setUser(updated);
       alert("Profile updated successfully!");
     } catch (err: any) {
-      alert(err.message);
+      console.error('Error updating profile:', err);
+      alert(err.response?.data?.message || 'Failed to update profile');
     } finally {
       setSaving(false);
     }
@@ -102,22 +162,53 @@ export default function ProfilePage() {
       <form onSubmit={handleSave} className="space-y-6">
         {/* User Info */}
         <div>
-          <label className="block text-sm font-medium">Username</label>
+          <label className="block text-sm font-medium">First Name</label>
           <input
             type="text"
-            value={user.username}
-            onChange={(e) => setUser({ ...user, username: e.target.value })}
+            value={user.firstName}
+            onChange={(e) => setUser({ ...user, firstName: e.target.value })}
             className="w-full border rounded p-2 mt-1"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium">Email</label>
+          <label className="block text-sm font-medium">Last Name</label>
+          <input
+            type="text"
+            value={user.lastName}
+            onChange={(e) => setUser({ ...user, lastName: e.target.value })}
+            className="w-full border rounded p-2 mt-1"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium">Username (readonly)</label>
+          <input
+            type="text"
+            value={user.username}
+            disabled
+            className="w-full border rounded p-2 mt-1 bg-gray-100"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium">Email (readonly)</label>
           <input
             type="email"
             value={user.email}
-            onChange={(e) => setUser({ ...user, email: e.target.value })}
+            disabled
+            className="w-full border rounded p-2 mt-1 bg-gray-100"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium">Phone Number</label>
+          <input
+            type="tel"
+            value={user.phoneNumber || ''}
+            onChange={(e) => setUser({ ...user, phoneNumber: e.target.value })}
             className="w-full border rounded p-2 mt-1"
+            placeholder="Optional"
           />
         </div>
 
