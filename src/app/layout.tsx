@@ -34,42 +34,65 @@
 // }
 
 import type { Metadata } from "next";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import "./globals.css"; // import TailwindCSS hoặc CSS global
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { Toaster } from "react-hot-toast";
+import { serverApi } from "@/lib/server-api";
 
 export const metadata: Metadata = {
   title: "My Store",
   description: "Website bán hàng demo với Next.js",
 };
 
-export default function RootLayout({
+interface User {
+  id: string;
+  username: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  authenticated: boolean;
+  roles: string[];
+}
+
+/**
+ * Root Layout - Server Component
+ * 
+ * ✨ Fetch user data từ server một lần cho toàn bộ app
+ * → Tránh loading state khi F5
+ * 
+ * ⚠️ CHỈ wrap providers, KHÔNG wrap Header/Footer
+ * → Mỗi route group có layout riêng
+ */
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // 🚀 Fetch user data từ server (SSR) - chỉ fetch 1 lần
+  const initialUser = await serverApi.get<User>('/users/me');
+  
+  console.log('🌍 [RootLayout] Initial user data:', initialUser);
+
   return (
     <html lang="vi">
       <body className="bg-gray-50 text-gray-900">
-        <AuthProvider>
+        {/* ✨ Pass initialData to AuthProvider */}
+        <AuthProvider initialData={initialUser}>
           <CartProvider>
-            <Header />
-            <main className="max-w-7xl mx-auto px-6 py-6">{children}
-              {/* <Toaster position="top-right" reverseOrder={false} /> */}
-              <Toaster
-                position="top-right"
-                reverseOrder={false}
-                gutter={16}
-                containerStyle={{
-                  top: '6rem',
-                  right: '1rem',
-                }}
-              />
-            </main>
-            <Footer />
+            {/* ✅ Children sẽ là nested layouts (shop/admin/staff) */}
+            {children}
+            
+            {/* Toast notifications */}
+            <Toaster
+              position="top-right"
+              reverseOrder={false}
+              gutter={16}
+              containerStyle={{
+                top: '6rem',
+                right: '1rem',
+              }}
+            />
           </CartProvider>
         </AuthProvider>
       </body>

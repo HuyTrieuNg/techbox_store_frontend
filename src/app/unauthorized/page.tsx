@@ -1,3 +1,6 @@
+import UnauthorizedButtons from "@/components/UnauthorizedButtons";
+
+
 export default function UnauthorizedPage() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -27,20 +30,7 @@ export default function UnauthorizedPage() {
           Vui lòng liên hệ quản trị viên nếu bạn cho rằng đây là lỗi.
         </p>
         
-        <div className="space-x-4">
-          <a
-            href="/"
-            className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Về trang chủ
-          </a>
-          <a
-            href="/account"
-            className="inline-block px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
-          >
-            Tài khoản của tôi
-          </a>
-        </div>
+        <UnauthorizedButtons />
       </div>
     </div>
   );
