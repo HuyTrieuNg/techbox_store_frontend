@@ -12,11 +12,10 @@ import { useCart } from "@/hooks/useCart";
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
-  const { accessToken, handleLogout } = useAuthContext();
-  const isLoggedIn = !!accessToken;
+  const { user, handleLogout } = useAuthContext();
+  const isLoggedIn = !!user;
   const toggleMenu = () => setIsOpen(!isOpen);
   const toggleAccount = () => setIsAccountOpen(!isAccountOpen);
-  // const { cartItems } = useCart();
   const { totalQuantity, isLoading } = useCart();
 
   // const cartCount = cartItems.reduce((sum: number, item: CartItems) => sum + item.quantity, 0) || 0;
@@ -86,7 +85,7 @@ export default function Header() {
                 onClick={toggleAccount}
                 className="flex items-center gap-2 bg-[#E61E4D] text-white px-4 py-2 rounded-full hover:bg-[#d41b46ff] transition-colors duration-200 cursor-pointer"
               >
-                <FaUser /> Xin chào
+                <FaUser /> Xin chào {user.lastName} {user.firstName}
                 <FaChevronDown
                   size={12}
                   className={`transition-transform duration-200 ${isAccountOpen ? "rotate-180" : ""

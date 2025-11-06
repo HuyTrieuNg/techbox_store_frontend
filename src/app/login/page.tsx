@@ -6,6 +6,7 @@ import { FaLock, FaEnvelope } from "react-icons/fa";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuthContext } from "@/contexts/AuthContext";
+import { getRedirectPathByRole } from "@/utils/auth";
 
 export default function LoginPage() {
   const { handleLogin } = useAuthContext();
@@ -13,15 +14,25 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
+  
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     try {
-      await handleLogin({ email, password });
-      alert("Login successful!");
-      router.push("/"); // chuyển hướng client-side
+      // 1. Login và lấy fresh user data
+      const { user: freshUser } = await handleLogin({ email, password });
+      
+      console.log('✅ [LoginPage] Fresh user from login:', freshUser);
+      
+      // 2. Get redirect path using helper function
+      const redirectPath = getRedirectPathByRole(freshUser);
+      
+      console.log('🚀 [LoginPage] Redirecting to:', redirectPath);
+      
+      // 3. Redirect
+      router.push(redirectPath);
     } catch (err: any) {
-      alert(err.message || "Login failed");
+      setError(err.message || "Login failed");
     }
   }
 

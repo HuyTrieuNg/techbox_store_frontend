@@ -13,8 +13,8 @@ interface UseProductsParams {
 export function useProducts(params?: UseProductsParams) {
   // Dùng key động để SWR tự cache theo điều kiện
   const key = params
-    ? ["products/search", params]
-    : ["products/search", {}];
+    ? ["products", params]
+    : ["products", {}];
 
   const fetcher = async () => {
     const res = await ProductService.getProducts(params);

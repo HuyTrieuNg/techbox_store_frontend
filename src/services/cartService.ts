@@ -1,31 +1,27 @@
-import axiosClient from "@/api/client";
+import { api } from "@/lib/axios";
 import { Cart } from "@/features/cart";
 
 export class CartService {
   static async getCart(): Promise<Cart> {
-    const response = await axiosClient.get<Cart>("/cart");
-    return response.data;
+    return api.get<Cart>("/cart");
   }
 
   static async addItem(productVariationId: number, quantity: number): Promise<Cart> {
-    const response = await axiosClient.post<Cart>("/cart/add", {
+    return api.post<Cart>("/cart/add", {
       productVariationId,
       quantity,
     });
-    return response.data;
   }
 
   static async updateItem(productVariationId: number, quantity: number): Promise<Cart> {
-    const response = await axiosClient.put<Cart>(`/cart/items/${productVariationId}`, { quantity });
-    return response.data;
+    return api.put<Cart>(`/cart/items/${productVariationId}`, { quantity });
   }
 
   static async removeItem(productVariationId: number): Promise<Cart> {
-    const response = await axiosClient.delete<Cart>(`/cart/items/${productVariationId}`);
-    return response.data;
+    return api.delete<Cart>(`/cart/items/${productVariationId}`);
   }
 
   static async clearCart(): Promise<void> {
-    await axiosClient.delete("/cart/clear");
+    await api.delete("/cart/clear");
   }
 }

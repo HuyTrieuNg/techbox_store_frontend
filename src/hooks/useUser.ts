@@ -3,28 +3,35 @@
 import { useEffect, useState } from "react";
 import { User, UpdatePasswordData, Address } from "@/features/user";
 import { addUserAddress, deleteUserAddress, getCurrentUserProfile, getUserAddresses, updateUserAddress, updateUserProfile } from "@/services/userService";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuthContext } from "@/contexts/AuthContext";
 
 export function useUser() {
-  const { accessToken } = useAuth();
+  const { user: authUser, isLoading: authLoading } = useAuthContext();
   const [user, setUser] = useState<User | null>(null);
   const [updatePasswordData, setUpdatePasswordData] = useState<UpdatePasswordData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [updateLoading, setUpdateLoading] = useState(false); // Trạng thái loading cho update
-  const [updateError, setUpdateError] = useState<string | null>(null); // Trạng thái lỗi cho update
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [updateError, setUpdateError] = useState<string | null>(null);
   const [addresses, setAddresses] = useState<Address[]>([]);
 
   useEffect(() => {
     const fetchUser = async () => {
-      const savedAccessToken = localStorage.getItem("accessToken");
-      if (!savedAccessToken) {
+      // Đợi auth loading xong
+      if (authLoading) {
+        return;
+      }
+
+      // Nếu chưa login
+      if (!authUser) {
         setError("Chưa đăng nhập");
         setLoading(false);
         return;
       }
+
       try {
-        const data = await getCurrentUserProfile(savedAccessToken);
+        // Gọi API để lấy full user profile
+        const data = await getCurrentUserProfile();
         setUser(data);
       } catch (err: any) {
         setError(err.response?.data?.message || "Lỗi khi tải thông tin người dùng");
@@ -34,18 +41,18 @@ export function useUser() {
     };
 
     fetchUser();
-  }, [accessToken]); // chạy lại khi token thay đổi
+  }, [authUser, authLoading]);
 
   // Hàm cập nhật thông tin người dùng
   const handleUpdateProfile = async (userData: Partial<User>) => {
-    if (!accessToken) {
+    if (!authUser) {
       setUpdateError("Chưa đăng nhập");
       return { success: false, error: "Chưa đăng nhập" };
     }
     try {
       setUpdateLoading(true);
       setUpdateError(null);
-      const updatedUser = await updateUserProfile(accessToken, userData);
+      const updatedUser = await updateUserProfile(userData);
       setUser(updatedUser);
       return { success: true, user: updatedUser };
     } catch (err: any) {
@@ -58,14 +65,13 @@ export function useUser() {
   };
 
   const handleUpdatePassword = async (userData: Partial<UpdatePasswordData>) => {
-    if (!accessToken) {
-      // setUpdateError("Chưa đăng nhập");
-      return { success: true };
+    if (!authUser) {
+      return { success: false, error: "Chưa đăng nhập" };
     }
     try {
       setUpdateLoading(true);
       setUpdateError(null);
-      const updatedUser = await updateUserProfile(accessToken, userData);
+      const updatedUser = await updateUserProfile(userData);
       setUser(updatedUser);
       return { success: true, user: updatedUser };
     } catch (err: any) {
@@ -78,30 +84,31 @@ export function useUser() {
   };
 
   const fetchAddresses = async () => {
-    if (!accessToken || !user) return;
+    if (!authUser || !user) return;
     try {
-      const data = await getUserAddresses(accessToken, user.id);
+      const data = await getUserAddresses(user.id);
       setAddresses(data);
     } catch (err) {
       console.error("Lỗi khi tải địa chỉ:", err);
     }
   };
+
   useEffect(() => {
-    if (user && accessToken) {
+    if (user && authUser) {
       fetchAddresses();
     }
-  }, [user, accessToken]);
+  }, [user, authUser]);
 
   const addAddress = async (newAddress: Omit<Address, "id">) => {
-    if (!user || !accessToken) return;
-    await addUserAddress(accessToken, user.id, newAddress);
+    if (!user || !authUser) return;
+    await addUserAddress(user.id, newAddress);
     await fetchAddresses(); // reload danh sách
   };
 
   const deleteAddress = async (addressId: number) => {
-    if (!user || !accessToken) return;
+    if (!user || !authUser) return;
     try {
-      await deleteUserAddress(accessToken, user.id, addressId);
+      await deleteUserAddress(user.id, addressId);
       await fetchAddresses(); // reload lại danh sách sau khi xóa
     } catch (err) {
       console.error("Lỗi khi xóa địa chỉ:", err);
@@ -109,9 +116,9 @@ export function useUser() {
   };
 
   const updateAddress = async (addressId: number, updatedData: Omit<Address, "id">) => {
-    if (!user || !accessToken) return;
+    if (!user || !authUser) return;
     try {
-      await updateUserAddress(accessToken, user.id, addressId, updatedData);
+      await updateUserAddress(user.id, addressId, updatedData);
       await fetchAddresses();
     } catch (err) {
       console.error("Lỗi khi cập nhật địa chỉ:", err);

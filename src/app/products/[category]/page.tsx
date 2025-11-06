@@ -53,12 +53,12 @@ import Link from "next/link";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 
-export default function CategoryPage({
+export default async function CategoryPage({
   params,
 }: {
-  params: { category: string };
+  params: Promise<{ category: string }>;
 }) {
-  const { category } = params;
+  const { category } = await params;
 
   // Lọc theo danh mục
   const categoryProducts = products.filter(
