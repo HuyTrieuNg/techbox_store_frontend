@@ -64,16 +64,24 @@ const fetcher = async (url: string): Promise<User | null> => {
   }
 };
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+interface AuthProviderProps {
+  children: ReactNode;
+  initialData?: User | null; // ✨ Data từ server (SSR)
+}
+
+export function AuthProvider({ children, initialData }: AuthProviderProps) {
   // Sử dụng useSWR để fetch user data qua proxy
   // ✅ KHÔNG cần /api/proxy prefix vì axios instance đã có baseURL
   const { data: user, error, mutate, isLoading } = useSWR<User | null>(
     '/users/me',  // ← Chỉ cần path, baseURL sẽ tự thêm /api/proxy
     fetcher,
     {
+      fallbackData: initialData, // ✨ Dùng data từ server nếu có
       revalidateOnFocus: false,
       revalidateOnReconnect: true,
       shouldRetryOnError: false,
+      // Nếu có initialData từ server → không fetch lại ngay lập tức
+      revalidateOnMount: !initialData,
     }
   );
 
