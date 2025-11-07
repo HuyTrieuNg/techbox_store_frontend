@@ -2,6 +2,7 @@
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuthContext, UserRole } from '@/contexts/AuthContext';
+import UnauthorizedContent from '@/components/UnauthorizedContent';
 
 interface RouteGuardProps {
   children: React.ReactNode;
@@ -35,62 +36,63 @@ export default function RouteGuard({
   const pathname = usePathname();
   const { user, isLoading, hasRole } = useAuthContext();
 
-  useEffect(() => {
-    // Chờ loading xong
-    if (isLoading) return;
+  // Debug log
+  console.log('[RouteGuard]', { pathname, isLoading, hasUser: !!user });
 
-    // Kiểm tra requireAuth
+  useEffect(() => {
+    // Chỉ chờ loading nếu CHƯA có user data
+    if (isLoading && !user) return;
+
+    // Redirect nếu requireAuth và chưa login
     if (requireAuth && !user) {
       const redirect = redirectTo || `/login?redirect=${encodeURIComponent(pathname)}`;
       router.push(redirect);
       return;
     }
 
-    // Kiểm tra requireGuest
+    // Redirect nếu requireGuest nhưng đã login
     if (requireGuest && user) {
       const redirect = redirectTo || '/';
       router.push(redirect);
       return;
     }
 
-    // Kiểm tra requiredRoles
-    if (requiredRoles.length > 0 && user) {
-      const hasRequiredRole = requiredRoles.some(role => hasRole(role));
-      if (!hasRequiredRole) {
-        const redirect = redirectTo || '/unauthorized';
-        router.push(redirect);
-        return;
-      }
-    }
-  }, [user, isLoading, requireAuth, requireGuest, requiredRoles, redirectTo, pathname, router, hasRole]);
+    // Không redirect nếu thiếu quyền - đã render UnauthorizedContent
+  }, [user, isLoading, requireAuth, requireGuest, redirectTo, pathname, router]);
 
-  // Hiển thị fallback trong lúc loading
-  if (isLoading) {
+  // Chỉ hiển thị fallback nếu loading VÀ chưa có user
+  if (isLoading && !user) {
     return <>{fallback}</>;
   }
 
-  // Kiểm tra điều kiện trước khi render children
+  // Nếu đã có user data → check roles ngay
+  // Check requireAuth
   if (requireAuth && !user) {
-    return <>{fallback}</>;
+    // Chưa login → redirect về login (useEffect sẽ xử lý)
+    return null;
   }
 
+  // Check requireGuest
   if (requireGuest && user) {
-    return <>{fallback}</>;
+    // Đã login nhưng vào trang guest → redirect (useEffect sẽ xử lý)
+    return null;
   }
 
-  // Kiểm tra roles
-  if (requiredRoles.length > 0 && user) {
+  // Check requiredRoles
+  if (requiredRoles.length > 0) {
+    if (!user) {
+      // Chưa login → redirect về login
+      return null;
+    }
+    
     const hasRequiredRole = requiredRoles.some(role => hasRole(role));
     if (!hasRequiredRole) {
-      return <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Không có quyền truy cập</h1>
-          <p className="text-gray-600">Bạn không có quyền truy cập trang này.</p>
-        </div>
-      </div>;
+      // Không có quyền → hiển thị unauthorized page ngay
+      return <UnauthorizedContent />;
     }
   }
 
+  // Pass tất cả checks → render children ngay
   return <>{children}</>;
 }
 

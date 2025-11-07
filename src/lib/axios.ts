@@ -34,10 +34,12 @@ axiosInstance.interceptors.response.use(
     if (error.response) {
       const { status, config } = error.response;
       
-      // Không log 401/403 cho /users/me (normal behavior khi chưa login)
-      if ((status === 401 || status === 403) && config?.url?.includes('/users/me')) {
-        // Silent fail - expected behavior
-      } else {
+      // Không log 401/403 cho các endpoint này (normal behavior)
+      const silentEndpoints = ['/users/me'];
+      const shouldSilent = (status === 401 || status === 403) && 
+                           silentEndpoints.some(endpoint => config?.url?.includes(endpoint));
+      
+      if (!shouldSilent) {
         console.error(`[Axios] Error ${status}`, config?.url);
       }
     } else if (error.request) {

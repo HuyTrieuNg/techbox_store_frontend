@@ -58,42 +58,37 @@ interface User {
 /**
  * Root Layout - Server Component
  * 
- * ✨ Fetch user data từ server một lần cho toàn bộ app
+ * Fetch user data từ server một lần cho toàn bộ app
  * → Tránh loading state khi F5
- * 
- * ⚠️ CHỈ wrap providers, KHÔNG wrap Header/Footer
- * → Mỗi route group có layout riêng
  */
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // 🚀 Fetch user data từ server (SSR) - chỉ fetch 1 lần
+  // Fetch user data từ server (SSR) - chỉ fetch 1 lần
   const initialUser = await serverApi.get<User>('/users/me');
   
-  console.log('🌍 [RootLayout] Initial user data:', initialUser);
+  console.log('[RootLayout] Initial user data:', initialUser);
 
   return (
     <html lang="vi">
       <body className="bg-gray-50 text-gray-900">
-        {/* ✨ Pass initialData to AuthProvider */}
+        {/* Pass initialData to AuthProvider */}
         <AuthProvider initialData={initialUser}>
-          <CartProvider>
-            {/* ✅ Children sẽ là nested layouts (shop/admin/staff) */}
-            {children}
-            
-            {/* Toast notifications */}
-            <Toaster
-              position="top-right"
-              reverseOrder={false}
-              gutter={16}
-              containerStyle={{
-                top: '6rem',
-                right: '1rem',
-              }}
-            />
-          </CartProvider>
+          {/* Children sẽ là nested layouts (shop/admin/staff) */}
+          {children}
+          
+          {/* Toast notifications */}
+          <Toaster
+            position="top-right"
+            reverseOrder={false}
+            gutter={16}
+            containerStyle={{
+              top: '6rem',
+              right: '1rem',
+            }}
+          />
         </AuthProvider>
       </body>
     </html>

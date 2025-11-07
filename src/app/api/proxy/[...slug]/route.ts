@@ -49,7 +49,7 @@ async function handleRequest(
     const requestOptions: RequestInit = {
       method,
       headers,
-      cache: 'no-store', // ✅ Disable cache cho proxy
+      cache: 'no-store', // Disable cache cho proxy
     };
 
     // Thêm body cho POST, PUT, PATCH
@@ -58,12 +58,12 @@ async function handleRequest(
         const contentType = request.headers.get('content-type') || '';
         
         if (contentType.includes('multipart/form-data')) {
-          // ✅ FormData: Pass directly
+          // FormData: Pass directly
           requestOptions.body = await request.formData() as any;
           // Remove Content-Type để browser tự set với boundary
           delete (headers as any)['Content-Type'];
         } else {
-          // ✅ JSON/Text: Parse as text
+          // JSON/Text: Parse as text
           const body = await request.text();
           if (body) {
             requestOptions.body = body;
@@ -74,11 +74,11 @@ async function handleRequest(
       }
     }
 
-    // 🚀 DUMB PROXY: Chỉ stream request/response
+    // DUMB PROXY: Chỉ stream request/response
     // Token đã được refresh bởi Middleware (nếu cần)
     const response = await fetch(fullUrl, requestOptions);
 
-    // ✅ Stream response trực tiếp (không buffer, không retry)
+    // Stream response trực tiếp (không buffer, không retry)
     // Middleware đã đảm bảo token valid, nên không cần xử lý 401
     return new NextResponse(response.body, {
       status: response.status,
