@@ -19,11 +19,9 @@ export default function StaffSidebar() {
   const pathname = usePathname();
 
   const menuItems = [
-    { href: "/staff", label: "Tổng quan", icon: FiHome },
+    { href: "/staff/dashboard", label: "Tổng quan", icon: FiHome },
     { href: "/staff/orders", label: "Đơn hàng", icon: FiShoppingCart },
-    { href: "/staff/products", label: "Sản phẩm", icon: FiPackage },
     { href: "/staff/inventory", label: "Kho hàng", icon: FiBox },
-    { href: "/staff/tasks", label: "Nhiệm vụ", icon: FiClipboard },
   ];
 
   return (

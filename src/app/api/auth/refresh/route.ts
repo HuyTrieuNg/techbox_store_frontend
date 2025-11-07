@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // ✅ KHÔNG cần revalidate cache
+    // KHÔNG cần revalidate cache
     // - API Public (products, categories) vẫn valid sau khi refresh token
     // - API Private (user, cart, orders) tự động revalidate qua useSWR client-side
 

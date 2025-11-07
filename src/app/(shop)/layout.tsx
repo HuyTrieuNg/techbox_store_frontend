@@ -1,18 +1,20 @@
 import { ReactNode } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { CartProvider } from "@/contexts/CartContext";
 
 /**
  * Shop Layout - Server Component
  * 
  * Layout cho tất cả trang shop (customer-facing)
+ * - CartProvider: Quản lý giỏ hàng (chỉ cho shop, không cho admin/staff)
  * - Header: Navigation, search, cart
  * - Main: Page content
  * - Footer: Links, info
  */
 export default function ShopLayout({ children }: { children: ReactNode }) {
   return (
-    <>
+    <CartProvider>
       {/* Header - Navigation bar */}
       <Header />
       
@@ -23,6 +25,6 @@ export default function ShopLayout({ children }: { children: ReactNode }) {
       
       {/* Footer */}
       <Footer />
-    </>
+    </CartProvider>
   );
 }

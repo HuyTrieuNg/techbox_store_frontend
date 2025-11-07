@@ -22,13 +22,9 @@ export default function AdminSidebar() {
   const pathname = usePathname();
 
   const menuItems = [
-    { href: "/admin", label: "Dashboard", icon: FiHome },
+    { href: "/admin/dashboard", label: "Dashboard", icon: FiHome },
     { href: "/admin/products", label: "Sản phẩm", icon: FiPackage },
-    { href: "/admin/categories", label: "Danh mục", icon: FiGrid },
-    { href: "/admin/orders", label: "Đơn hàng", icon: FiShoppingCart },
     { href: "/admin/users", label: "Người dùng", icon: FiUsers },
-    { href: "/admin/reports", label: "Báo cáo", icon: FiBarChart2 },
-    { href: "/admin/inventory", label: "Kho hàng", icon: FiBox },
     { href: "/admin/settings", label: "Cài đặt", icon: FiSettings },
   ];
 

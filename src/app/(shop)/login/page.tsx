@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useAuth } from "../../hooks/useAuth";
 import { FaLock, FaEnvelope } from "react-icons/fa";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -22,15 +21,21 @@ export default function LoginPage() {
       // 1. Login và lấy fresh user data
       const { user: freshUser } = await handleLogin({ email, password });
       
-      console.log('✅ [LoginPage] Fresh user from login:', freshUser);
+      console.log('[LoginPage] Fresh user from login:', freshUser);
       
       // 2. Get redirect path using helper function
       const redirectPath = getRedirectPathByRole(freshUser);
       
-      console.log('🚀 [LoginPage] Redirecting to:', redirectPath);
+      console.log('[LoginPage] Redirecting to:', redirectPath);
       
       // 3. Redirect
-      router.push(redirectPath);
+      // Dùng window.location.href để force full reload
+      // Tránh mount Shop Layout khi redirect sang Admin/Staff
+      if (redirectPath.startsWith('/admin') || redirectPath.startsWith('/staff')) {
+        window.location.href = redirectPath;
+      } else {
+        router.push(redirectPath);
+      }
     } catch (err: any) {
       setError(err.message || "Login failed");
     }

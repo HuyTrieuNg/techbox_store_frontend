@@ -75,13 +75,13 @@ async function refreshAccessToken(
     const match = setCookie?.match(/accessToken=([^;]+)/);
     
     if (match && match[1]) {
-      console.log('✅ [Middleware] Token refreshed successfully');
+      console.log('[Middleware] Token refreshed successfully');
       return match[1];
     }
 
     return null;
   } catch (error) {
-    console.error('❌ [Middleware] Refresh error:', error);
+    console.error('[Middleware] Refresh error:', error);
     return null;
   }
 }
@@ -129,11 +129,11 @@ export default async function middleware(request: NextRequest) {
           path: '/',
         });
         
-        console.log('✅ [Middleware] Token refreshed, continuing request');
+        console.log('[Middleware] Token refreshed, continuing request');
         return response;
       } else {
         // Refresh thất bại → Clear cookies và redirect to login (nếu cần)
-        console.log('❌ [Middleware] Refresh failed, clearing cookies');
+        console.log('[Middleware] Refresh failed, clearing cookies');
         const response = NextResponse.next();
         response.cookies.delete('accessToken');
         response.cookies.delete('refreshToken');
@@ -151,20 +151,20 @@ export default async function middleware(request: NextRequest) {
     }
   }
 
-  // 🔒 GUEST ONLY ROUTES PROTECTION
+  // GUEST ONLY ROUTES PROTECTION
   const isGuestOnlyRoute = GUEST_ONLY_ROUTES.some(route => 
     pathname.startsWith(route)
   );
 
   if (isGuestOnlyRoute && hasToken) {
-    console.log('🚫 [Middleware] Redirecting authenticated user from guest-only route');
+    console.log('[Middleware] Redirecting authenticated user from guest-only route');
     const url = request.nextUrl.clone();
     url.pathname = '/';
     return NextResponse.redirect(url);
   }
 
-  // ✅ Token valid, continue
-  console.log('✅ [Middleware] Request allowed');
+  // Token valid, continue
+  console.log('[Middleware] Request allowed');
   return NextResponse.next();
 }
 

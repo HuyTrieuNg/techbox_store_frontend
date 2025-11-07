@@ -9,7 +9,7 @@
 
 import { cookies } from 'next/headers';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080';
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080') + '/api';
 
 /**
  * Fetch API từ server component với cookies
@@ -36,12 +36,12 @@ export const serverApi = {
       
       // Nếu không có token → return null (user chưa login)
       if (!accessToken) {
-        console.log(`🔓 [ServerAPI] No access token, skipping ${endpoint}`);
+        console.log(`[ServerAPI] No access token, skipping ${endpoint}`);
         return null;
       }
 
       const url = `${API_BASE_URL}${endpoint}`;
-      console.log(`📡 [ServerAPI] GET ${url}`);
+      console.log(`[ServerAPI] GET ${url}`);
 
       const response = await fetch(url, {
         method: 'GET',
@@ -55,22 +55,25 @@ export const serverApi = {
 
       // 401/403 → User chưa login hoặc token expired
       if (response.status === 401 || response.status === 403) {
-        console.log(`🔓 [ServerAPI] Unauthorized (${response.status}), returning null`);
+        console.log(`[ServerAPI] Unauthorized (${response.status}) for ${url}`);
         return null;
       }
 
       // Các lỗi khác
       if (!response.ok) {
-        console.error(`❌ [ServerAPI] Error ${response.status}: ${response.statusText}`);
-        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+        console.error(`[ServerAPI] Error ${response.status}: ${response.statusText} | URL: ${url} | Method: GET | Has Token: ${!!accessToken}`);
+        // Return null thay vì throw để tránh bị catch block log lại lần 2
+        return null;
       }
 
       const data = await response.json();
-      console.log(`✅ [ServerAPI] Success:`, data);
+      console.log(`[ServerAPI] Success:`, data);
       return data;
 
     } catch (error) {
-      console.error(`❌ [ServerAPI] Exception:`, error);
+      // Chỉ log exception thật sự (network error, JSON parse error, etc.)
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      console.error(`[ServerAPI] Exception in ${endpoint} | URL: ${API_BASE_URL}${endpoint} | Error: ${errorMsg}`);
       // Return null thay vì throw để avoid crash page
       return null;
     }

@@ -3,7 +3,7 @@ import { createContext, useContext, ReactNode } from "react";
 import useSWR from "swr";
 import { LoginPayload, RegisterPayload } from "../features/auth";
 import axios from 'axios';
-import { api } from '@/lib/axios'; // ✨ Import axios instance
+import { api } from '@/lib/axios'; // Import axios instance
 import { 
   getRedirectPathByRole, 
   hasRole as checkRole, 
@@ -48,7 +48,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 // Fetcher cho useSWR - sử dụng axios
 const fetcher = async (url: string): Promise<User | null> => {
   try {
-    // ✅ Sử dụng axios instance - tự động handle response.data
+    // Sử dụng axios instance - tự động handle response.data
     const data = await api.get<User>(url);
     return data;
   } catch (error: any) {
@@ -66,17 +66,16 @@ const fetcher = async (url: string): Promise<User | null> => {
 
 interface AuthProviderProps {
   children: ReactNode;
-  initialData?: User | null; // ✨ Data từ server (SSR)
+  initialData?: User | null;
 }
 
 export function AuthProvider({ children, initialData }: AuthProviderProps) {
   // Sử dụng useSWR để fetch user data qua proxy
-  // ✅ KHÔNG cần /api/proxy prefix vì axios instance đã có baseURL
   const { data: user, error, mutate, isLoading } = useSWR<User | null>(
-    '/users/me',  // ← Chỉ cần path, baseURL sẽ tự thêm /api/proxy
+    '/users/me', 
     fetcher,
     {
-      fallbackData: initialData, // ✨ Dùng data từ server nếu có
+      fallbackData: initialData, 
       revalidateOnFocus: false,
       revalidateOnReconnect: true,
       shouldRetryOnError: false,
@@ -93,18 +92,18 @@ export function AuthProvider({ children, initialData }: AuthProviderProps) {
       const { data } = await axios.post('/api/auth/login', payload, {
         withCredentials: true,
       });
-      console.log('✅ [Login] Login API success:', data);
+      console.log('[Login] Login API success:', data);
       
       // 2. Revalidate user data và lấy kết quả trực tiếp
-      console.log('🔄 [Login] Revalidating user data...');
+      console.log('[Login] Revalidating user data...');
       const freshUser = await mutate();
       
-      console.log('✅ [Login] Login successful, fresh user data:', freshUser);
+      console.log('[Login] Login successful, fresh user data:', freshUser);
       
       // 3. Return fresh user (handle undefined case)
       return { user: freshUser || null };
     } catch (error: any) {
-      console.error('❌ [Login] Login error:', error);
+      console.error('[Login] Login error:', error);
       const errorMessage = error.response?.data?.error || 'Đăng nhập thất bại';
       throw new Error(errorMessage);
     }
@@ -112,7 +111,7 @@ export function AuthProvider({ children, initialData }: AuthProviderProps) {
 
   const handleRegister = async (payload: RegisterPayload): Promise<void> => {
     try {
-      // ✅ Sử dụng api instance từ @/lib/axios
+      // Sử dụng api instance từ @/lib/axios
       await api.post('/auth/register', payload);
     } catch (error: any) {
       console.error('Register error:', error);
@@ -123,21 +122,21 @@ export function AuthProvider({ children, initialData }: AuthProviderProps) {
 
   const handleLogout = async () => {
     try {
-      console.log('🚪 [Logout] Starting logout...');
+      console.log('[Logout] Starting logout...');
       
       // Call logout API để xóa cookies
       await axios.post('/api/auth/logout', {}, {
         withCredentials: true,
       });
       
-      console.log('✅ [Logout] Cookies cleared');
+      console.log('[Logout] Cookies cleared');
 
       // Clear user data trong SWR cache
       await mutate(null, false);
       
-      console.log('✅ [Logout] User data cleared');
+      console.log('[Logout] User data cleared');
     } catch (error) {
-      console.error('❌ [Logout] Logout error:', error);
+      console.error('[Logout] Logout error:', error);
       // Vẫn clear user data ngay cả khi API fail
       await mutate(null, false);
     }
