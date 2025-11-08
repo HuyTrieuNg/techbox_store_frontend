@@ -2,6 +2,6 @@
 
 import ProductManagementContainer from '@/components/common/manage/Container/ProductManagementContainer';
 
-export default function AdminProductsPage() {
+export default function StaffProductsPage() {
   return <ProductManagementContainer />;
 }

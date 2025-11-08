@@ -10,7 +10,8 @@ import {
   FiBarChart2,
   FiSettings,
   FiGrid,
-  FiBox
+  FiBox,
+  FiList
 } from "react-icons/fi";
 
 /**
@@ -24,6 +25,7 @@ export default function AdminSidebar() {
   const menuItems = [
     { href: "/admin/dashboard", label: "Dashboard", icon: FiHome },
     { href: "/admin/products", label: "Sản phẩm", icon: FiPackage },
+    { href: "/admin/categories", label: "Danh Mục", icon: FiList },
     { href: "/admin/users", label: "Người dùng", icon: FiUsers },
     { href: "/admin/settings", label: "Cài đặt", icon: FiSettings },
   ];
