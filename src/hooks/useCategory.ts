@@ -1,40 +1,3 @@
-// import { useState, useEffect } from 'react';
-// import { ProductService } from '@/services/productService';
-// import { Category } from '@/features/category';
-
-// interface UseProductResult {
-//   categories: Category[] | null;
-//   isLoading: boolean;
-//   error: any;
-// }
-
-// // Hook để lấy tất cả categories
-// export function useCategories(): UseProductResult {
-//   const [categories, setCategories] = useState<Category[] | null>(null);
-//   const [isLoading, setIsLoading] = useState<boolean>(false);
-//   const [error, setError] = useState<any>(null);
-
-//   useEffect(() => {
-//     const fetchCategories = async () => {
-//       setIsLoading(true);
-//       try {
-//         const data = await ProductService.getAllCategories();
-//         const rootCategories = data.filter(cat => cat.parentCategoryId === null);
-//         setCategories(rootCategories);
-//       } catch (err) {
-//         setError(err);
-//       } finally {
-//         setIsLoading(false);
-//       }
-//     };
-
-//     fetchCategories();
-//   }, []);
-
-//   return { categories, isLoading, error };
-// }
-
-
 import useSWR from "swr";
 import { ProductService } from "@/services/productService";
 import { Category } from "@/features/category";
@@ -45,10 +8,44 @@ export function useCategories() {
     ProductService.getAllCategories
   );
 
-  const rootCategories = data?.filter((cat:any) => cat.parentCategoryId === null) ?? [];
+  const categoryMap = new Map<number, Category>();
+  if (data) {
+    const traverse = (cats: Category[]) => {
+      cats.forEach((cat) => {
+        categoryMap.set(cat.id, cat);
+        if (cat.childCategories) {
+          traverse(cat.childCategories);
+        }
+      });
+    };
+    traverse(data);
+  }
 
+  const rootCategories = data?.filter((cat: any) => cat.parentCategoryId === null) ?? [];
+  
+  // Hàm lấy category theo ID từ cache
+  const getCategoryById = (id: number): Category | undefined => {
+    return categoryMap.get(id);
+  };
+
+  const getBreadcrumbPath = (id: number): Category[] => {
+    const path: Category[] = [];
+    let current = categoryMap.get(id);
+
+    while (current) {
+      path.unshift(current); // Thêm vào đầu mảng → cha trước, con sau
+      if (!current.parentCategoryId) break;
+      current = categoryMap.get(current.parentCategoryId);
+    }
+
+    return path; // Ví dụ: [Điện thoại, iPhone, iPhone 15 Series]
+  };
   return {
     categories: rootCategories,
+    allCategories: data ?? [],
+    getCategoryById,           // Hàm tiện ích
+    getBreadcrumbPath,     // Hàm tiện ích
+    categoryMap,
     isLoading,
     error,
   };

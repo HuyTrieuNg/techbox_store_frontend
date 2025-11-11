@@ -1,7 +1,8 @@
 export interface Category {
   id: number;
   name: string;
-  parentCategoryId?: number;       // map với parent_category_id
+  parentCategoryId?: number; 
+  parentCategoryName?: string;      // map với parent_category_id
   parentCategory?: Category;       // map với parentCategory
   childCategories?: Category[];    // map với childCategories
   createdAt?: string;              // ISO string từ LocalDateTime

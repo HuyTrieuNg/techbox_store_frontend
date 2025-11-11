@@ -5,8 +5,11 @@ export interface CartItem {
   productImage: string;
   variantName: string;
   quantity: number;
+  originalPrice: number;
   unitPrice: number;
   totalPrice: number;
+  discountType: string | null;
+  discountValue: number | null;
   addedAt: string;
   updatedAt: string;
   sku: string;

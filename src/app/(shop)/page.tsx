@@ -178,7 +178,7 @@ const HomePage = () => {
           </div>
           {/* <h2 className="text-2xl font-bold">Laptop bán chạy</h2> */}
           <div className="flex gap-8 text-gray-600 font-semibold">
-            {brands.map((brand, index) => (
+            {/* {brands.map((brand, index) => (
               <Link
                 key={index}
                 href={`/brand/${brand.toLowerCase()}`}
@@ -186,9 +186,9 @@ const HomePage = () => {
               >
                 {brand}
               </Link>
-            ))}
+            ))} */}
 
-            <Link href="/products/laptop" className="text-blue-500 hover:text-[#E61E4D] transition">
+            <Link href="/products/2" className="text-blue-500 hover:text-[#E61E4D] transition">
               Xem tất cả
             </Link>
           </div>
@@ -214,7 +214,7 @@ const HomePage = () => {
           {/* <h2 className="text-2xl font-bold">Máy tính bán chạy</h2> */}
           {/* Nhóm các link thương hiệu */}
           <div className="flex gap-8 text-gray-600 font-semibold">
-            {brands.map((brand, index) => (
+            {/* {brands.map((brand, index) => (
               <Link
                 key={index}
                 href={`/brand/${brand.toLowerCase()}`}
@@ -222,9 +222,9 @@ const HomePage = () => {
               >
                 {brand}
               </Link>
-            ))}
+            ))} */}
 
-            <Link href="/products/pc" className="text-blue-500 hover:text-[#E61E4D] transition">
+            <Link href="/products/1" className="text-blue-500 hover:text-[#E61E4D] transition">
               Xem tất cả
             </Link>
           </div>
@@ -245,7 +245,7 @@ const HomePage = () => {
           </div>
           {/* <h2 className="text-2xl font-bold">Điện thoại bán chạy</h2> */}
           <div className="flex gap-8 text-gray-600 font-semibold">
-            {brands.map((brand, index) => (
+            {/* {brands.map((brand, index) => (
               <Link
                 key={index}
                 href={`/brand/${brand.toLowerCase()}`}
@@ -253,9 +253,9 @@ const HomePage = () => {
               >
                 {brand}
               </Link>
-            ))}
+            ))} */}
 
-            <Link href="/products/pc" className="text-blue-500 hover:text-[#E61E4D] transition">
+            <Link href="/products/4" className="text-blue-500 hover:text-[#E61E4D] transition">
               Xem tất cả
             </Link>
           </div>
