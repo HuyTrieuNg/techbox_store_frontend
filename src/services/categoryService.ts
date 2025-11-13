@@ -6,6 +6,10 @@ export interface Category {
   parentCategoryId?: number | null;
   parentCategoryName?: string | null;
   childCategories?: Category[] | null;
+  level?: number;
+  displayName?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export const getCategories = async (): Promise<Category[]> => {

@@ -3,8 +3,9 @@
  * API calls for product management (admin/staff)
  */
 
-import axios from '@/lib/axios';
+import axios, { axiosUploadInstance } from '@/lib/axios';
 import { Brand, Category } from '@/features/category';
+import { Attribute } from '@/types/productCreate';
 import { 
   ProductManagementItem, 
   ProductManagementParams, 
@@ -39,6 +40,12 @@ export const getBrands = async (): Promise<Brand[]> => {
 export const getCategories = async (): Promise<Category[]> => {
   const response = await axios.get('/categories') as any;
   return response as Category[];
+};
+
+// Get all attributes (admin API)
+export const getAttributes = async (): Promise<Attribute[]> => {
+  const response = await axios.get('/attributes') as any;
+  return response as Attribute[];
 };
 
 // Publish product (DRAFT/DELETED -> PUBLISHED)
@@ -79,6 +86,7 @@ export const flattenCategories = (
     // Warn if duplicate ID found
     if (seenIds.has(category.id)) {
       console.warn(`Duplicate category ID found: ${category.id} - ${category.name}`);
+      return; // Skip duplicate
     }
     seenIds.add(category.id);
     
@@ -94,4 +102,56 @@ export const flattenCategories = (
   });
 
   return result;
+};
+
+// Upload images to Cloudinary
+export const uploadImages = async (formData: FormData): Promise<Array<{url: string, publicId: string}>> => {
+  const response = await axiosUploadInstance.post('/cloudinary/upload', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+    timeout: 120000, // 120 seconds timeout for uploads
+  });
+  return response.data;
+};
+
+// Create product variation with image URLs
+export const createProductVariationWithImages = async (variationData: any): Promise<any> => {
+  const response = await axios.post('/product-variations', variationData);
+  return response;
+};
+
+// Get product variations by product ID
+export const getProductVariations = async (productId: number): Promise<any[]> => {
+  const response = await axios.get(`/product-variations/management/product/${productId}`);
+
+  return response;
+};
+
+// Upload product image to Cloudinary
+export const uploadProductImage = async (file: File): Promise<{url: string, publicId: string}> => {
+  const formData = new FormData();
+  formData.append('files', file);
+  formData.append('folderName', 'products');
+
+  const response = await axiosUploadInstance.post('/cloudinary/upload', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+    timeout: 30000, // 30 seconds timeout for uploads
+  });
+
+  // Backend returns array even for single file, take first element
+  const uploadedImages = response.data;
+  if (Array.isArray(uploadedImages) && uploadedImages.length > 0) {
+    return uploadedImages[0];
+  }
+
+  return uploadedImages;
+};
+
+// Create product with attributes and image
+export const createProductWithAttributes = async (productData: any): Promise<any> => {
+  const response = await axios.post('/products', productData);
+  return response;
 };

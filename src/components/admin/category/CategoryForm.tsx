@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Category, checkCategoryExistsForUpdate } from '@/services/categoryService';
+import { Category } from '@/services/categoryService';
 
 interface CategoryFormProps {
   initial?: Category | null;
@@ -16,13 +16,6 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ initial, onSubmit, onCancel
   const [error, setError] = useState('');
   const [checking, setChecking] = useState(false);
 
-  const checkExistsForUpdate = async (name: string, id?: number) => {
-    if (id) {
-      return await checkCategoryExistsForUpdate(name, id);
-    }
-    return await checkExists(name);
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -33,14 +26,6 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ initial, onSubmit, onCancel
     if (!initial) { // Chỉ kiểm tra khi tạo mới
       setChecking(true);
       const exists = await checkExists(name.trim());
-      setChecking(false);
-      if (exists) {
-        setError('Tên danh mục đã tồn tại');
-        return;
-      }
-    } else { // Kiểm tra khi cập nhật
-      setChecking(true);
-      const exists = await checkExistsForUpdate(name.trim(), initial.id);
       setChecking(false);
       if (exists) {
         setError('Tên danh mục đã tồn tại');
@@ -80,16 +65,7 @@ const CategoryForm: React.FC<CategoryFormProps> = ({ initial, onSubmit, onCancel
           ))}
         </select>
       </div>
-      {error && (
-        <div className="text-red-500 text-sm">
-          {error}
-        </div>
-      )}
-      {checking && (
-        <div className="text-yellow-500 text-sm">
-          Đang kiểm tra tên danh mục...
-        </div>
-      )}
+      {error && <div className="text-red-500 text-sm">{error}</div>}
       <div className="flex gap-2">
         <button
           type="submit"

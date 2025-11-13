@@ -9,6 +9,7 @@
  */
 
 import axios from 'axios';
+import { toast } from 'sonner';
 
 const axiosInstance = axios.create({
   baseURL: '/api/proxy',
@@ -16,6 +17,14 @@ const axiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
+  timeout: 30000, // 30 seconds default timeout
+});
+
+// Separate instance for file uploads with longer timeout
+export const axiosUploadInstance = axios.create({
+  baseURL: '/api/proxy',
+  withCredentials: true,
+  timeout: 120000, // 2 minutes for uploads
 });
 
 // Request logging
@@ -41,11 +50,14 @@ axiosInstance.interceptors.response.use(
       
       if (!shouldSilent) {
         console.error(`[Axios] Error ${status}`, config?.url);
+        toast.error(`Lỗi ${status}: ${error.response.data?.message || 'Có lỗi xảy ra'}`);
       }
     } else if (error.request) {
       console.error('[Axios] No response from server');
+      toast.error('Không thể kết nối đến server');
     } else {
       console.error('[Axios] Error:', error.message);
+      toast.error('Có lỗi xảy ra');
     }
     return Promise.reject(error);
   }

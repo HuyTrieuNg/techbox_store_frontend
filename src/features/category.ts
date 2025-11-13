@@ -6,9 +6,13 @@ export interface Category {
   childCategories?: Category[] | null;
   level?: number;
   displayName?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Brand {
   id: number;
   name: string;
+  createdAt?: string;
+  updatedAt?: string;
 }

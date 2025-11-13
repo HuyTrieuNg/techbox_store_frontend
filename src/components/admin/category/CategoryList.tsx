@@ -55,9 +55,21 @@ const CategoryList: React.FC<CategoryListProps> = ({ categories, onEdit, onDelet
                 )}
                 
                 {/* 2. Tên Danh mục */}
-                <span className={`flex-grow truncate ${level === 0 ? 'font-bold text-gray-800' : 'text-gray-700'}`}>
-                  {cat.name}
-                </span>
+                <div className="flex-grow">
+                  <span className={`block truncate ${level === 0 ? 'font-bold text-gray-800' : 'text-gray-700'}`}>
+                    {cat.name}
+                  </span>
+                  {(cat.createdAt || cat.updatedAt) && (
+                    <div className="text-xs text-gray-500 mt-1 space-y-0.5">
+                      {cat.createdAt && (
+                        <div>Tạo: {new Date(cat.createdAt).toLocaleDateString('vi-VN')}</div>
+                      )}
+                      {cat.updatedAt && (
+                        <div>Cập nhật: {new Date(cat.updatedAt).toLocaleDateString('vi-VN')}</div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
               
               {/* 3. Nút Hành động */}
