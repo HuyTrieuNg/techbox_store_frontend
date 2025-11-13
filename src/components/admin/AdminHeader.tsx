@@ -120,7 +120,7 @@ const AdminHeader = () => {
           </div>
 
           <div className="flex items-center space-x-2 sm:space-x-3">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREAehZlj7Da4Pbj2eVHM4LTlAQibMpr9SmMg&s" alt="admin" width={35} height={35} className="rounded-full border border-gray-600 cursor-pointer" />
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREAehZlj7Da4Pbj2eVHM4LTlAQibMpr9SmMg&s" alt="admin" width={35} height={35} className="rounded-full border border-gray-600" />
 
             <span className="hidden sm:block text-gray-100 font-medium ">Admin</span>
 

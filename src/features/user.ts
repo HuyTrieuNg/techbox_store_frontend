@@ -30,6 +30,32 @@ export interface User {
   phone: string;
   addresses?: Address[];
   dateOfBirth: Date;
+  roles: string[];
+  isActive: boolean;
+  isLocked: boolean;
+  createdAt: string;
+}
+
+export interface UserResponse {
+  content: User[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  first: boolean;
+  last: boolean;
+  hasNext: boolean;
+  hasPrevious: boolean;
+}
+
+export interface UserCreateRequest {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  dateOfBirth: Date;
+  roles: string[];
 }
 
 export interface UpdatePasswordData {
