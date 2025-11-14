@@ -7,9 +7,11 @@
 
 import Image from 'next/image';
 import { ProductVariation } from '@/features/productDetail';
-import { FiPackage, FiTag, FiPercent, FiClock, FiTrash2, FiRefreshCw } from 'react-icons/fi';
+import { FiPackage, FiTag, FiPercent, FiClock, FiTrash2, FiRefreshCw, FiX, FiEdit2 } from 'react-icons/fi';
 import { deleteVariation, restoreVariation } from '@/services/productDetailService';
 import { useState, useEffect } from 'react';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import ProductVariationEditForm from '@/components/common/manage/product/ProductVariationEditForm';
 
 interface ProductVariationsTableProps {
   variations: ProductVariation[];
@@ -28,29 +30,12 @@ export default function ProductVariationsTable({
 }: ProductVariationsTableProps) {
   const [processingId, setProcessingId] = useState<number | null>(null);
   const [localVariations, setLocalVariations] = useState<Array<ProductVariation>>([]);
-  const [imageIndexes, setImageIndexes] = useState<{[id:number]:number}>({});
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingVariation, setEditingVariation] = useState<ProductVariation | null>(null);
 
   useEffect(() => {
     setLocalVariations(Array.isArray(variations) ? variations : []);
   }, [variations]);
-
-  // Auto-slide images for each variation
-  useEffect(() => {
-    const timers: { [id: number]: NodeJS.Timeout } = {};
-    localVariations.forEach(variation => {
-      if (variation.images && variation.images.length > 1) {
-        timers[variation.id] = setInterval(() => {
-          setImageIndexes(prev => ({
-            ...prev,
-            [variation.id]: ((prev[variation.id] || 0) + 1) % variation.images.length
-          }));
-        }, 2000);
-      }
-    });
-    return () => {
-      Object.values(timers).forEach(clearInterval);
-    };
-  }, [localVariations]);
 
   // Filter variations based on includeDeleted
   const filteredVariations = includeDeleted
@@ -125,154 +110,267 @@ export default function ProductVariationsTable({
           <span className="text-sm text-gray-700 dark:text-gray-300">Hiển thị biến thể đã xóa</span>
         </label>
       </div>
-      {/* Card Layout: each variation is a row */}
-      <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* Card Layout: each variation takes full row */}
+      <div className="divide-y divide-gray-200 dark:divide-gray-600">
         {filteredVariations.map((variation) => {
           const images = variation.images || [];
-          const imgCount = images.length;
-          const imgIdx = imageIndexes[variation.id] || 0;
-          const imgSlice = imgCount > 3
-            ? images.slice(imgIdx, imgIdx + 3).concat(images.slice(0, Math.max(0, imgIdx + 3 - imgCount)))
-            : images;
+          const displayImages = images.slice(0, 3); // Show max 3 images
+          const remainingCount = Math.max(0, images.length - 3);
+
           return (
-            <div key={variation.id} className={`relative rounded-lg shadow border p-4 bg-white dark:bg-gray-700 flex flex-col gap-2 min-h-[320px] ${variation.deletedAt ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800' : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600'}`}>
-              {/* Delete/Restore button top-right */}
-              <div className="absolute top-2 right-2 z-10">
-                {variation.deletedAt ? (
-                  <button
-                    onClick={() => handleRestore(variation.id)}
-                    disabled={processingId === variation.id}
-                    className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 rounded text-xs hover:bg-blue-100 dark:hover:bg-blue-900/30 flex items-center gap-1 shadow"
-                  >
-                    <FiRefreshCw className="w-4 h-4" />
-                    Khôi phục
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => handleDelete(variation.id)}
-                    disabled={processingId === variation.id}
-                    className="px-3 py-1 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded text-xs hover:bg-red-100 dark:hover:bg-red-900/30 flex items-center gap-1 shadow"
-                  >
-                    <FiTrash2 className="w-4 h-4" />
-                    Xóa
-                  </button>
-                )}
-              </div>
-              {/* Row 1: Images */}
-              <div className="flex gap-2 justify-center mb-2">
-                {imgSlice.length > 0 ? (
-                  imgSlice.map((img, idx) => (
-                    <div key={img.id + '-' + idx} className="w-16 h-16 relative bg-gray-100 rounded overflow-hidden flex-shrink-0">
-                      <Image src={img.imageUrl} alt={`${variation.variationName} - ${idx + 1}`} fill className="object-cover" />
-                    </div>
-                  ))
-                ) : (
-                  <div className="w-16 h-16 relative bg-gray-100 rounded overflow-hidden flex items-center justify-center">
-                    <FiPackage className="w-10 h-10 text-gray-300" />
-                  </div>
-                )}
-              </div>
-              {/* Row 2: Product ID */}
-              <div className="text-xs text-gray-400">Product ID: #{variation.productId}</div>
-              {/* Row 3: SKU */}
-              <div className="text-gray-500 font-mono flex items-center gap-1">
-                <FiTag className="w-4 h-4" />
-                {variation.sku}
-              </div>
-              {/* Row 4: Prices */}
-              <div className="flex gap-4 items-center">
-                <div className="text-sm font-medium text-gray-700">Giá gốc: {variation.price.toLocaleString('vi-VN')}đ</div>
-                <div className="font-bold text-blue-600">Giá bán: {variation.salePrice.toLocaleString('vi-VN')}đ</div>
-                {variation.price > variation.salePrice && (
-                  <div className="text-xs text-green-600">Giảm: {((1 - variation.salePrice / variation.price) * 100).toFixed(1)}%</div>
-                )}
-              </div>
-              {/* Row 5: Stock */}
-              <div className="flex gap-4 items-center">
-                <span className="text-gray-500 text-xs">Tổng: <span className="font-bold text-gray-900">{variation.stock}</span></span>
-                <span className={`font-medium ${variation.reservedQuantity > 0 ? 'text-orange-600' : 'text-gray-400'}`}>Đặt trước: {variation.reservedQuantity}</span>
-                <span className={`font-bold ${variation.availableQuantity === 0 ? 'text-red-600' : variation.availableQuantity < 10 ? 'text-yellow-600' : 'text-green-600'}`}>Khả dụng: {variation.availableQuantity}</span>
-                {variation.availableQuantity === 0 ? (
-                  <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded">Hết hàng</span>
-                ) : variation.availableQuantity < 10 ? (
-                  <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded">Sắp hết</span>
-                ) : (
-                  <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">Còn hàng</span>
-                )}
-              </div>
-              {/* Row 6: Timestamps */}
-              <div className="flex gap-4 items-center text-xs text-gray-600">
-                <span>Tạo: {new Date(variation.createdAt).toLocaleString('vi-VN')}</span>
-                <span>Cập nhật: {new Date(variation.updatedAt).toLocaleString('vi-VN')}</span>
-                {variation.deletedAt && (
-                  <span className="text-red-600">Xóa: {new Date(variation.deletedAt).toLocaleString('vi-VN')}</span>
-                )}
-              </div>
-              {/* Row 7: Promotion */}
-              {(variation.promotionName || variation.discountType || variation.promotionId || variation.promotionStartDate || variation.promotionEndDate) && (
-                <div className="flex flex-col gap-1 text-xs">
-                  {variation.promotionName && (
-                    <span className="font-medium text-green-600">{variation.promotionName}</span>
-                  )}
-                  {variation.discountType && (
-                    <span className="flex items-center gap-1 text-red-600 font-semibold">
-                      <FiPercent className="w-4 h-4" />
-                      {variation.discountType === 'PERCENTAGE'
-                        ? `-${variation.discountValue}%`
-                        : `-${variation.discountValue?.toLocaleString('vi-VN')}đ`
-                      }
-                    </span>
-                  )}
-                  {variation.promotionId && (
-                    <span className="text-gray-400">ID: #{variation.promotionId}</span>
-                  )}
-                  {variation.promotionStartDate && (
-                    <span className="text-gray-500 flex items-center gap-1">
-                      <FiClock className="w-4 h-4" />
-                      Từ: {new Date(variation.promotionStartDate).toLocaleDateString('vi-VN')}
-                    </span>
-                  )}
-                  {variation.promotionEndDate && (
-                    <span className="text-gray-500 flex items-center gap-1">
-                      <FiClock className="w-4 h-4" />
-                      Đến: {new Date(variation.promotionEndDate).toLocaleDateString('vi-VN')}
-                    </span>
-                  )}
+            <div key={variation.id} className={`p-6 ${variation.deletedAt ? 'bg-red-50 dark:bg-red-900/20' : 'bg-white dark:bg-gray-800'} hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors`}>
+              <div className="flex gap-6">
+                {/* Images Section */}
+                <div className="flex-shrink-0">
+                  <HoverCard>
+                    <HoverCardTrigger asChild>
+                      <div className="flex flex-col gap-2 cursor-pointer">
+                        {displayImages.length > 0 ? (
+                          <>
+                            {displayImages.map((img, idx) => (
+                              <div key={img.id} className="w-16 h-16 relative bg-gray-100 dark:bg-gray-600 rounded-lg overflow-hidden flex-shrink-0">
+                                <Image
+                                  src={img.imageUrl}
+                                  alt={`${variation.variationName} - ${idx + 1}`}
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+                            ))}
+                            {remainingCount > 0 && (
+                              <div className="w-16 h-16 relative bg-gray-100 dark:bg-gray-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                                  +{remainingCount}
+                                </span>
+                              </div>
+                            )}
+                          </>
+                        ) : (
+                          <div className="w-16 h-16 relative bg-gray-100 dark:bg-gray-600 rounded-lg flex items-center justify-center">
+                            <FiPackage className="w-8 h-8 text-gray-400" />
+                          </div>
+                        )}
+                      </div>
+                    </HoverCardTrigger>
+                    <HoverCardContent side="right" className="w-96 p-4">
+                      <div className="space-y-3">
+                        <h4 className="font-semibold text-sm">Tất cả ảnh của {variation.variationName}</h4>
+                        <div className="grid grid-cols-4 gap-3 max-h-80 overflow-y-auto">
+                          {images.map((img, idx) => (
+                            <div key={img.id} className="relative group">
+                              <div className="aspect-square relative bg-gray-100 dark:bg-gray-600 rounded overflow-hidden">
+                                <Image
+                                  src={img.imageUrl}
+                                  alt={`${variation.variationName} - ${idx + 1}`}
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+                              <div className="absolute bottom-1 right-1 bg-black bg-opacity-75 text-white text-xs px-1 py-0.5 rounded">
+                                {idx + 1}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </HoverCardContent>
+                  </HoverCard>
                 </div>
-              )}
-              {/* Row 8: Attributes table */}
-              {variation.attributes && variation.attributes.length > 0 && (
-                <table className="w-full mt-2 text-xs border border-gray-200 rounded">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-2 py-1 text-left text-gray-500">Tên thuộc tính</th>
-                      <th className="px-2 py-1 text-left text-gray-500">Giá trị</th>
-                      <th className="px-2 py-1 text-left text-gray-500">ID</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {variation.attributes.map(attr => (
-                      <tr key={attr.attributeId}>
-                        <td className="px-2 py-1">{attr.attributeName}</td>
-                        <td className="px-2 py-1">{attr.attributeValue}</td>
-                        <td className="px-2 py-1">{attr.attributeId}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
+
+                {/* Content Section */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                        {variation.variationName}
+                      </h3>
+                      <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                        <span className="flex items-center gap-1">
+                          <FiTag className="w-4 h-4" />
+                          SKU: {variation.sku}
+                        </span>
+                        <span>ID: #{variation.id}</span>
+                        <span>Product ID: #{variation.productId}</span>
+                      </div>
+                    </div>
+
+                    {/* Action Button */}
+                    <div className="flex-shrink-0 flex items-center gap-2">
+                      {!variation.deletedAt && (
+                        <button
+                          onClick={() => {
+                            setEditingVariation(variation);
+                            setShowEditModal(true);
+                          }}
+                          className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-1.5"
+                        >
+                          <FiEdit2 className="w-4 h-4" />
+                          Chỉnh sửa
+                        </button>
+                      )}
+                      {variation.deletedAt ? (
+                        <button
+                          onClick={() => handleRestore(variation.id)}
+                          disabled={processingId === variation.id}
+                          className="px-3 py-1.5 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                        >
+                          <FiRefreshCw className="w-4 h-4" />
+                          Khôi phục
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleDelete(variation.id)}
+                          disabled={processingId === variation.id}
+                          className="px-3 py-1.5 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 transition-colors flex items-center gap-1.5 disabled:opacity-50"
+                        >
+                          <FiTrash2 className="w-4 h-4" />
+                          Xóa
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Price Information */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                    <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Giá gốc</div>
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        {variation.price.toLocaleString('vi-VN')}đ
+                      </div>
+                    </div>
+                    <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
+                      <div className="text-xs text-blue-600 dark:text-blue-400 mb-1">Giá bán</div>
+                      <div className="text-sm font-semibold text-blue-700 dark:text-blue-300">
+                        {variation.salePrice.toLocaleString('vi-VN')}đ
+                      </div>
+                    </div>
+                    <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg">
+                      <div className="text-xs text-green-600 dark:text-green-400 mb-1">Giảm giá</div>
+                      <div className="text-sm font-medium text-green-700 dark:text-green-300">
+                        {variation.price > variation.salePrice
+                          ? `${((1 - variation.salePrice / variation.price) * 100).toFixed(1)}%`
+                          : '0%'
+                        }
+                      </div>
+                    </div>
+                    <div className={`p-3 rounded-lg ${variation.availableQuantity === 0 ? 'bg-red-50 dark:bg-red-900/20' : variation.availableQuantity < 10 ? 'bg-yellow-50 dark:bg-yellow-900/20' : 'bg-green-50 dark:bg-green-900/20'}`}>
+                      <div className={`text-xs mb-1 ${variation.availableQuantity === 0 ? 'text-red-600 dark:text-red-400' : variation.availableQuantity < 10 ? 'text-yellow-600 dark:text-yellow-400' : 'text-green-600 dark:text-green-400'}`}>
+                        Tồn kho
+                      </div>
+                      <div className={`text-sm font-medium ${variation.availableQuantity === 0 ? 'text-red-700 dark:text-red-300' : variation.availableQuantity < 10 ? 'text-yellow-700 dark:text-yellow-300' : 'text-green-700 dark:text-green-300'}`}>
+                        {variation.availableQuantity}/{variation.stock}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Stock Details */}
+                  <div className="flex items-center gap-6 mb-4 text-sm">
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Tổng: <span className="font-medium text-gray-900 dark:text-white">{variation.stock}</span>
+                    </span>
+                    <span className="text-gray-600 dark:text-gray-400">
+                      Đặt trước: <span className={`font-medium ${variation.reservedQuantity > 0 ? 'text-orange-600' : 'text-gray-500'}`}>{variation.reservedQuantity}</span>
+                    </span>
+                    <span className={`font-medium px-2 py-1 rounded-full text-xs ${variation.availableQuantity === 0 ? 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400' : variation.availableQuantity < 10 ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400' : 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400'}`}>
+                      {variation.availableQuantity === 0 ? 'Hết hàng' : variation.availableQuantity < 10 ? 'Sắp hết' : 'Còn hàng'}
+                    </span>
+                  </div>
+
+                  {/* Attributes */}
+                  {variation.attributes && variation.attributes.length > 0 && (
+                    <div className="mb-4">
+                      <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Thuộc tính:</div>
+                      <div className="flex flex-wrap gap-2">
+                        {variation.attributes.map(attr => (
+                          <span key={attr.attributeId} className="px-2 py-1 bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300 text-xs rounded-md">
+                            {attr.attributeName}: {attr.attributeValue}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Promotion */}
+                  {(variation.promotionName || variation.discountType) && (
+                    <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                      <div className="flex items-center gap-2 mb-2">
+                        <FiPercent className="w-4 h-4 text-green-600" />
+                        <span className="text-sm font-medium text-green-700 dark:text-green-300">
+                          {variation.promotionName || 'Khuyến mãi'}
+                        </span>
+                      </div>
+                      {variation.discountType && (
+                        <div className="text-sm text-green-600 dark:text-green-400">
+                          Giảm: {variation.discountType === 'PERCENTAGE'
+                            ? `${variation.discountValue}%`
+                            : `${variation.discountValue?.toLocaleString('vi-VN')}đ`
+                          }
+                        </div>
+                      )}
+                      {variation.promotionStartDate && variation.promotionEndDate && (
+                        <div className="text-xs text-green-500 dark:text-green-400 mt-1">
+                          {new Date(variation.promotionStartDate).toLocaleDateString('vi-VN')} - {new Date(variation.promotionEndDate).toLocaleDateString('vi-VN')}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Timestamps */}
+                  <div className="text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-600 pt-3">
+                    Tạo: {new Date(variation.createdAt).toLocaleString('vi-VN')} |
+                    Cập nhật: {new Date(variation.updatedAt).toLocaleString('vi-VN')}
+                    {variation.deletedAt && (
+                      <> | Xóa: {new Date(variation.deletedAt).toLocaleString('vi-VN')}</>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           );
         })}
         {filteredVariations.length === 0 && (
-          <div className="col-span-full text-center py-12 text-gray-500">
-            <FiPackage className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+          <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+            <FiPackage className="w-16 h-16 mx-auto mb-4 text-gray-300 dark:text-gray-600" />
             <p className="text-lg font-medium">
               {includeDeleted ? 'Không có biến thể nào' : 'Không có biến thể đang hoạt động'}
             </p>
           </div>
         )}
       </div>
+
+      {/* Edit Variation Modal */}
+      {showEditModal && editingVariation && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-600">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Chỉnh sửa biến thể: {editingVariation.variationName}
+                </h3>
+                <button
+                  onClick={() => {
+                    setShowEditModal(false);
+                    setEditingVariation(null);
+                  }}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                >
+                  <FiX className="w-6 h-6" />
+                </button>
+              </div>
+            </div>
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+              <ProductVariationEditForm
+                variation={editingVariation}
+                onSuccess={() => {
+                  setShowEditModal(false);
+                  setEditingVariation(null);
+                  mutate?.(); // Refresh variations list
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

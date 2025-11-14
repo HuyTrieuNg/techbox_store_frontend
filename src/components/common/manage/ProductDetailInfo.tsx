@@ -9,7 +9,11 @@ import { useState } from 'react';
 import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import { ProductDetail } from '@/features/productDetail';
-import { FiTag, FiPackage, FiStar, FiClock, FiShield, FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { FiTag, FiPackage, FiStar, FiClock, FiShield, FiChevronDown, FiChevronUp, FiEdit2, FiTrash2, FiRefreshCw, FiUpload, FiFileText, FiX, FiCamera } from 'react-icons/fi';
+import ProductUpdateForm from './product/ProductUpdateForm';
+import { uploadProductImage } from '@/services/productManagementService';
+import axiosInstance from '@/lib/axios';
+import { toast } from 'sonner';
 
 interface ProductDetailInfoProps {
   product: ProductDetail;
@@ -18,10 +22,62 @@ interface ProductDetailInfoProps {
   onPublish?: (p: ProductDetail) => void;
   onDraft?: (p: ProductDetail) => void;
   onRestore?: (p: ProductDetail) => void;
+  actionLoading?: string | null;
 }
 
-export default function ProductDetailInfo({ product, onEdit, onDelete, onPublish, onDraft, onRestore }: ProductDetailInfoProps) {
+export default function ProductDetailInfo({ product, onEdit, onDelete, onPublish, onDraft, onRestore, actionLoading }: ProductDetailInfoProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleImageFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectedImageFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleImageUpload = async () => {
+    if (!selectedImageFile || !product) return;
+
+    setIsUploading(true);
+    try {
+      // First upload image to Cloudinary
+      const uploadResult = await uploadProductImage(selectedImageFile);
+
+      // Then update product with new image URL
+      await axiosInstance.put(`/products/${product.id}`, {
+        imageUrl: uploadResult.url,
+        imagePublicId: uploadResult.publicId,
+      });
+
+      toast.success('Product image updated successfully');
+      setShowImageModal(false);
+      setSelectedImageFile(null);
+      setImagePreview(null);
+      // Refresh product data
+      onEdit?.(product);
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast.error('Failed to upload image');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const closeImageModal = () => {
+    setShowImageModal(false);
+    setSelectedImageFile(null);
+    setImagePreview(null);
+  };
   
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -46,7 +102,7 @@ export default function ProductDetailInfo({ product, onEdit, onDelete, onPublish
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left: Image */}
         <div className="lg:col-span-1">
-          <div className="relative w-full aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
+          <div className="relative w-full aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden group cursor-pointer">
             {product.imageUrl ? (
               <Image
                 src={product.imageUrl}
@@ -60,6 +116,15 @@ export default function ProductDetailInfo({ product, onEdit, onDelete, onPublish
                 <FiPackage className="w-24 h-24 text-gray-300 dark:text-gray-600" />
               </div>
             )}
+            {/* Hover overlay */}
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-all duration-200 flex items-center justify-center">
+              <button
+                onClick={() => setShowImageModal(true)}
+                className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-white rounded-full p-3 shadow-lg hover:bg-gray-100"
+              >
+                <FiCamera className="w-6 h-6 text-gray-700" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -88,9 +153,10 @@ export default function ProductDetailInfo({ product, onEdit, onDelete, onPublish
               <div className="flex items-center gap-2">
                 {/* Edit always available */}
                 <button
-                  onClick={() => onEdit?.(product)}
-                  className="px-3 py-1 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-100 dark:hover:bg-gray-600 text-sm"
+                  onClick={() => setShowEditModal(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm"
                 >
+                  <FiEdit2 className="w-4 h-4" />
                   Chỉnh sửa
                 </button>
 
@@ -98,15 +164,19 @@ export default function ProductDetailInfo({ product, onEdit, onDelete, onPublish
                   <>
                     <button
                       onClick={() => onDraft?.(product)}
-                      className="px-3 py-1 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400 rounded hover:bg-yellow-100 dark:hover:bg-yellow-900/30 text-sm"
+                      disabled={actionLoading === 'draft'}
+                      className="flex items-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors text-sm font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Đặt nháp
+                      <FiFileText className="w-4 h-4" />
+                      {actionLoading === 'draft' ? 'Đang xử lý...' : 'Đặt nháp'}
                     </button>
                     <button
                       onClick={() => onDelete?.(product)}
-                      className="px-3 py-1 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-sm"
+                      disabled={actionLoading === 'delete'}
+                      className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Xóa
+                      <FiTrash2 className="w-4 h-4" />
+                      {actionLoading === 'delete' ? 'Đang xử lý...' : 'Xóa'}
                     </button>
                   </>
                 )}
@@ -115,15 +185,19 @@ export default function ProductDetailInfo({ product, onEdit, onDelete, onPublish
                   <>
                     <button
                       onClick={() => onPublish?.(product)}
-                      className="px-3 py-1 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded hover:bg-green-100 dark:hover:bg-green-900/30 text-sm"
+                      disabled={actionLoading === 'publish'}
+                      className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Xuất bản
+                      <FiUpload className="w-4 h-4" />
+                      {actionLoading === 'publish' ? 'Đang xử lý...' : 'Xuất bản'}
                     </button>
                     <button
                       onClick={() => onDelete?.(product)}
-                      className="px-3 py-1 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-sm"
+                      disabled={actionLoading === 'delete'}
+                      className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Xóa
+                      <FiTrash2 className="w-4 h-4" />
+                      {actionLoading === 'delete' ? 'Đang xử lý...' : 'Xóa'}
                     </button>
                   </>
                 )}
@@ -132,9 +206,11 @@ export default function ProductDetailInfo({ product, onEdit, onDelete, onPublish
                   <>
                     <button
                       onClick={() => onRestore?.(product)}
-                      className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 rounded hover:bg-blue-100 dark:hover:bg-blue-900/30 text-sm"
+                      disabled={actionLoading === 'restore'}
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      Khôi phục
+                      <FiRefreshCw className="w-4 h-4" />
+                      {actionLoading === 'restore' ? 'Đang xử lý...' : 'Khôi phục'}
                     </button>
                   </>
                 )}
@@ -287,6 +363,108 @@ export default function ProductDetailInfo({ product, onEdit, onDelete, onPublish
           )}
         </div>
       </div>
+
+      {/* Edit Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+            <div className="p-6 border-b border-gray-200 dark:border-gray-600">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Chỉnh sửa sản phẩm
+                </h3>
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                >
+                  <FiX className="w-6 h-6" />
+                </button>
+              </div>
+            </div>
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+              <ProductUpdateForm
+                product={product}
+                onSuccess={() => {
+                  setShowEditModal(false);
+                  // Refresh the product data
+                  onEdit?.(product);
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Image Upload Modal */}
+      {showImageModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                Upload Product Image
+              </h3>
+              <button
+                onClick={closeImageModal}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                <FiX className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="p-6">
+              <div className="space-y-4">
+                <div className="flex justify-center">
+                  <label className="cursor-pointer">
+                    <div className="w-32 h-32 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center hover:border-blue-500 transition-colors">
+                      {imagePreview ? (
+                        <Image
+                          src={imagePreview}
+                          alt="Preview"
+                          width={128}
+                          height={128}
+                          className="w-full h-full object-cover rounded-lg"
+                        />
+                      ) : (
+                        <div className="text-center">
+                          <FiCamera className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                          <span className="text-sm text-gray-500">Click to select image</span>
+                        </div>
+                      )}
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageFileSelect}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+
+                {selectedImageFile && (
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    Selected: {selectedImageFile.name}
+                  </div>
+                )}
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={closeImageModal}
+                    className="flex-1 px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleImageUpload}
+                    disabled={!selectedImageFile || isUploading}
+                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isUploading ? 'Uploading...' : 'Upload'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
-}
+};
