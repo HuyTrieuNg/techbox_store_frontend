@@ -6,6 +6,7 @@ import { FaShoppingCart, FaUser, FaChevronDown, FaSearch, FaChevronRight, FaSign
 import CategoryMenu from "./Category";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useCart } from "@/hooks/useCart";
+import { useRouter } from "next/navigation";
 // import { useCart } from "@/contexts/CartContext";
 // import { CartItems } from "@/features/CartItem";
 
@@ -17,6 +18,7 @@ export default function Header() {
   const toggleMenu = () => setIsOpen(!isOpen);
   const toggleAccount = () => setIsAccountOpen(!isAccountOpen);
   const { totalQuantity, isLoading } = useCart();
+  const router = useRouter();
 
   // const cartCount = cartItems.reduce((sum: number, item: CartItems) => sum + item.quantity, 0) || 0;
   return (
@@ -85,7 +87,7 @@ export default function Header() {
                 onClick={toggleAccount}
                 className="flex items-center gap-2 bg-[#E61E4D] text-white px-4 py-2 rounded-full hover:bg-[#d41b46ff] transition-colors duration-200 cursor-pointer"
               >
-                <FaUser /> Xin chào {user.lastName} {user.firstName}
+                <FaUser /> Xin chào {user.firstName}
                 <FaChevronDown
                   size={12}
                   className={`transition-transform duration-200 ${isAccountOpen ? "rotate-180" : ""
@@ -128,6 +130,7 @@ export default function Header() {
                     onClick={() => {
                       handleLogout(); // Gọi hàm đăng xuất
                       setIsAccountOpen(false); // Đóng dropdown khi nhấp
+                      router.push("/");
                     }}
                     className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center gap-2 cursor-pointer"
                   >

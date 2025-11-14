@@ -7,6 +7,10 @@ export class ProductService {
     return api.get<Category[]>("categories");
   }
 
+  static async getCategoryById(id: number): Promise<Category> {
+    return api.get<Category>(`categories/${id}`);
+  }
+
   static async getProductById(id: number): Promise<ProductDetail> {
     try {
       return await api.get<ProductDetail>(`products/${id}`);

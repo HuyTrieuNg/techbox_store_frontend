@@ -20,34 +20,23 @@ export interface User {
   lastName: string;
   phone: string;
   addresses?: Address[];
-  dateOfBirth?: Date;
-  roles?: string[];
-  createdAt?: string;
-  updatedAt?: string;
-  isActive?: boolean;
+  dateOfBirth: Date;
+  roles: string[];
+  isActive: boolean;
+  isLocked: boolean;
+  createdAt: string;
 }
 
 export interface UserResponse {
-  id: number;
-  email: string;
-  firstName: string;
-  lastName: string;
-  phone: string;
-  roles?: string[];
-  createdAt?: string;
-  updatedAt?: string;
-  isActive?: boolean;
-}
-
-export interface PagedUserResponse {
-  content: UserResponse[];
+  content: User[];
+  page: number;
+  size: number;
   totalElements: number;
   totalPages: number;
-  size: number;
-  number: number;
   first: boolean;
   last: boolean;
-  empty: boolean;
+  hasNext: boolean;
+  hasPrevious: boolean;
 }
 
 export interface UserCreateRequest {
@@ -56,13 +45,8 @@ export interface UserCreateRequest {
   firstName: string;
   lastName: string;
   phone: string;
-  roles?: string[];
-}
-
-export interface UserUpdateRequest {
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
+  dateOfBirth: Date;
+  roles: string[];
 }
 
 export interface UpdatePasswordData {

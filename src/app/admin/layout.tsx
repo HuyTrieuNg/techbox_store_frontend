@@ -27,12 +27,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </div>
       }
     >
-      <div className="flex min-h-screen bg-gray-100">
-        {/* Sidebar - Fixed bên trái */}
-        <AdminSidebar />
+    <div className="flex h-screen overflow-hidden bg-black">
+      {/* Sidebar - Fixed bên trái */}
+      <AdminSidebar />
 
-        {/* Main Content Area */}
-        <div className="flex-1 ml-64">
+      {/* Main Content Area */}
+      <div className="flex flex-col flex-1 overflow-auto">
+        <div className="max-w-7xl mx-auto w-full">
           {/* Header - Sticky top */}
           <AdminHeader />
 
@@ -41,6 +42,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             {children}
           </main>
         </div>
+
       </div>
       <Toaster />
     </RouteGuard>

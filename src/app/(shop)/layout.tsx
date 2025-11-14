@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { CartProvider } from "@/contexts/CartContext";
+// import { CartProvider } from "@/contexts/CartContext";
 
 /**
  * Shop Layout - Server Component
@@ -14,7 +14,7 @@ import { CartProvider } from "@/contexts/CartContext";
  */
 export default function ShopLayout({ children }: { children: ReactNode }) {
   return (
-    <CartProvider>
+    <>
       {/* Header - Navigation bar */}
       <Header />
       
@@ -25,6 +25,6 @@ export default function ShopLayout({ children }: { children: ReactNode }) {
       
       {/* Footer */}
       <Footer />
-    </CartProvider>
+    </>
   );
 }
