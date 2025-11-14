@@ -20,6 +20,7 @@ export default function StaffSidebar() {
 
   const menuItems = [
     { href: "/staff/dashboard", label: "Tổng quan", icon: FiHome },
+    { href: "/staff/products", label: "Sản phẩm", icon: FiPackage },
     { href: "/staff/orders", label: "Đơn hàng", icon: FiShoppingCart },
     { href: "/staff/inventory", label: "Kho hàng", icon: FiBox },
   ];
