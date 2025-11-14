@@ -31,6 +31,7 @@ export default function AdminUsersPage() {
     setSearchTerm,
     setFormData,
     setShowCreateModal,
+    setShowDeleted,
     resetForm,
     handleCreateUser,
     handleDeleteUser,
@@ -46,11 +47,6 @@ export default function AdminUsersPage() {
   // Handle view order history - chuyển sang trang mới
   const handleViewOrderHistory = (userId: number) => {
     router.push(`/admin/users/orders/${userId}`);
-  };
-
-  // Handle edit user - chuyển sang trang edit
-  const handleEditUser = (userId: number) => {
-    router.push(`/admin/users/${userId}/edit`);
   };
 
   return (
@@ -77,7 +73,7 @@ export default function AdminUsersPage() {
         selectedRole={selectedRole}
         handleRoleChange={handleRoleChange}
         showDeleted={showDeleted}
-        setShowDeleted={(show) => {}}
+        setShowDeleted={setShowDeleted}
         pageSize={pageSize}
         handlePageSizeChange={handlePageSizeChange}
       />
@@ -100,7 +96,6 @@ export default function AdminUsersPage() {
         handleDeleteUser={handleDeleteUser}
         handleRestoreUser={handleRestoreUser}
         handleViewOrderHistory={handleViewOrderHistory}
-        handleEditUser={handleEditUser}
       />
 
       {/* Pagination */}

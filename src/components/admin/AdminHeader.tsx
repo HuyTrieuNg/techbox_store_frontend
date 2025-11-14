@@ -93,7 +93,7 @@ const AdminHeader = () => {
                 <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
                   <button
                     onClick={() => {
-                      router.push('/profile');
+                      router.push('/admin/profile');
                       setShowUserMenu(false);
                     }}
                     className="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
