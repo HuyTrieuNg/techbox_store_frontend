@@ -1,5 +1,12 @@
 import { api } from "@/lib/axios";
-import { Address, User } from "@/features/user";
+import { 
+  Address, 
+  User, 
+  UserResponse, 
+  PagedUserResponse, 
+  UserCreateRequest, 
+  UserUpdateRequest 
+} from "@/features/user";
 
 // Lấy thông tin người dùng hiện tại
 export const getCurrentUserProfile = async (): Promise<User> => {
@@ -12,6 +19,67 @@ export const updateUserProfile = async (
 ): Promise<User> => {
   return api.patch<User>("/users/profile", userData);
 };
+
+// ===== ADMIN USER MANAGEMENT =====
+
+// Lấy danh sách người dùng (phân trang)
+export const getUsers = async (
+  page: number = 0,
+  size: number = 10,
+  sortBy: string = "id",
+  sortDir: "asc" | "desc" = "asc",
+  includeDeleted: boolean = false
+): Promise<PagedUserResponse> => {
+  return api.get<PagedUserResponse>("/users", {
+    params: { page, size, sortBy, sortDir, includeDeleted }
+  });
+};
+
+// Lấy danh sách người dùng theo role (phân trang)
+export const getUsersByRole = async (
+  roleName: string,
+  page: number = 0,
+  size: number = 10,
+  sortBy: string = "id",
+  sortDir: "asc" | "desc" = "asc",
+  includeDeleted: boolean = false
+): Promise<PagedUserResponse> => {
+  return api.get<PagedUserResponse>(`/users/by-role/${roleName}`, {
+    params: { page, size, sortBy, sortDir, includeDeleted }
+  });
+};
+
+// Lấy thông tin một người dùng theo ID
+export const getUserById = async (id: number): Promise<UserResponse> => {
+  return api.get<UserResponse>(`/users/${id}`);
+};
+
+// Tạo người dùng mới
+export const createUser = async (
+  userData: UserCreateRequest
+): Promise<UserResponse> => {
+  return api.post<UserResponse>("/users", userData);
+};
+
+// Cập nhật thông tin người dùng
+export const updateUser = async (
+  id: number,
+  userData: UserUpdateRequest
+): Promise<UserResponse> => {
+  return api.patch<UserResponse>(`/users/${id}`, userData);
+};
+
+// Xóa người dùng (soft delete)
+export const deleteUser = async (id: number): Promise<void> => {
+  await api.delete(`/users/${id}`);
+};
+
+// Khôi phục người dùng đã xóa
+export const restoreUser = async (id: number): Promise<UserResponse> => {
+  return api.patch<UserResponse>(`/users/${id}/restore`);
+};
+
+// ===== ADDRESS MANAGEMENT =====
 
 export const getUserAddresses = async (
   userId: number
