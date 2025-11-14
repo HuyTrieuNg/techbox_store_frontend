@@ -11,6 +11,7 @@ import {
   checkCategoryExistsForUpdate,
   Category,
 } from "@/services/categoryService";
+import { toast } from "sonner";
 
 export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -30,7 +31,9 @@ export default function AdminCategoriesPage() {
       setCategories(data);
     } catch (e: any) {
       console.error("Error fetching categories:", e); // Debug log
-      setError("Không thể tải danh sách danh mục");
+      const message = e?.response?.data?.message || 'Failed to load categories';
+      setError(message);
+      toast.error(message);
     }
     setLoading(false);
   };
@@ -53,8 +56,11 @@ export default function AdminCategoriesPage() {
     try {
       await deleteCategory(cat.id);
       fetchCategories();
-    } catch {
-      alert("Xóa thất bại");
+      toast.success('Category deleted successfully!');
+    } catch (e: any) {
+      console.error("Error deleting category:", e);
+      const message = e?.response?.data?.message || 'Failed to delete category';
+      toast.error(message);
     }
     setFormLoading(false);
   };
@@ -63,7 +69,6 @@ export default function AdminCategoriesPage() {
       const exists = await checkCategoryExists(name);
       setIsNameValid(!exists);
     } catch (e) {
-      console.error("Error validating category name:", e);
       setIsNameValid(false);
     }
   };
@@ -73,7 +78,6 @@ export default function AdminCategoriesPage() {
       const exists = await checkCategoryExistsForUpdate(name, id);
       setIsNameValid(!exists);
     } catch (e) {
-      console.error("Error validating category name for update:", e);
       setIsNameValid(false);
     }
   };
@@ -90,16 +94,19 @@ export default function AdminCategoriesPage() {
         const updated = await updateCategory(editing.id, name, parentCategoryId);
         console.log("Updated category:", updated); // Debug log
         fetchCategories();
+        toast.success('Category updated successfully!');
       } else {
         console.log("Creating category:", { name, parentCategoryId }); // Debug log
         await createCategory(name, parentCategoryId);
         fetchCategories();
+        toast.success('Category created successfully!');
       }
       setShowForm(false);
       setEditing(null);
-    } catch (e) {
+    } catch (e: any) {
       console.error("Error saving category:", e); // Debug log
-      alert("Lưu thất bại");
+      const message = e?.response?.data?.message || 'Failed to save category';
+      toast.error(message);
     }
     setFormLoading(false);
   };
@@ -132,26 +139,26 @@ export default function AdminCategoriesPage() {
   };
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
+    <div className="p-6 max-w-2xl mx-auto bg-white dark:bg-gray-900 min-h-screen">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Quản lý Danh mục</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Quản lý Danh mục</h1>
         <button
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+          className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 text-white px-4 py-2 rounded transition"
           onClick={handleAdd}
           disabled={formLoading}
         >
           Thêm mới
         </button>
       </div>
-      {error && <div className="text-red-500 mb-2">{error}</div>}
+      {error && <div className="text-red-500 dark:text-red-400 mb-2">{error}</div>}
       <CategoryList
         categories={categories}
         onEdit={handleEdit}
         onDelete={handleDelete}
       />
       {showForm && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-          <div className="bg-white rounded shadow p-6 min-w-[320px] max-w-[90vw]">
+        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-800 rounded shadow p-6 min-w-[320px] max-w-[90vw]">
             <CategoryForm
               initial={editing}
               onSubmit={handleFormSubmit}

@@ -95,9 +95,9 @@ const ProductList: React.FC<Props> = ({ categoryId }) => {
     size: 20,
   });
 
-  if (isLoading) return <div>Đang tải sản phẩm...</div>;
-  if (error) return <div>Lỗi khi tải danh sách sản phẩm.</div>;
-  if (products.length === 0) return <div>Không có sản phẩm nào trong danh mục này.</div>;
+  if (isLoading) return <div className="text-gray-600 dark:text-gray-400">Đang tải sản phẩm...</div>;
+  if (error) return <div className="text-red-500 dark:text-red-400">Lỗi khi tải danh sách sản phẩm.</div>;
+  if (products.length === 0) return <div className="text-gray-600 dark:text-gray-400">Không có sản phẩm nào trong danh mục này.</div>;
 
   return (
     <div className="w-full">

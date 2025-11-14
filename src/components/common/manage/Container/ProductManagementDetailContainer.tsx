@@ -7,12 +7,15 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import { FiArrowLeft, FiEdit2 } from 'react-icons/fi';
+import { useState } from 'react';
 import { useProductManagementDetail } from '@/hooks/useProductManagementDetail';
 import { useProductVariations } from '@/hooks/useProductVariations';
 import ProductDetailInfo from '@/components/common/manage/ProductDetailInfo';
 import ProductVariationsTable from '@/components/common/manage/ProductVariationsTable';
+import ProductVariationCreateForm from '@/components/common/manage/product/ProductVariationCreateForm';
 import { publishProduct, draftProduct, deleteProduct, restoreProduct } from '@/services/productDetailService';
-import { toast } from 'react-hot-toast';
+import { toast } from 'sonner';
+import { Button } from '@/components/UI/button';
 
 export default function ProductManagementDetailContainer() {
   const params = useParams();
@@ -30,6 +33,13 @@ export default function ProductManagementDetailContainer() {
     setIncludeDeleted,
     mutate: mutateVariations,
   } = useProductVariations(productId);
+
+  const [showVariationModal, setShowVariationModal] = useState(false);
+
+  const handleVariationCreated = () => {
+    setShowVariationModal(false);
+    mutateVariations(); // Refresh variations list
+  };
 
   // Product action handlers
   const handleEdit = () => {
@@ -129,13 +139,15 @@ export default function ProductManagementDetailContainer() {
           <span className="font-medium">Quay lại</span>
         </button>
 
-        <button
-          onClick={() => router.push(`/admin/products/${productId}/edit`)}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <FiEdit2 className="w-4 h-4" />
-          <span>Chỉnh sửa</span>
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => router.push(`/admin/products/${productId}/edit`)}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <FiEdit2 className="w-4 h-4" />
+            <span>Chỉnh sửa</span>
+          </button>
+        </div>
       </div>
 
       {/* Product Info */}
@@ -149,13 +161,57 @@ export default function ProductManagementDetailContainer() {
       />
 
       {/* Product Variations */}
-      <ProductVariationsTable
-        variations={variations}
-        isLoading={variationsLoading}
-        includeDeleted={includeDeleted}
-        onToggleDeleted={setIncludeDeleted}
-        mutate={mutateVariations}
-      />
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Biến thể sản phẩm</h2>
+            <Button
+              onClick={() => setShowVariationModal(true)}
+              className="bg-green-600 hover:bg-green-700 text-white"
+            >
+              + Thêm biến thể
+            </Button>
+          </div>
+        </div>
+        <div className="p-6">
+          <ProductVariationsTable
+            variations={variations}
+            isLoading={variationsLoading}
+            includeDeleted={includeDeleted}
+            onToggleDeleted={setIncludeDeleted}
+            mutate={mutateVariations}
+          />
+        </div>
+      </div>
+
+      {/* Create Variation Modal */}
+      {showVariationModal && (
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          onClick={() => setShowVariationModal(false)}
+        >
+          <div 
+            className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto m-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Thêm biến thể mới</h2>
+                <button
+                  onClick={() => setShowVariationModal(false)}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                >
+                  ✕
+                </button>
+              </div>
+              <ProductVariationCreateForm 
+                productId={productId!} 
+                onVariationCreated={handleVariationCreated}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

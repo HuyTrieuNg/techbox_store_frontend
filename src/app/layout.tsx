@@ -37,7 +37,8 @@ import type { Metadata } from "next";
 import "./globals.css"; // import TailwindCSS hoặc CSS global
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
-import { Toaster } from "react-hot-toast";
+import { ThemeProvider } from "next-themes";
+import { Toaster } from "@/components/UI/sonner";
 import { serverApi } from "@/lib/server-api";
 
 export const metadata: Metadata = {
@@ -72,24 +73,18 @@ export default async function RootLayout({
   console.log('[RootLayout] Initial user data:', initialUser);
 
   return (
-    <html lang="vi">
-      <body className="bg-gray-50 text-gray-900">
-        {/* Pass initialData to AuthProvider */}
-        <AuthProvider initialData={initialUser}>
-          {/* Children sẽ là nested layouts (shop/admin/staff) */}
-          {children}
-          
-          {/* Toast notifications */}
-          <Toaster
-            position="top-right"
-            reverseOrder={false}
-            gutter={16}
-            containerStyle={{
-              top: '6rem',
-              right: '1rem',
-            }}
-          />
-        </AuthProvider>
+    <html lang="vi" suppressHydrationWarning>
+      <body className="bg-gray-50 text-gray-900 dark:bg-gray-900 dark:text-white" suppressHydrationWarning>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          {/* Pass initialData to AuthProvider */}
+          <AuthProvider initialData={initialUser}>
+            {/* Children sẽ là nested layouts (shop/admin/staff) */}
+            {children}
+            
+            {/* Toast notifications */}
+            <Toaster />
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

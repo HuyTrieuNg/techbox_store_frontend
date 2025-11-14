@@ -41,13 +41,13 @@ export default function ProductTable({
   // Loading skeleton
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sản phẩm</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Giá gốc</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">ID</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Sản phẩm</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Giá gốc</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Giá bán</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Giảm giá</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Đánh giá</th>
@@ -95,27 +95,27 @@ export default function ProductTable({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 ID
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Sản phẩm
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Giá gốc
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Giá bán
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Giảm giá
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Đánh giá
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -153,9 +153,9 @@ export default function ProductTable({
               const statusBadge = getStatusBadge(product.status);
 
               return (
-                <tr key={product.id} className="hover:bg-gray-50">
+                <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
                   {/* ID */}
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     #{product.id}
                   </td>
 
@@ -165,7 +165,7 @@ export default function ProductTable({
                       className="flex items-center cursor-pointer group"
                       onClick={() => router.push(`${baseUrl}/products/${product.id}`)}
                     >
-                      <div className="relative w-12 h-12 bg-gray-100 rounded overflow-hidden flex-shrink-0">
+                      <div className="relative w-12 h-12 bg-gray-100 dark:bg-gray-600 rounded overflow-hidden flex-shrink-0">
                         {product.imageUrl ? (
                           <Image
                             src={product.imageUrl}
@@ -174,15 +174,15 @@ export default function ProductTable({
                             className="object-cover"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                            <svg className="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-600">
+                            <svg className="w-6 h-6 text-gray-300 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                             </svg>
                           </div>
                         )}
                       </div>
                       <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900 max-w-xs truncate group-hover:underline">
+                        <div className="text-sm font-medium text-gray-900 dark:text-white max-w-xs truncate group-hover:underline">
                           {product.name}
                         </div>
                       </div>
@@ -190,7 +190,7 @@ export default function ProductTable({
                   </td>
 
                   {/* Original Price */}
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                     {product.displayOriginalPrice 
                       ? `${product.displayOriginalPrice.toLocaleString('vi-VN')}đ`
                       : '-'
@@ -198,20 +198,20 @@ export default function ProductTable({
                   </td>
 
                   {/* Sale Price */}
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     {product.displaySalePrice ? (
-                      <span className="text-sm font-semibold text-blue-600">
+                      <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
                         {product.displaySalePrice.toLocaleString('vi-VN')}đ
                       </span>
                     ) : (
-                      <span className="text-sm text-gray-500">-</span>
+                      <span className="text-sm text-gray-500 dark:text-gray-400">-</span>
                     )}
                   </td>
 
                   {/* Discount */}
                   <td className="px-6 py-4 whitespace-nowrap">
                     {hasDiscount ? (
-                      <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                      <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-400">
                         {product.discountType === 'PERCENTAGE' 
                           ? `-${product.discountValue}%`
                           : `-${product.discountValue?.toLocaleString('vi-VN')}đ`
@@ -226,17 +226,17 @@ export default function ProductTable({
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-1">
                       <FiStar className="w-4 h-4 text-yellow-400 fill-current" />
-                      <span className="text-sm text-gray-700">
+                      <span className="text-sm text-gray-700 dark:text-gray-300">
                         {product.averageRating.toFixed(1)}
                       </span>
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-gray-400 dark:text-gray-500">
                         ({product.totalRatings})
                       </span>
                     </div>
                   </td>
 
                   {/* SPU */}
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 font-mono">
                     {product.spu}
                   </td>
 
@@ -256,14 +256,14 @@ export default function ProductTable({
                           <>
                             <button
                               onClick={() => onDraft?.(product)}
-                              className="text-yellow-600 hover:text-yellow-900 flex items-center gap-1"
+                              className="text-yellow-600 hover:text-yellow-900 dark:hover:text-yellow-400 flex items-center gap-1"
                               title="Chuyển về Draft"
                             >
                               <FiFileText className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => onDelete?.(product)}
-                              className="text-red-600 hover:text-red-900 flex items-center gap-1"
+                              className="text-red-600 hover:text-red-900 dark:hover:text-red-400 flex items-center gap-1"
                               title="Xóa"
                             >
                               <FiTrash2 className="w-4 h-4" />
@@ -275,14 +275,14 @@ export default function ProductTable({
                           <>
                             <button
                               onClick={() => onPublish?.(product)}
-                              className="text-green-600 hover:text-green-900 flex items-center gap-1"
+                              className="text-green-600 hover:text-green-900 dark:hover:text-green-400 flex items-center gap-1"
                               title="Xuất bản"
                             >
                               <FiCheckCircle className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => onDelete?.(product)}
-                              className="text-red-600 hover:text-red-900 flex items-center gap-1"
+                              className="text-red-600 hover:text-red-900 dark:hover:text-red-400 flex items-center gap-1"
                               title="Xóa"
                             >
                               <FiTrash2 className="w-4 h-4" />
@@ -293,7 +293,7 @@ export default function ProductTable({
                         {product.status === 'DELETED' && (
                           <button
                             onClick={() => onRestore?.(product)}
-                            className="text-yellow-600 hover:text-yellow-900 flex items-center gap-1"
+                            className="text-yellow-600 hover:text-yellow-900 dark:hover:text-yellow-400 flex items-center gap-1"
                             title="Khôi phục về Draft"
                           >
                             <FiRotateCcw className="w-4 h-4" />

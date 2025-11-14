@@ -11,7 +11,6 @@ import { z } from 'zod';
 import { Button } from '@/components/UI/button';
 import { Input } from '@/components/UI/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/UI/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/UI/card';
 import { Label } from '@/components/UI/label';
 import { useProductVariationCreate } from '@/hooks/useProductVariationCreate';
 import { Plus, Trash2, X, Upload, Image as ImageIcon } from 'lucide-react';
@@ -67,12 +66,11 @@ export default function ProductVariationCreateForm({ productId, onVariationCreat
   };
 
   return (
-    <Card className="w-full max-w-4xl mx-auto">
-      <CardHeader>
-        <CardTitle>Tạo Biến Thể Sản Phẩm</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
+    <div className="w-full">
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Tạo Biến Thể Sản Phẩm</h3>
+      </div>
+      <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
           {/* Variation Name */}
           <div>
             <Label htmlFor="variationName">Tên biến thể</Label>
@@ -143,7 +141,7 @@ export default function ProductVariationCreateForm({ productId, onVariationCreat
                       </SelectTrigger>
                       <SelectContent>
                         {attributes.map((attr) => (
-                          <SelectItem key={Math.random()} value={attr.id.toString()}>
+                          <SelectItem key={`attr-${attr.id}`} value={attr.id.toString()}>
                             {attr.name}
                           </SelectItem>
                         ))}
@@ -260,7 +258,6 @@ export default function ProductVariationCreateForm({ productId, onVariationCreat
             {loading ? 'Đang tạo...' : 'Tạo biến thể'}
           </Button>
         </form>
-      </CardContent>
-    </Card>
+      </div>
   );
 }

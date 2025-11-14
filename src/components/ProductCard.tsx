@@ -17,14 +17,14 @@ const ProductCard: React.FC<Props> = ({ product }) => {
 
   // const shortSpecs = product.specs ?? ["i5 12400F", "16GB", "15.6 inch FHD", "RTX 3050", "144 Hz"];
   return (
-    <div className="bg-white border border-gray-300 rounded-md shadow-md p-3 flex flex-col hover:shadow-lg transition cursor-pointer">
+    <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-md p-3 flex flex-col hover:shadow-lg transition cursor-pointer">
       <Link href={`/product/${product.id}`}>
         <img
           src={product.imageUrl || "/images/placeholder.png"}
           alt={product.name}
           className="w-full h-48 object-contain mb-3"
         />
-        <h3 className="text-gray-800 font-bold mt-2 line-clamp-2">{product.name}</h3>
+        <h3 className="text-gray-800 dark:text-white font-bold mt-2 line-clamp-2">{product.name}</h3>
 
         {/* Thông số ngắn gọn */}
         {/* <p className="text-sm text-gray-600 mt-1 mb-2">
@@ -33,7 +33,7 @@ const ProductCard: React.FC<Props> = ({ product }) => {
         </span>
       </p> */}
 
-        <p className="text-gray-400 line-through text-xs mt-2"> {product.displayOriginalPrice
+        <p className="text-gray-400 dark:text-gray-500 line-through text-xs mt-2"> {product.displayOriginalPrice
           ? formatPrice(product.displayOriginalPrice)
           : ""}</p>
         <p className="text-[#E61E4D] font-bold mt-2">
@@ -61,7 +61,7 @@ const ProductCard: React.FC<Props> = ({ product }) => {
           <FaStar size={13} className="text-yellow-400" />
           <span className="text-sm text-gray-500 ml-1">({product.totalRatings} đánh giá)</span>
         </div> */}
-        <div className="flex items-center gap-1 text-sm text-gray-600 mt-2 mb-2">
+        <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 mt-2 mb-2">
           <FaStar className="text-yellow-400" />
           <span>{product.averageRating.toFixed(1)}</span>
           <span>({product.totalRatings} đánh giá)</span>

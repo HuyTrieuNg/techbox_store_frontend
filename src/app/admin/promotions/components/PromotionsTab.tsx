@@ -5,6 +5,7 @@ import { FiPlus, FiEdit2, FiTrash2, FiSearch, FiPercent, FiDollarSign } from 're
 import { promotionService, campaignService } from '@/services/promotionService';
 import { Promotion, Campaign } from '@/types';
 import PromotionModal from './PromotionModal';
+import { toast } from 'sonner';
 
 /**
  * Promotions Tab - Quản lý khuyến mãi sản phẩm
@@ -37,9 +38,9 @@ export default function PromotionsTab() {
       });
       setPromotions(response.content);
       setTotalPages(response.page.totalPages);
-    } catch (error) {
-      console.error('Error loading promotions:', error);
-      alert('Không thể tải danh sách khuyến mãi');
+    } catch (error: any) {
+      const message = error?.response?.data?.message || 'Failed to load promotions';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -49,8 +50,9 @@ export default function PromotionsTab() {
     try {
       const response = await campaignService.getAll({ page: 0, size: 100 });
       setCampaigns(response.content);
-    } catch (error) {
-      console.error('Error loading campaigns:', error);
+    } catch (error: any) {
+      const message = error?.response?.data?.message || 'Failed to load campaigns';
+      toast.error(message);
     }
   };
 
@@ -59,11 +61,11 @@ export default function PromotionsTab() {
 
     try {
       await promotionService.delete(id);
-      alert('Đã xóa khuyến mãi');
+      toast.success('Promotion deleted successfully!');
       loadPromotions();
-    } catch (error) {
-      console.error('Error deleting promotion:', error);
-      alert('Không thể xóa khuyến mãi');
+    } catch (error: any) {
+      const message = error?.response?.data?.message || 'Failed to delete promotion';
+      toast.error(message);
     }
   };
 

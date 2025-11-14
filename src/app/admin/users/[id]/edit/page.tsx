@@ -63,63 +63,63 @@ const UserEditPage = () => {
     }
   };
 
-  if (loading) return <p className="text-gray-400">Đang tải dữ liệu...</p>;
-  if (!user) return <p className="text-red-400">Không tìm thấy user!</p>;
+  if (loading) return <p className="text-gray-400 dark:text-gray-500">Đang tải dữ liệu...</p>;
+  if (!user) return <p className="text-red-400 dark:text-red-300">Không tìm thấy user!</p>;
 
   return (
-    <div className="flex-1 overflow-auto relative z-10">
-      <div className="max-w-7xl lg:px-2">
-        <div className="bg-[#1e1e1e] backdrop-blur-md shadow-lg rounded-xl p-4 sm:p-6 border border-[#1f1f1f] mx-2 sm:mx-0">
+    <div className="flex-1 overflow-auto relative z-10 bg-white dark:bg-gray-900 min-h-screen">
+      <div className="max-w-7xl lg:px-2 p-8">
+        <div className="bg-white dark:bg-gray-800 backdrop-blur-md shadow-lg rounded-xl p-4 sm:p-6 border border-gray-200 dark:border-gray-700 mx-2 sm:mx-0">
 
 
-          <h2 className="text-2xl font-semibold text-white mb-6">Chỉnh sửa người dùng</h2>
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Chỉnh sửa người dùng</h2>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-gray-300 mb-1">Email</label>
+              <label className="block text-gray-700 dark:text-gray-300 mb-1">Email</label>
               <input
                 type="text"
                 value={user.email}
                 disabled
-                className="w-full p-2 rounded-md bg-gray-700 text-gray-400 border border-gray-600"
+                className="w-full p-2 rounded-md bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border border-gray-300 dark:border-gray-600"
               />
             </div>
 
             <div>
-              <label className="block text-gray-300 mb-1">First Name</label>
+              <label className="block text-gray-700 dark:text-gray-300 mb-1">First Name</label>
               <input
                 name="firstName"
                 type="text"
                 value={user.firstName ?? ""}
                 onChange={handleChange}
-                className="w-full p-2 rounded-md bg-gray-800 text-white border border-gray-700"
+                className="w-full p-2 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
               />
             </div>
 
             <div>
-              <label className="block text-gray-300 mb-1">Last Name</label>
+              <label className="block text-gray-700 dark:text-gray-300 mb-1">Last Name</label>
               <input
                 name="lastName"
                 type="text"
                 value={user.lastName ?? ""}
                 onChange={handleChange}
-                className="w-full p-2 rounded-md bg-gray-800 text-white border border-gray-700"
+                className="w-full p-2 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
               />
             </div>
 
             <div>
-              <label className="block text-gray-300 mb-1">Phone</label>
+              <label className="block text-gray-700 dark:text-gray-300 mb-1">Phone</label>
               <input
                 name="phone"
                 type="text"
                 value={user.phone ?? ""}
                 onChange={handleChange}
-                className="w-full p-2 rounded-md bg-gray-800 text-white border border-gray-700"
+                className="w-full p-2 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
               />
             </div>
 
             <div>
-              <label className="block text-gray-300 mb-1">Date of Birth</label>
+              <label className="block text-gray-700 dark:text-gray-300 mb-1">Date of Birth</label>
               <input
                 name="dateOfBirth"
                 type="date"
@@ -127,24 +127,25 @@ const UserEditPage = () => {
                   ? new Date(user.dateOfBirth).toISOString().split("T")[0]
                   : ""}
                 onChange={handleChange}
-                className="w-full p-2 rounded-md bg-gray-800 text-white border border-gray-700"
+                className="w-full p-2 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
               />
             </div>
 
             <div className="flex items-center gap-2">
-              <label className="text-gray-300">Active</label>
+              <label className="text-gray-700 dark:text-gray-300">Active</label>
               <input
                 type="checkbox"
                 checked={user.isActive}
                 onChange={(e) => setUser({ ...user, isActive: e.target.checked })}
+                className="w-4 h-4 text-blue-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-blue-400"
               />
             </div>
 
             <div>
-              <label className="block text-gray-300 mb-2">Roles</label>
+              <label className="block text-gray-700 dark:text-gray-300 mb-2">Roles</label>
               <div className="space-y-2">
                 {["ROLE_CUSTOMER", "ROLE_STAFF", "ROLE_ADMIN"].map((role) => (
-                  <label key={role} className="flex items-center gap-2 text-gray-300">
+                  <label key={role} className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
                     <input
                       type="checkbox"
                       checked={user.roles.includes(role)}
@@ -157,7 +158,7 @@ const UserEditPage = () => {
                             : user.roles.filter((r) => r !== role), // Xóa role
                         });
                       }}
-                      className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500"
+                      className="w-4 h-4 text-blue-600 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 dark:focus:ring-blue-400"
                     />
                     <span>
                       {role === "ROLE_CUSTOMER"
@@ -174,14 +175,14 @@ const UserEditPage = () => {
             <div className="flex justify-end mt-6">
               <button
                 onClick={() => router.back()}
-                className="px-4 py-2 rounded-md bg-gray-700 hover:bg-gray-600 text-gray-200 mr-3"
+                className="px-4 py-2 rounded-md bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 mr-3 transition"
               >
                 Hủy
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-500 text-white disabled:opacity-50"
+                className="px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 text-white disabled:opacity-50 transition"
               >
                 {saving ? "Đang lưu..." : "Lưu thay đổi"}
               </button>

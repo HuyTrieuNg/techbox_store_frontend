@@ -59,10 +59,10 @@ export default function ProductVariationsTable({
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
         <div className="animate-pulse space-y-4">
-          <div className="h-6 bg-gray-200 rounded w-1/4"></div>
-          <div className="h-64 bg-gray-200 rounded"></div>
+          <div className="h-6 bg-gray-200 dark:bg-gray-600 rounded w-1/4"></div>
+          <div className="h-64 bg-gray-200 dark:bg-gray-600 rounded"></div>
         </div>
       </div>
     );
@@ -107,10 +107,10 @@ export default function ProductVariationsTable({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md">
       {/* Header */}
-      <div className="px-6 py-4 border-b flex items-center justify-between">
-        <h2 className="text-xl font-bold text-gray-900">
+      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-600 flex items-center justify-between">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white">
           Biến thể sản phẩm ({filteredVariations.length})
         </h2>
         
@@ -120,9 +120,9 @@ export default function ProductVariationsTable({
             type="checkbox"
             checked={includeDeleted}
             onChange={(e) => onToggleDeleted(e.target.checked)}
-            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            className="w-4 h-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500"
           />
-          <span className="text-sm text-gray-700">Hiển thị biến thể đã xóa</span>
+          <span className="text-sm text-gray-700 dark:text-gray-300">Hiển thị biến thể đã xóa</span>
         </label>
       </div>
       {/* Card Layout: each variation is a row */}
@@ -135,14 +135,14 @@ export default function ProductVariationsTable({
             ? images.slice(imgIdx, imgIdx + 3).concat(images.slice(0, Math.max(0, imgIdx + 3 - imgCount)))
             : images;
           return (
-            <div key={variation.id} className={`relative rounded-lg shadow border p-4 bg-white flex flex-col gap-2 min-h-[320px] ${variation.deletedAt ? 'bg-red-50 border-red-200' : 'bg-white border-gray-200'}`}>
+            <div key={variation.id} className={`relative rounded-lg shadow border p-4 bg-white dark:bg-gray-700 flex flex-col gap-2 min-h-[320px] ${variation.deletedAt ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800' : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600'}`}>
               {/* Delete/Restore button top-right */}
               <div className="absolute top-2 right-2 z-10">
                 {variation.deletedAt ? (
                   <button
                     onClick={() => handleRestore(variation.id)}
                     disabled={processingId === variation.id}
-                    className="px-3 py-1 bg-blue-50 text-blue-700 rounded text-xs hover:bg-blue-100 flex items-center gap-1 shadow"
+                    className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 rounded text-xs hover:bg-blue-100 dark:hover:bg-blue-900/30 flex items-center gap-1 shadow"
                   >
                     <FiRefreshCw className="w-4 h-4" />
                     Khôi phục
@@ -151,7 +151,7 @@ export default function ProductVariationsTable({
                   <button
                     onClick={() => handleDelete(variation.id)}
                     disabled={processingId === variation.id}
-                    className="px-3 py-1 bg-red-50 text-red-700 rounded text-xs hover:bg-red-100 flex items-center gap-1 shadow"
+                    className="px-3 py-1 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded text-xs hover:bg-red-100 dark:hover:bg-red-900/30 flex items-center gap-1 shadow"
                   >
                     <FiTrash2 className="w-4 h-4" />
                     Xóa

@@ -9,7 +9,6 @@
  */
 
 import axios from 'axios';
-import { toast } from 'sonner';
 
 const axiosInstance = axios.create({
   baseURL: '/api/proxy',
@@ -50,14 +49,14 @@ axiosInstance.interceptors.response.use(
       
       if (!shouldSilent) {
         console.error(`[Axios] Error ${status}`, config?.url);
-        toast.error(`Lỗi ${status}: ${error.response.data?.message || 'Có lỗi xảy ra'}`);
+        // Removed toast.error to avoid duplication with component-level error handling
       }
     } else if (error.request) {
       console.error('[Axios] No response from server');
-      toast.error('Không thể kết nối đến server');
+      // Removed toast.error to avoid duplication with component-level error handling
     } else {
       console.error('[Axios] Error:', error.message);
-      toast.error('Có lỗi xảy ra');
+      // Removed toast.error to avoid duplication with component-level error handling
     }
     return Promise.reject(error);
   }

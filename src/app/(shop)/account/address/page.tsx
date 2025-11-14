@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useUser } from "@/hooks/useUser";
 import { Address } from "@/features/user";
 import { Dialog } from "@headlessui/react";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 
 export default function AddressPage() {
   const { addresses, addAddress, deleteAddress, updateAddress } = useUser();

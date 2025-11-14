@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { OrderResponse, PaginatedOrders } from "@/features/order";
 import { api } from "@/lib/axios";
+import { toast } from "sonner";
 
 interface ErrorResponse {
   response?: {
@@ -43,8 +44,9 @@ export const useAdminOrders = (autoFetch: boolean = true) => {
         setPageSize(response.page.size);
       } catch (err) {
         const error = err as ErrorResponse;
-        setError(error?.response?.data?.message || "Failed to fetch orders");
-        console.error("Error fetching orders:", err);
+        const message = error?.response?.data?.message || "Failed to fetch orders";
+        setError(message);
+        toast.error(message);
       } finally {
         setLoading(false);
       }
@@ -68,8 +70,9 @@ export const useAdminOrders = (autoFetch: boolean = true) => {
         setPageSize(response.page.size);
       } catch (err) {
         const error = err as ErrorResponse;
-        setError(error?.response?.data?.message || "Failed to fetch user orders");
-        console.error("Error fetching user orders:", err);
+        const message = error?.response?.data?.message || "Failed to fetch user orders";
+        setError(message);
+        toast.error(message);
       } finally {
         setLoading(false);
       }
@@ -91,8 +94,9 @@ export const useAdminOrders = (autoFetch: boolean = true) => {
       return true;
     } catch (err) {
       const error = err as ErrorResponse;
-      setError(error?.response?.data?.message || "Failed to update order status");
-      console.error("Error updating order status:", err);
+      const message = error?.response?.data?.message || "Failed to update order status";
+      setError(message);
+      toast.error(message);
       return false;
     } finally {
       setLoading(false);
@@ -108,8 +112,9 @@ export const useAdminOrders = (autoFetch: boolean = true) => {
       return response;
     } catch (err) {
       const error = err as ErrorResponse;
-      setError(error?.response?.data?.message || "Failed to fetch order");
-      console.error("Error fetching order:", err);
+      const message = error?.response?.data?.message || "Failed to fetch order";
+      setError(message);
+      toast.error(message);
       return null;
     } finally {
       setLoading(false);

@@ -51,7 +51,7 @@ const Countdown = () => {
   const formatTime = (num:number) => num.toString().padStart(2, '0');
 
   return (
-    <div className="flex gap-2 bg-white text-black px-3 py-1 rounded-md font-semibold">
+    <div className="flex gap-2 bg-white dark:bg-gray-800 text-black dark:text-white px-3 py-1 rounded-md font-semibold">
       <span>00</span>:
       <span>{formatTime(timeLeft.hours)}</span>:
       <span>{formatTime(timeLeft.minutes)}</span>:

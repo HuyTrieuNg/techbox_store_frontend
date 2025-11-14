@@ -27,7 +27,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </div>
       }
     >
-    <div className="flex h-screen overflow-hidden bg-black">
+    <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-900">
       {/* Sidebar - Fixed bên trái */}
       <AdminSidebar />
 
@@ -44,6 +44,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </div>
 
       </div>
+    </div>
       <Toaster />
     </RouteGuard>
   );

@@ -29,7 +29,7 @@ const productSchema = z.object({
 
 type ProductFormData = z.infer<typeof productSchema>;
 
-export const useProductCreate = () => {
+export const useProductCreate = (onSuccess?: (productId: number) => void) => {
   const [brands, setBrands] = useState<Brand[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [flattenedCategories, setFlattenedCategories] = useState<Category[]>([]);
@@ -90,7 +90,12 @@ export const useProductCreate = () => {
       let uploadedImage: { url: string; publicId: string } | null = null;
       if (imageFile) {
         const uploadResponse = await uploadProductImage(imageFile);
-        uploadedImage = uploadResponse;
+        // Handle both single object and array responses
+        if (Array.isArray(uploadResponse) && uploadResponse.length > 0) {
+          uploadedImage = uploadResponse[0];
+        } else if (uploadResponse && typeof uploadResponse === 'object' && 'url' in uploadResponse) {
+          uploadedImage = uploadResponse;
+        }
         console.log('Image uploaded:', uploadedImage);
       }
 
@@ -111,12 +116,26 @@ export const useProductCreate = () => {
       console.log('Product created:', response);
       toast.success('Sản phẩm đã được tạo thành công!');
 
-      // Redirect to create variation page
+      // Call success callback or redirect to product detail page
       if (response && response.id) {
-        router.push(`/admin/products/${response.id}/variations/create`);
+        if (onSuccess) {
+          onSuccess(response.id);
+        } else {
+          router.push(`/admin/products/${response.id}`);
+        }
       }
     } catch (error) {
       console.error('Failed to create product:', error);
+
+      // Show detailed error message
+      let errorMessage = 'Không thể tạo sản phẩm. Vui lòng thử lại.';
+      if (error?.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+
+      toast.error(errorMessage);
       // Toast error is handled globally in axios interceptor
     } finally {
       setLoading(false);

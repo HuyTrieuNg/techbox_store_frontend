@@ -28,13 +28,13 @@ const CategorySection = () => {
     if (error) return <div>Error: {error.message}</div>;
 
     return (
-        <section className="bg-gray-100  rounded-sm">
-            <h2 className="text-2xl font-semibold py-4 px-4 border-b border-gray-300">
+        <section className="bg-gray-100 dark:bg-gray-900 rounded-sm">
+            <h2 className="text-2xl font-semibold py-4 px-4 border-b border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white">
                 Danh mục sản phẩm
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-10 gap-4 py-4 px-4">
                 {categories?.map((category, index) => (
-                    <Link href={`/category/${category.name.toLowerCase().replace(/ /g, "-")}`} key={index} className="flex flex-col items-center text-center text-gray-800 hover:text-gray-600 transition">
+                    <Link href={`/category/${category.name.toLowerCase().replace(/ /g, "-")}`} key={index} className="flex flex-col items-center text-center text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400 transition">
                         <img
                             // src={category.image}
                             src="https://file.hstatic.net/200000636033/file/icon1_ce115f32db874a8e9b5af39517176e96.png"

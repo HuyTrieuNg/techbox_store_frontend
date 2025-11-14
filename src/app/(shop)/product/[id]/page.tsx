@@ -9,7 +9,7 @@ import { useProductDetail } from "@/hooks/useProductDetail";
 import ProductList from "@/components/ProductList";
 import { useCart } from "@/hooks/useCart";
 import { CartService } from "@/services/cartService";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 export default function ProductDetailPage() {

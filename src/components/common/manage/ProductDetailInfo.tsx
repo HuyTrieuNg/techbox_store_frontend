@@ -42,11 +42,11 @@ export default function ProductDetailInfo({ product, onEdit, onDelete, onPublish
   const isLongDescription = product.description && product.description.length > 300;
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left: Image */}
         <div className="lg:col-span-1">
-          <div className="relative w-full aspect-square bg-gray-100 rounded-lg overflow-hidden">
+          <div className="relative w-full aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
             {product.imageUrl ? (
               <Image
                 src={product.imageUrl}
@@ -57,7 +57,7 @@ export default function ProductDetailInfo({ product, onEdit, onDelete, onPublish
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
-                <FiPackage className="w-24 h-24 text-gray-300" />
+                <FiPackage className="w-24 h-24 text-gray-300 dark:text-gray-600" />
               </div>
             )}
           </div>
@@ -68,8 +68,8 @@ export default function ProductDetailInfo({ product, onEdit, onDelete, onPublish
           {/* Header */}
           <div className="flex items-start justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">{product.name}</h1>
-              <div className="flex items-center gap-3 text-sm text-gray-600">
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{product.name}</h1>
+              <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
                 <span className="flex items-center gap-1">
                   <FiTag className="w-4 h-4" />
                   <span className="font-mono">{product.spu}</span>
@@ -89,7 +89,7 @@ export default function ProductDetailInfo({ product, onEdit, onDelete, onPublish
                 {/* Edit always available */}
                 <button
                   onClick={() => onEdit?.(product)}
-                  className="px-3 py-1 bg-gray-50 text-gray-700 rounded hover:bg-gray-100 text-sm"
+                  className="px-3 py-1 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-100 dark:hover:bg-gray-600 text-sm"
                 >
                   Chỉnh sửa
                 </button>
@@ -98,13 +98,13 @@ export default function ProductDetailInfo({ product, onEdit, onDelete, onPublish
                   <>
                     <button
                       onClick={() => onDraft?.(product)}
-                      className="px-3 py-1 bg-yellow-50 text-yellow-700 rounded hover:bg-yellow-100 text-sm"
+                      className="px-3 py-1 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400 rounded hover:bg-yellow-100 dark:hover:bg-yellow-900/30 text-sm"
                     >
                       Đặt nháp
                     </button>
                     <button
                       onClick={() => onDelete?.(product)}
-                      className="px-3 py-1 bg-red-50 text-red-700 rounded hover:bg-red-100 text-sm"
+                      className="px-3 py-1 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-sm"
                     >
                       Xóa
                     </button>
@@ -115,13 +115,13 @@ export default function ProductDetailInfo({ product, onEdit, onDelete, onPublish
                   <>
                     <button
                       onClick={() => onPublish?.(product)}
-                      className="px-3 py-1 bg-green-50 text-green-700 rounded hover:bg-green-100 text-sm"
+                      className="px-3 py-1 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded hover:bg-green-100 dark:hover:bg-green-900/30 text-sm"
                     >
                       Xuất bản
                     </button>
                     <button
                       onClick={() => onDelete?.(product)}
-                      className="px-3 py-1 bg-red-50 text-red-700 rounded hover:bg-red-100 text-sm"
+                      className="px-3 py-1 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-sm"
                     >
                       Xóa
                     </button>
@@ -132,7 +132,7 @@ export default function ProductDetailInfo({ product, onEdit, onDelete, onPublish
                   <>
                     <button
                       onClick={() => onRestore?.(product)}
-                      className="px-3 py-1 bg-blue-50 text-blue-700 rounded hover:bg-blue-100 text-sm"
+                      className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 rounded hover:bg-blue-100 dark:hover:bg-blue-900/30 text-sm"
                     >
                       Khôi phục
                     </button>
@@ -143,10 +143,10 @@ export default function ProductDetailInfo({ product, onEdit, onDelete, onPublish
           </div>
 
           {/* Category & Brand */}
-          <div className="grid grid-cols-2 gap-4 py-4 border-y">
+          <div className="grid grid-cols-2 gap-4 py-4 border-y border-gray-200 dark:border-gray-600">
             <div>
-              <div className="text-sm text-gray-500 mb-1">Danh mục</div>
-              <div className="font-medium text-gray-900">{product.categoryName}</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">Danh mục</div>
+              <div className="font-medium text-gray-900 dark:text-white">{product.categoryName}</div>
             </div>
             <div>
               <div className="text-sm text-gray-500 mb-1">Thương hiệu</div>
@@ -156,33 +156,33 @@ export default function ProductDetailInfo({ product, onEdit, onDelete, onPublish
 
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center p-3 bg-blue-50 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600">{product.totalVariations}</div>
-              <div className="text-xs text-gray-600 mt-1">Tổng biến thể</div>
+            <div className="text-center p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{product.totalVariations}</div>
+              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Tổng biến thể</div>
             </div>
-            <div className="text-center p-3 bg-green-50 rounded-lg">
-              <div className="text-2xl font-bold text-green-600">{product.activeVariations}</div>
-              <div className="text-xs text-gray-600 mt-1">Đang hoạt động</div>
+            <div className="text-center p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400">{product.activeVariations}</div>
+              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Đang hoạt động</div>
             </div>
-            <div className="text-center p-3 bg-yellow-50 rounded-lg">
-              <div className="flex items-center justify-center gap-1 text-2xl font-bold text-yellow-600">
+            <div className="text-center p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+              <div className="flex items-center justify-center gap-1 text-2xl font-bold text-yellow-600 dark:text-yellow-400">
                 <FiStar className="w-5 h-5 fill-current" />
                 {product.averageRating.toFixed(1)}
               </div>
-              <div className="text-xs text-gray-600 mt-1">{product.totalRatings} đánh giá</div>
+              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">{product.totalRatings} đánh giá</div>
             </div>
-            <div className="text-center p-3 bg-purple-50 rounded-lg">
-              <div className="flex items-center justify-center gap-1 text-xl font-bold text-purple-600">
+            <div className="text-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+              <div className="flex items-center justify-center gap-1 text-xl font-bold text-purple-600 dark:text-purple-400">
                 <FiShield className="w-5 h-5" />
                 {product.warrantyMonths || 0} tháng
               </div>
-              <div className="text-xs text-gray-600 mt-1">Bảo hành</div>
+              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Bảo hành</div>
             </div>
           </div>
 
           {/* Price Range */}
           {product.displaySalePrice && (
-            <div className="flex items-baseline gap-3 py-3 border-t">
+            <div className="flex items-baseline gap-3 py-3 border-t border-gray-200 dark:border-gray-600">
               <span className="text-sm text-gray-500">Giá hiển thị:</span>
               <span className="text-2xl font-bold text-blue-600">
                 {product.displaySalePrice.toLocaleString('vi-VN')}đ
@@ -239,10 +239,10 @@ export default function ProductDetailInfo({ product, onEdit, onDelete, onPublish
 
           {/* Description - Moved to bottom for better expandability */}
           {product.description && (
-            <div className="border rounded-lg p-4 bg-gray-50 mt-4">
-              <h3 className="font-semibold text-gray-900 mb-2">Mô tả sản phẩm</h3>
+            <div className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 bg-gray-50 dark:bg-gray-700 mt-4">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">Mô tả sản phẩm</h3>
               <div 
-                className={`prose prose-sm max-w-none text-gray-700 ${
+                className={`prose prose-sm max-w-none text-gray-700 dark:text-gray-300 ${
                   isLongDescription && !isExpanded ? 'line-clamp-6' : ''
                 }`}
               >

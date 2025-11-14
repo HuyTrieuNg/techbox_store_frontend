@@ -11,6 +11,7 @@ import {
   PagedUserResponse,
   UserCreateRequest,
 } from "@/features/user";
+import { toast } from "sonner";
 
 interface ErrorResponse {
   response?: {
@@ -59,8 +60,10 @@ export const useAdminUsers = () => {
         setPageSize(response.size);
       } catch (err) {
         const error = err as ErrorResponse;
-        setError(error?.response?.data?.message || "Failed to fetch users");
+        const message = error?.response?.data?.message || "Failed to fetch users";
+        setError(message);
         console.error("Error fetching users:", err);
+        toast.error(message);
       } finally {
         setLoading(false);
       }
@@ -77,8 +80,10 @@ export const useAdminUsers = () => {
       return user;
     } catch (err) {
       const error = err as ErrorResponse;
-      setError(error?.response?.data?.message || "Failed to fetch user");
+      const message = error?.response?.data?.message || "Failed to fetch user";
+      setError(message);
       console.error("Error fetching user:", err);
+      toast.error(message);
       return null;
     } finally {
       setLoading(false);
@@ -98,8 +103,10 @@ export const useAdminUsers = () => {
       return true;
     } catch (err) {
       const error = err as ErrorResponse;
-      setError(error?.response?.data?.message || "Failed to create user");
+      const message = error?.response?.data?.message || "Failed to create user";
+      setError(message);
       console.error("Error creating user:", err);
+      toast.error(message);
       return false;
     } finally {
       setLoading(false);
@@ -117,8 +124,10 @@ export const useAdminUsers = () => {
       return true;
     } catch (err) {
       const error = err as ErrorResponse;
-      setError(error?.response?.data?.message || "Failed to delete user");
+      const message = error?.response?.data?.message || "Failed to delete user";
+      setError(message);
       console.error("Error deleting user:", err);
+      toast.error(message);
       return false;
     } finally {
       setLoading(false);
@@ -136,8 +145,10 @@ export const useAdminUsers = () => {
       return true;
     } catch (err) {
       const error = err as ErrorResponse;
-      setError(error?.response?.data?.message || "Failed to restore user");
+      const message = error?.response?.data?.message || "Failed to restore user";
+      setError(message);
       console.error("Error restoring user:", err);
+      toast.error(message);
       return false;
     } finally {
       setLoading(false);

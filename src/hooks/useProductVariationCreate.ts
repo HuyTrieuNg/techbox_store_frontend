@@ -138,8 +138,9 @@ export const useProductVariationCreate = (productId: number) => {
         productId,
         price: data.price,
         sku: data.sku,
+        imageUrls: uploadedImages.map(img => img.url),
+        imagePublicIds: uploadedImages.map(img => img.publicId),
         variationAttributes: data.variationAttributes,
-        images: uploadedImages,
       };
 
       const response = await createProductVariationWithImages(variationData);

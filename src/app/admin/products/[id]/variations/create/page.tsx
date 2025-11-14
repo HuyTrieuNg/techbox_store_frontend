@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import ProductVariationList from '@/components/common/manage/product/ProductVariationList';
+import ProductVariationCreateForm from '@/components/common/manage/product/ProductVariationCreateForm';
 
 export default function ProductVariationsPage() {
   const params = useParams();
@@ -13,7 +13,7 @@ export default function ProductVariationsPage() {
 
   return (
     <div className="container mx-auto py-8">
-      <ProductVariationList productId={productId} />
+      <ProductVariationCreateForm productId={productId} />
     </div>
   );
 }

@@ -12,7 +12,6 @@ import { Button } from '@/components/UI/button';
 import { Input } from '@/components/UI/input';
 import { Textarea } from '@/components/UI/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/UI/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/UI/card';
 import { Label } from '@/components/UI/label';
 import { useProductCreate } from '@/hooks/useProductCreate';
 import { Plus, Trash2 } from 'lucide-react';
@@ -36,7 +35,11 @@ const productSchema = z.object({
 
 type ProductFormData = z.infer<typeof productSchema>;
 
-export default function ProductCreateForm() {
+type ProductCreateFormProps = {
+  onSuccess?: (productId: number) => void;
+};
+
+export default function ProductCreateForm({ onSuccess }: ProductCreateFormProps) {
   const {
     form,
     brands,
@@ -49,7 +52,7 @@ export default function ProductCreateForm() {
     addAttribute,
     removeAttribute,
     onSubmit,
-  } = useProductCreate();
+  } = useProductCreate(onSuccess);
 
   const { control, handleSubmit, formState: { errors }, watch } = form;
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -72,12 +75,11 @@ export default function ProductCreateForm() {
   };
 
   return (
-    <Card className="w-full max-w-4xl mx-auto">
-      <CardHeader>
-        <CardTitle>Tạo Sản Phẩm Mới</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <div className="w-full">
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Tạo Sản Phẩm Mới</h3>
+      </div>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Name */}
           <div>
             <Label htmlFor="name">Tên sản phẩm</Label>
@@ -103,7 +105,6 @@ export default function ProductCreateForm() {
                   onChange={(value) => field.onChange(value || '')}
                   preview="edit"
                   hideToolbar={false}
-                  visibleDragBar={false}
                   data-color-mode="light"
                 />
               )}
@@ -126,7 +127,7 @@ export default function ProductCreateForm() {
                     </SelectTrigger>
                     <SelectContent>
                       {brands.map((brand) => (
-                        <SelectItem key={Math.random()} value={brand.id.toString()}>
+                        <SelectItem key={`brand-${brand.id}`} value={brand.id.toString()}>
                           {brand.name}
                         </SelectItem>
                       ))}
@@ -162,7 +163,7 @@ export default function ProductCreateForm() {
           <div>
             <Label>Thuộc tính</Label>
             {watch('attributes').map((_, index) => (
-              <div key={Math.random()} className="flex items-center space-x-2 mt-2">
+              <div key={`attribute-${index}`} className="flex items-center space-x-2 mt-2">
                 <Controller
                   name={`attributes.${index}.attributeId`}
                   control={control}
@@ -173,7 +174,7 @@ export default function ProductCreateForm() {
                       </SelectTrigger>
                       <SelectContent>
                         {attributes.map((attr) => (
-                          <SelectItem key={Math.random()} value={attr.id.toString()}>
+                          <SelectItem key={`attr-${attr.id}`} value={attr.id.toString()}>
                             {attr.name}
                           </SelectItem>
                         ))}
@@ -236,7 +237,6 @@ export default function ProductCreateForm() {
             {loading ? 'Đang tạo...' : 'Tạo sản phẩm'}
           </Button>
         </form>
-      </CardContent>
-    </Card>
+      </div>
   );
 }

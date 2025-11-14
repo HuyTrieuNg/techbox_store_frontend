@@ -1,9 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import BrandList from "@/components/admin/BrandList";
-import brandService from "@/services/brandService";
+import { api } from "@/lib/axios";
 import { Brand } from "@/features/category";
 import BrandForm from "@/components/admin/BrandForm";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
 
 const AdminBrandsPage = () => {
@@ -18,12 +21,15 @@ const AdminBrandsPage = () => {
     setLoading(true);
     setError(undefined);
     try {
-      const data = await brandService.getAllBrands();
+      const data = await api.get<Brand[]>('/brands');
       setBrands(data);
-    } catch (e: any) {
-      setError("Không thể tải danh sách thương hiệu");
+    } catch (error: any) {
+      const message = error?.response?.data?.message || 'Failed to load brands';
+      setError(message);
+      toast.error(message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -41,56 +47,83 @@ const AdminBrandsPage = () => {
   };
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm("Bạn có chắc muốn xóa thương hiệu này?")) return;
+    if (!window.confirm("Are you sure you want to delete this brand?")) return;
+
     setFormLoading(true);
     try {
-      await brandService.deleteBrand(id);
+      await api.delete(`/brands/${id}`);
       setBrands(brands.filter((b) => b.id !== id));
-    } catch {
-      alert("Xóa thất bại");
+      toast.success('Brand deleted successfully!');
+    } catch (error: any) {
+      const message = error?.response?.data?.message || 'Failed to delete brand';
+      toast.error(message);
+    } finally {
+      setFormLoading(false);
     }
-    setFormLoading(false);
   };
 
   const handleFormSubmit = async (name: string) => {
     setFormLoading(true);
+
     try {
       if (editing) {
-        const updated = await brandService.updateBrand(editing.id, { name });
+        const updated = await api.put<Brand>(`/brands/${editing.id}`, { name });
         setBrands(brands.map((b) => (b.id === updated.id ? updated : b)));
+        toast.success('Brand updated successfully!');
       } else {
-        const created = await brandService.createBrand({ name });
+        const created = await api.post<Brand>('/brands', { name });
         setBrands([created, ...brands]);
+        toast.success('Brand created successfully!');
       }
       setShowForm(false);
       setEditing(null);
-    } catch {
-      alert("Lưu thất bại");
+    } catch (error: any) {
+      const message = error?.response?.data?.message || 'Failed to save brand';
+      toast.error(message);
+    } finally {
+      setFormLoading(false);
     }
-    setFormLoading(false);
+  };
+
+  const checkBrandNameExists = async (name: string): Promise<boolean> => {
+    try {
+      const response = await api.get<boolean>(`/brands/exists/?name=${encodeURIComponent(name)}`);
+      return response;
+    } catch (error) {
+      return false; // Assume it doesn't exist if check fails
+    }
   };
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Quản lý Thương hiệu</h1>
-        <button
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+    <div className="p-6 max-w-6xl mx-auto bg-white dark:bg-gray-900 min-h-screen">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Brand Management</h1>
+        <Button
           onClick={handleAdd}
           disabled={formLoading}
+          className="flex items-center gap-2"
         >
-          Thêm mới
-        </button>
+          <Plus size={16} />
+          Add Brand
+        </Button>
       </div>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+
+      {error && (
+        <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+          <p className="text-red-600 dark:text-red-400">{error}</p>
+        </div>
+      )}
+
       <BrandList
         brands={brands}
+        loading={loading}
         onEdit={handleEdit}
         onDelete={handleDelete}
       />
+
       {showForm && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-          <div className="bg-white rounded shadow p-6 min-w-[320px] max-w-[90vw]">
+        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 min-w-[320px] max-w-[90vw] max-h-[90vh] overflow-y-auto">
             <BrandForm
               initial={editing ? { name: editing.name } : undefined}
               onSubmit={handleFormSubmit}
@@ -99,7 +132,7 @@ const AdminBrandsPage = () => {
                 setEditing(null);
               }}
               loading={formLoading}
-              checkExists={brandService.checkBrandNameExists}
+              checkExists={checkBrandNameExists}
             />
           </div>
         </div>

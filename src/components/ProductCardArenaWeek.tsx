@@ -11,7 +11,7 @@ const ProductCardArenaWeek = ({ product }: { product: any }) => {
     const sold = product.sold ?? 0;
 
     return (
-        <div className="bg-white rounded-md border border-gray-200 overflow-hidden shadow-md hover:shadow-lg transition">
+        <div className="bg-white dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-600 overflow-hidden shadow-md hover:shadow-lg transition">
             <div className="relative flex justify-center items-center pt-2"> {/* Increased pt-8 for frame space */}
                 <img
                     src={product.image_url}
@@ -22,17 +22,17 @@ const ProductCardArenaWeek = ({ product }: { product: any }) => {
 
             <div className="p-3 pt-2">
                 <Link href={`/product/${product.slug}`}>
-                    <h3 className="font-semibold text-gray-800 text-sm line-clamp-2">{product.name}</h3>
+                    <h3 className="font-semibold text-gray-800 dark:text-white text-sm line-clamp-2">{product.name}</h3>
                 </Link>
 
                 {/* Giá */}
                 <div className="mt-1">
-                    <p className="text-gray-400 line-through text-xs">{formatPrice(originalPrice)}</p>
+                    <p className="text-gray-400 dark:text-gray-500 line-through text-xs">{formatPrice(originalPrice)}</p>
                     <p className="text-[#E61E4D] font-bold text-lg">{formatPrice(price)}</p>
                 </div>
 
                 {/* Rating + đã bán */}
-                <div className="flex items-center gap-1 text-xs text-gray-600 mt-1">
+                <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400 mt-1">
                     <FaStar className="text-yellow-400" />
                     <span>5.0</span>
                     <span>({product.review_count ?? 0} đánh giá)</span>

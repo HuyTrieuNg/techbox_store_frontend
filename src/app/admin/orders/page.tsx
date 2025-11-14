@@ -142,16 +142,16 @@ export default function AdminOrders() {
   });
 
   return (
-    <div className="p-8">
+    <div className="p-8 bg-white dark:bg-gray-900 min-h-screen">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-3xl font-bold">Quản Lý Đơn Hàng</h1>
-          <p className="text-gray-600 mt-1">Tổng số: {totalElements} đơn hàng</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Quản Lý Đơn Hàng</h1>
+          <p className="text-gray-600 dark:text-gray-400 mt-1">Tổng số: {totalElements} đơn hàng</p>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow p-4 mb-6">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6">
         <div className="flex gap-4 items-center flex-wrap">
           {/* Search */}
           <input
@@ -159,14 +159,14 @@ export default function AdminOrders() {
             placeholder="Tìm kiếm theo mã đơn, tên, SĐT..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1 min-w-[200px] px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 min-w-[200px] px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
 
           {/* Status Filter */}
           <select
             value={selectedStatus}
             onChange={(e) => handleStatusChange(e.target.value)}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="ALL">Tất cả trạng thái</option>
             <option value="PENDING">Đang chờ xử lý</option>
@@ -182,7 +182,7 @@ export default function AdminOrders() {
           <select
             value={pageSize}
             onChange={(e) => handlePageSizeChange(Number(e.target.value))}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value={5}>5 / trang</option>
             <option value={10}>10 / trang</option>
@@ -194,7 +194,7 @@ export default function AdminOrders() {
 
       {/* Error Message */}
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+        <div className="bg-red-100 dark:bg-red-900/20 border border-red-400 dark:border-red-600 text-red-700 dark:text-red-300 px-4 py-3 rounded mb-4">
           {error}
         </div>
       )}
