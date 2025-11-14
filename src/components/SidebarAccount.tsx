@@ -19,10 +19,10 @@ export default function SidebarAccount() {
     <aside className="col-span-1 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800">
       {/* Header user info */}
       <div className="flex items-center gap-4 px-6 py-4 border-b border-gray-300 dark:border-gray-600">
-        <div className="w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-300">
-          <FaUser size={22} />
+        <div className="w-10 h-10 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-300">
+          <FaUser size={20} />
         </div>
-        <p className="font-semibold text-gray-700 dark:text-gray-300 text-lg">abc</p>
+        <p className="font-semibold text-gray-700 dark:text-gray-300 text-lg">Tài khoản cá nhân</p>
       </div>
 
       {/* Menu */}
