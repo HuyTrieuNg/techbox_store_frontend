@@ -53,11 +53,11 @@ import { OrderService } from "@/services/orderService";
 import { OrderRequest, OrderResponse, PaginatedOrders } from "@/features/order";
 import { useState } from "react";
 
-// Lấy danh sách đơn hàng (phân trang)
+// Lấy danh sách đơn hàng của user hiện tại (phân trang)
 export const useOrders = (page: number = 0, size: number = 10) => {
   const { data, error, isLoading, mutate } = useSWR<PaginatedOrders>(
     [`/orders?page=${page}&size=${size}`, page, size],
-    () => OrderService.getAllOrders(page, size)
+    () => OrderService.getUserOrders(page, size)
   );
 
   return {

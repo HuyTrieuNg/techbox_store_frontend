@@ -14,7 +14,7 @@ export class OrderService {
 
   // Lấy danh sách đơn hàng của user hiện tại
   static async getUserOrders(page: number = 0, size: number = 10): Promise<PaginatedOrders> {
-    return api.get<PaginatedOrders>(`/orders/user?page=${page}&size=${size}`);
+    return api.get<PaginatedOrders>(`/orders?page=${page}&size=${size}`);
   }
 
   // Lấy danh sách tất cả đơn hàng (Admin)
