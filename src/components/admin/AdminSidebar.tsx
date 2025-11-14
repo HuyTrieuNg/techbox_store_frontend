@@ -3,108 +3,37 @@
 import { Bell, DollarSign, House, Info, Mail, Menu, Settings, ShoppingBag, ShoppingCart, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { use, useEffect } from "react";
+import { 
+  FiHome, 
+  FiPackage, 
+  FiShoppingCart, 
+  FiUsers, 
+  FiBarChart2,
+  FiSettings,
+  FiGrid,
+  FiBox,
+  FiList,
+  FiTag,
+} from "react-icons/fi";
 
-// import Link from "next/link";
-// import { usePathname } from "next/navigation";
-// import { 
-//   FiHome, 
-//   FiPackage, 
-//   FiShoppingCart, 
-//   FiUsers, 
-//   FiBarChart2,
-//   FiSettings,
-//   FiGrid,
-//   FiBox
-// } from "react-icons/fi";
-
-// /**
-//  * Admin Sidebar - Navigation
-//  * 
-//  * Menu điều hướng cho admin panel
-//  */
-// export default function AdminSidebar() {
-//   const pathname = usePathname();
-
-//   const menuItems = [
-//     { href: "/admin/dashboard", label: "Dashboard", icon: FiHome },
-//     { href: "/admin/products", label: "Sản phẩm", icon: FiPackage },
-//     { href: "/admin/users", label: "Người dùng", icon: FiUsers },
-//     { href: "/admin/settings", label: "Cài đặt", icon: FiSettings },
-//   ];
-
-//   return (
-//     <aside className="fixed left-0 top-0 h-full w-64 bg-gray-900 text-white shadow-lg z-40">
-//       {/* Logo */}
-//       <div className="flex items-center justify-center h-16 border-b border-gray-800">
-//         <h1 className="text-xl font-bold">Admin Panel</h1>
-//       </div>
-
-//       {/* Menu */}
-//       <nav className="mt-6">
-//         <ul className="space-y-1 px-3">
-//           {menuItems.map((item) => {
-//             const Icon = item.icon;
-//             const isActive = pathname === item.href;
-
-//             return (
-//               <li key={item.href}>
-//                 <Link
-//                   href={item.href}
-//                   className={`
-//                     flex items-center gap-3 px-4 py-3 rounded-lg
-//                     transition-colors duration-200
-//                     ${isActive 
-//                       ? 'bg-blue-600 text-white' 
-//                       : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-//                     }
-//                   `}
-//                 >
-//                   <Icon className="w-5 h-5" />
-//                   <span className="font-medium">{item.label}</span>
-//                 </Link>
-//               </li>
-//             );
-//           })}
-//         </ul>
-//       </nav>
-//     </aside>
-//   );
-// }
-
-const ICONS = {
-  House,
-  DollarSign,
-  Settings,
-  ShoppingBag,
-  ShoppingCart,
-  Mail,
-  Users,
-  Bell,
-  Info,
-
-}
-
-const sidebarItems = [
-  { name: 'Dashboard', href: '/admin/dashboard', icon: 'House' },
-  { name: 'Orders', href: '/admin/orders', icon: 'ShoppingCart' },
-  { name: 'Products', href: '/admin/products', icon: 'ShoppingBag' },
-  { name: 'Users', href: '/admin/users', icon: 'Users' },
-  { name: 'Settings', href: '/admin/settings', icon: 'Settings' },
-  // Thêm các item khác nếu cần
-];
-
-const AdminSidebar = () => {
-  // const [sidebarItems, setSidebarItems] = React.useState([]);
-  const [isSidebarOpen, setIsSidebarOpen] = React.useState(true);
+/**
+ * Admin Sidebar - Navigation
+ * 
+ * Menu điều hướng cho admin panel
+ */
+export default function AdminSidebar() {
   const pathname = usePathname();
 
-  // useEffect(() => {
-  //   fetch('/api/admin/sidebar-items')
-  //     .then((res) => res.json())
-  //     .then((data) => setSidebarItems(data.sidebarItems))
-  //     .catch(error => console.error('Error fetching sidebar items:', error));
-  // }, []);
+  const menuItems = [
+    { href: "/admin/dashboard", label: "Dashboard", icon: FiHome },
+    { href: "/admin/products", label: "Sản phẩm", icon: FiPackage },
+    { href: "/admin/orders", label: "Đơn hàng", icon: FiShoppingCart },
+    { href: "/admin/categories", label: "Danh mục", icon: FiList },
+    { href: "/admin/brands", label: "Thương hiệu", icon: FiTag },
+    { href: "/admin/users", label: "Người dùng", icon: FiUsers },
+    { href: "/admin/promotions", label: "Khuyến mãi", icon: FiTag },
+    { href: "/admin/settings", label: "Cài đặt", icon: FiSettings },
+  ];
 
   return (
 

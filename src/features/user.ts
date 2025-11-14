@@ -1,9 +1,4 @@
-// User feature module (example)
-// export interface User {
-//   id: number;
-//   username: string;
-//   email: string;
-// }
+// User feature module
 // src/features/user.ts
 
 export interface Address {
@@ -18,13 +13,9 @@ export interface Address {
 }
 
 export interface User {
-  // id: number;
-  // username: string;
-  // email: string;
-  // addresses?: Address[];
   id: number;
   email: string;
-  password: string;
+  password?: string;
   firstName: string;
   lastName: string;
   phone: string;

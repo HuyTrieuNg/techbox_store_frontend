@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import RouteGuard from "@/components/RouteGuard";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminHeader from "@/components/admin/AdminHeader";
+import { Toaster } from "@/components/UI/sonner";
 
 /**
  * Admin Layout - Server Component
@@ -43,7 +44,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </div>
 
       </div>
-    </div>
-     </RouteGuard>
+      <Toaster />
+    </RouteGuard>
   );
 }
