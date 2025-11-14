@@ -15,9 +15,9 @@ export default function AddressPage() {
   const [isOpen, setIsOpen] = useState(false);
   const [form, setForm] = useState({
     streetAddress: "",
-    ward: "a",
-    district: "b",
-    city: "c",
+    ward: "",
+    district: "",
+    city: "",
     postalCode: "",
     isDefault: false,
     addressType: "",
