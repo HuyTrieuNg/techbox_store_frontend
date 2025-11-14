@@ -80,6 +80,7 @@ import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import "@/styles/SwiperCustom.css";
+import { useWishlist } from "@/hooks/useWishList";
 
 interface Props {
   categoryId: number;
@@ -94,6 +95,8 @@ const ProductList: React.FC<Props> = ({ categoryId }) => {
     page: 0,
     size: 20,
   });
+
+  const { wishlistIds } = useWishlist();
 
   if (isLoading) return <div className="text-gray-600 dark:text-gray-400">Đang tải sản phẩm...</div>;
   if (error) return <div className="text-red-500 dark:text-red-400">Lỗi khi tải danh sách sản phẩm.</div>;
@@ -111,7 +114,14 @@ const ProductList: React.FC<Props> = ({ categoryId }) => {
       >
         {products.map((product) => (
           <SwiperSlide key={product.id}>
-            <ProductCard product={product} />
+            {/* <ProductCard product={product} /> */}
+            <ProductCard
+              key={product.id}
+              product={{
+                ...product,
+                inWishlist: wishlistIds.has(product.id), // TRUYỀN VÀO ĐÂY
+              }}
+            />
           </SwiperSlide>
         ))}
       </Swiper>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { FaShoppingCart, FaUser, FaChevronDown, FaSearch, FaChevronRight, FaSignOutAlt, FaBox, FaMapMarkerAlt, FaLock, FaMoon, FaSun } from "react-icons/fa";
+import { FaShoppingCart, FaUser, FaChevronDown, FaSearch, FaChevronRight, FaSignOutAlt, FaBox, FaMapMarkerAlt, FaLock, FaMoon, FaSun, FaHeart } from "react-icons/fa";
 import CategoryMenu from "./Category";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useCart } from "@/hooks/useCart";
@@ -93,6 +93,11 @@ export default function Header() {
             </span>
           </Link>
           {/* </button> */}
+
+          <Link href="/wishlist" className="relative">
+            <FaHeart size={22} className="text-gray-800 dark:text-gray-200" />
+            
+          </Link>
 
           {!isLoggedIn ? (
             <Link href="/login">
