@@ -6,7 +6,7 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { FiArrowLeft, FiEdit2 } from 'react-icons/fi';
+import { FiArrowLeft } from 'react-icons/fi';
 import { useState } from 'react';
 import { useProductManagementDetail } from '@/hooks/useProductManagementDetail';
 import { useProductVariations } from '@/hooks/useProductVariations';
@@ -23,7 +23,7 @@ export default function ProductManagementDetailContainer() {
   const productId = params?.id ? Number(params.id) : null;
 
   // Fetch product detail
-  const { product, isLoading: productLoading, error: productError } = useProductManagementDetail(productId);
+  const { product, isLoading: productLoading, error: productError, mutate: mutateProduct } = useProductManagementDetail(productId);
 
   // Fetch product variations
   const {
@@ -35,6 +35,7 @@ export default function ProductManagementDetailContainer() {
   } = useProductVariations(productId);
 
   const [showVariationModal, setShowVariationModal] = useState(false);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   const handleVariationCreated = () => {
     setShowVariationModal(false);
@@ -42,34 +43,40 @@ export default function ProductManagementDetailContainer() {
   };
 
   // Product action handlers
-  const handleEdit = () => {
-    router.push(`/admin/products/${productId}/edit`);
-  };
 
   const handlePublish = async () => {
+    if (actionLoading) return;
+    setActionLoading('publish');
     try {
       await publishProduct(productId!);
       toast.success('Sản phẩm đã được xuất bản');
-      // Refresh product data
-      window.location.reload();
+      // Refresh product data without page reload
+      mutateProduct();
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Không thể xuất bản sản phẩm');
+    } finally {
+      setActionLoading(null);
     }
   };
 
   const handleDraft = async () => {
+    if (actionLoading) return;
+    setActionLoading('draft');
     try {
       await draftProduct(productId!);
       toast.success('Sản phẩm đã chuyển thành bản nháp');
-      // Refresh product data
-      window.location.reload();
+      // Refresh product data without page reload
+      mutateProduct();
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Không thể chuyển thành bản nháp');
+    } finally {
+      setActionLoading(null);
     }
   };
 
   const handleDelete = async () => {
-    if (!confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) return;
+    if (actionLoading || !confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) return;
+    setActionLoading('delete');
     
     try {
       await deleteProduct(productId!);
@@ -77,17 +84,23 @@ export default function ProductManagementDetailContainer() {
       router.push('/admin/products');
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Không thể xóa sản phẩm');
+    } finally {
+      setActionLoading(null);
     }
   };
 
   const handleRestore = async () => {
+    if (actionLoading) return;
+    setActionLoading('restore');
     try {
       await restoreProduct(productId!);
       toast.success('Sản phẩm đã được khôi phục');
-      // Refresh product data
-      window.location.reload();
+      // Refresh product data without page reload
+      mutateProduct();
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Không thể khôi phục sản phẩm');
+    } finally {
+      setActionLoading(null);
     }
   };
 
@@ -138,29 +151,18 @@ export default function ProductManagementDetailContainer() {
           <FiArrowLeft className="w-5 h-5" />
           <span className="font-medium">Quay lại</span>
         </button>
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => router.push(`/admin/products/${productId}/edit`)}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            <FiEdit2 className="w-4 h-4" />
-            <span>Chỉnh sửa</span>
-          </button>
-        </div>
       </div>
 
       {/* Product Info */}
-      <ProductDetailInfo 
-        product={product} 
-        onEdit={handleEdit}
+      <ProductDetailInfo
+        product={product}
+        onEdit={mutateProduct}
         onPublish={handlePublish}
         onDraft={handleDraft}
         onDelete={handleDelete}
         onRestore={handleRestore}
-      />
-
-      {/* Product Variations */}
+        actionLoading={actionLoading}
+      />      {/* Product Variations */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md">
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">

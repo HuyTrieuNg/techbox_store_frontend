@@ -53,3 +53,27 @@ export const deleteProduct = async (productId: number) => {
 };
 
 export const restoreProduct = draftProduct;
+
+// Update product basic information
+export const updateProduct = async (productId: number, productData: any) => {
+  const response = await api.put(`/products/${productId}`, productData);
+  return response.data;
+};
+
+// Update product image
+export const updateProductImage = async (productId: number, imageUrl: string) => {
+  const response = await api.put(`/products/${productId}/image`, { imageUrl });
+  return response.data;
+};
+
+// Update product variation
+export const updateProductVariation = async (variationId: number, variationData: any) => {
+  const response = await api.put(`/product-variations/${variationId}`, variationData);
+  return response.data;
+};
+
+// Create product variation
+export const createProductVariation = async (productId: number, variationData: any) => {
+  const response = await api.post(`/product-variations`, { ...variationData, productId });
+  return response.data;
+};
