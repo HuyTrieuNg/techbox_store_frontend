@@ -10,7 +10,7 @@ import { ProductVariation } from '@/features/productDetail';
 import { FiPackage, FiTag, FiPercent, FiClock, FiTrash2, FiRefreshCw, FiX, FiEdit2 } from 'react-icons/fi';
 import { deleteVariation, restoreVariation } from '@/services/productDetailService';
 import { useState, useEffect } from 'react';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/UI/hover-card';
 import ProductVariationEditForm from '@/components/common/manage/product/ProductVariationEditForm';
 
 interface ProductVariationsTableProps {

@@ -11,6 +11,7 @@ import {
   ProductManagementParams, 
   ProductManagementResponse,
 } from '@/features/productManagement';
+import { ProductVariation } from '@/features/productDetail';
 
 // Re-export types for convenience
 export type { 
@@ -122,10 +123,10 @@ export const createProductVariationWithImages = async (variationData: any): Prom
 };
 
 // Get product variations by product ID
-export const getProductVariations = async (productId: number): Promise<any[]> => {
+export const getProductVariations = async (productId: number): Promise<ProductVariation[]> => {
   const response = await axios.get(`/product-variations/management/product/${productId}`);
 
-  return response;
+  return response.data;
 };
 
 // Upload product image to Cloudinary

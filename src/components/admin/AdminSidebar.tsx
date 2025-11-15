@@ -42,6 +42,7 @@ export default function AdminSidebar() {
   const menuItems = [
     { href: "/admin/dashboard", label: "Dashboard", icon: "FiHome" },
     { href: "/admin/products", label: "Sản phẩm", icon: "FiPackage" },
+    { href: "/admin/inventory/supplier", label: "Kho hàng", icon: "FiBox" },
     { href: "/admin/orders", label: "Đơn hàng", icon: "FiShoppingCart" },
     { href: "/admin/categories", label: "Danh mục", icon: "FiList" },
     { href: "/admin/brands", label: "Thương hiệu", icon: "FiTag" },

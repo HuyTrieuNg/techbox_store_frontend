@@ -19,8 +19,8 @@ import { ProductVariation } from '@/features/productDetail';
 // Zod schema for validation based on the DTO provided
 const variationEditSchema = z.object({
   variationName: z.string().max(255, 'Tên biến thể không được vượt quá 255 ký tự'),
-  price: z.number().min(0.01, 'Giá phải lớn hơn 0'),
-  sku: z.string().max(255, 'SKU không được vượt quá 255 ký tự').optional(),
+  price: z.number().int().min(0, 'Giá phải >= 0'),
+  sku: z.string().max(255, 'SKU không được vượt quá 255 ký tự'),
   variationAttributes: z.array(z.object({
     attributeId: z.number().min(1, 'ID thuộc tính là bắt buộc'),
     value: z.string().min(1, 'Giá trị thuộc tính là bắt buộc'),

@@ -7,9 +7,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
-import { ProductVariationWithImagesRequest, VariationAttribute } from '@/types/productCreate';
+import { ProductVariationWithImagesRequest, VariationAttribute, Attribute } from '@/types/productCreate';
 import { getAttributes, uploadImages, createProductVariationWithImages } from '@/services/productManagementService';
-import { Attribute } from '@/features/category';
 import axios from '@/lib/axios';
 
 // Zod schema for validation

@@ -5,7 +5,7 @@ import { api } from "@/lib/axios";
 import { Brand } from "@/features/category";
 import BrandForm from "@/components/admin/BrandForm";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/UI/button";
 import { Plus } from "lucide-react";
 
 
