@@ -156,6 +156,7 @@ export const useUserManagement = () => {
     setSearchTerm,
     setFormData,
     setShowCreateModal,
+    setShowDeleted,
     resetForm,
     handleCreateUser,
     handleDeleteUser,

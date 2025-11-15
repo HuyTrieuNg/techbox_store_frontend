@@ -63,7 +63,7 @@ export interface Product {
   discountValue: number | null;
   averageRating: number;
   totalRatings: number;
-  inWishlist: boolean;
+  // inWishlist: boolean;
 }
 
 // Interface cho hình ảnh

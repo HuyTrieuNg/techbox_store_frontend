@@ -15,9 +15,9 @@ export default function AddressPage() {
   const [isOpen, setIsOpen] = useState(false);
   const [form, setForm] = useState({
     streetAddress: "",
-    ward: "a",
-    district: "b",
-    city: "c",
+    ward: "",
+    district: "",
+    city: "",
     postalCode: "",
     isDefault: false,
     addressType: "",
@@ -201,30 +201,51 @@ export default function AddressPage() {
               <div className="space-y-2">
                 <label className="font-medium text-gray-700 text-sm">Địa chỉ</label>
                 <div className="grid grid-cols-2 gap-3">
-                  <select
+                  {/* <select
                     value={form.city}
                     onChange={(e) => setForm({ ...form, city: e.target.value })}
                     className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#E61E4D]"
                   >
                     <option>Chọn Tỉnh/Thành phố</option>
-                  </select>
-                  <select
+                  </select> */}
+                  <input
+                    type="text"
+                    placeholder="Tỉnh/Thành phố"
+                    value={form.city}
+                    onChange={(e) => setForm({ ...form, city: e.target.value })}
+                    className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#E61E4D]"
+                  />
+                  {/* <select
                     value={form.district}
                     onChange={(e) => setForm({ ...form, district: e.target.value })}
                     className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#E61E4D]"
                   >
                     <option>Chọn Quận/Huyện</option>
-                  </select>
+                  </select> */}
+                  <input
+                    type="text"
+                    placeholder="Quận/Huyện"
+                    value={form.district}
+                    onChange={(e) => setForm({ ...form, district: e.target.value })}
+                    className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#E61E4D]"
+                  />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <select
+                  {/* <select
                     value={form.ward}
                     onChange={(e) => setForm({ ...form, ward: e.target.value })}
                     className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#E61E4D]"
                   >
                     <option>Chọn Phường/Xã</option>
-                  </select>
+                  </select> */}
+                  <input
+                    type="text"
+                    placeholder="Phường/Xã"
+                    value={form.ward}
+                    onChange={(e) => setForm({ ...form, ward: e.target.value })}
+                    className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#E61E4D]"
+                  />
                   <input
                     type="text"
                     placeholder="Số nhà, địa chỉ"

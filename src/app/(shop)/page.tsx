@@ -35,8 +35,7 @@ const HomePage = () => {
     setCurrent((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
 
-  const brands = ["MSI", "Asus", "Acer", "Dell"];
-
+  // const brands = ["MSI", "Asus", "Acer", "Dell"];
   return (
     <>
       {/* Banner + danh mục */}

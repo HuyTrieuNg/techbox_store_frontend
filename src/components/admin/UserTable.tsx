@@ -21,7 +21,6 @@ interface UserTableProps {
   handleDeleteUser: (id: number, name: string) => void;
   handleRestoreUser: (id: number, name: string) => void;
   handleViewOrderHistory: (userId: number) => void;
-  handleEditUser: (userId: number) => void;
 }
 
 export const UserTable: React.FC<UserTableProps> = ({
@@ -34,7 +33,6 @@ export const UserTable: React.FC<UserTableProps> = ({
   handleDeleteUser,
   handleRestoreUser,
   handleViewOrderHistory,
-  handleEditUser,
 }) => {
   if (loading) {
     return (
@@ -167,14 +165,6 @@ export const UserTable: React.FC<UserTableProps> = ({
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex space-x-3">
-                      {selectedRole !== "ADMIN" && (
-                        <button
-                          onClick={() => handleEditUser(user.id)}
-                          className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300"
-                        >
-                          Sửa
-                        </button>
-                      )}
                       {user.isActive === false ? (
                         <button
                           onClick={() => handleRestoreUser(user.id, `${user.firstName} ${user.lastName}`)}
