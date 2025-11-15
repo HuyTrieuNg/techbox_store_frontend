@@ -1,13 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format } from 'date-fns';
-import { useCreateStockImport } from '@/hooks/useStockImport';
-import { useSuppliers } from '@/hooks/useSupplier';
+import { useCreateStockExport } from '@/hooks/useStockExport';
 import { useProducts } from '@/hooks/useProduct';
 import { useProductDetail } from '@/hooks/useProductDetail';
 import { Button } from '@/components/UI/button';
@@ -18,37 +17,36 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/UI/card';
 import { FiPlus, FiTrash2, FiSave, FiX, FiSearch } from 'react-icons/fi';
 import { toast } from 'react-hot-toast';
 
-const stockImportItemSchema = z.object({
+const stockExportItemSchema = z.object({
   productVariationId: z.number().min(1, 'Vui lòng chọn sản phẩm'),
   quantity: z.number().min(1, 'Số lượng phải lớn hơn 0'),
-  costPrice: z.number().min(0, 'Giá nhập phải >= 0'),
+  sellingPrice: z.number().min(0, 'Giá bán phải >= 0'),
 });
 
-const stockImportSchema = z.object({
-  supplierId: z.number().min(1, 'Vui lòng chọn nhà cung cấp'),
-  importDate: z.string().min(1, 'Vui lòng chọn ngày nhập'),
+const stockExportSchema = z.object({
+  orderId: z.number().min(1, 'Vui lòng nhập mã đơn hàng'),
+  exportDate: z.string().min(1, 'Vui lòng chọn ngày xuất'),
   note: z.string().optional(),
-  items: z.array(stockImportItemSchema).min(1, 'Phải có ít nhất 1 sản phẩm'),
+  items: z.array(stockExportItemSchema).min(1, 'Phải có ít nhất 1 sản phẩm'),
 });
 
-type StockImportFormData = z.infer<typeof stockImportSchema>;
+type StockExportFormData = z.infer<typeof stockExportSchema>;
 
-const StockImportCreatePage: React.FC = () => {
+const StockExportCreatePage: React.FC = () => {
   const router = useRouter();
-  const { createStockImport, loading } = useCreateStockImport();
-  const { suppliers } = useSuppliers({ size: 100 });
-  
+  const { createStockExport, loading } = useCreateStockExport();
+
   // Product search state
   const [productSearchTerm, setProductSearchTerm] = useState('');
   const [selectedProductId, setSelectedProductId] = useState<number | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
-  
+
   const { products, isLoading: productsLoading } = useProducts({
     page: 0,
     size: 50,
     ...(productSearchTerm && { keyword: productSearchTerm })
   });
-  
+
   const { product: productDetail, isLoading: productDetailLoading } = useProductDetail(selectedProductId || 0);
 
   const {
@@ -58,11 +56,12 @@ const StockImportCreatePage: React.FC = () => {
     watch,
     setValue,
     formState: { errors },
-  } = useForm<StockImportFormData>({
-    resolver: zodResolver(stockImportSchema),
+  } = useForm<StockExportFormData>({
+    resolver: zodResolver(stockExportSchema),
     defaultValues: {
-      importDate: new Date().toISOString().split('T')[0], // UTC date in YYYY-MM-DD format
-      items: [{ productVariationId: 0, quantity: 1, costPrice: 0 }],
+      exportDate: format(new Date(), 'yyyy-MM-dd'),
+      orderId: 0,
+      items: [{ productVariationId: 0, quantity: 1, sellingPrice: 0 }],
     },
   });
 
@@ -75,12 +74,12 @@ const StockImportCreatePage: React.FC = () => {
 
   const calculateTotal = () => {
     return watchedItems?.reduce((total, item) => {
-      return total + (item.quantity * item.costPrice);
+      return total + (item.quantity * item.sellingPrice);
     }, 0) || 0;
   };
 
   const handleAddItem = () => {
-    append({ productVariationId: 0, quantity: 1, costPrice: 0 });
+    append({ productVariationId: 0, quantity: 1, sellingPrice: 0 });
   };
 
   const handleRemoveItem = (index: number) => {
@@ -89,17 +88,11 @@ const StockImportCreatePage: React.FC = () => {
     }
   };
 
-  const onSubmit = async (data: StockImportFormData) => {
+  const onSubmit = async (data: StockExportFormData) => {
     try {
-      // Convert importDate to UTC
-      const utcDate = new Date(data.importDate).toISOString();
-      const submitData = {
-        ...data,
-        importDate: utcDate,
-      };
-      const result = await createStockImport(submitData);
+      const result = await createStockExport(data);
       if (result) {
-        router.push(`/admin/inventory/import/${result.id}`);
+        router.push(`/admin/inventory/export/${result.id}`);
       }
     } catch (error) {
       // Error is handled in the hook
@@ -107,18 +100,27 @@ const StockImportCreatePage: React.FC = () => {
   };
 
   const handleCancel = () => {
-    router.push('/admin/inventory/import');
+    router.push('/admin/inventory/export');
   };
+
+  const exportReasons = [
+    { value: 'damaged', label: 'Hàng hỏng' },
+    { value: 'expired', label: 'Hàng hết hạn' },
+    { value: 'return', label: 'Trả hàng' },
+    { value: 'promotion', label: 'Khuyến mãi' },
+    { value: 'inventory_adjustment', label: 'Điều chỉnh tồn kho' },
+    { value: 'other', label: 'Khác' },
+  ];
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Tạo phiếu nhập kho
+            Tạo phiếu xuất kho
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2">
-            Tạo phiếu nhập kho mới cho cửa hàng
+            Tạo phiếu xuất kho mới cho cửa hàng
           </p>
         </div>
         <Button variant="outline" onClick={handleCancel} className="flex items-center gap-2">
@@ -137,38 +139,31 @@ const StockImportCreatePage: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Nhà cung cấp *
+                  Mã đơn hàng *
                 </label>
-                <Select
-                  onValueChange={(value) => setValue('supplierId', parseInt(value))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Chọn nhà cung cấp" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {suppliers?.map((supplier) => (
-                      <SelectItem key={supplier.supplierId} value={supplier.supplierId.toString()}>
-                        {supplier.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {errors.supplierId && (
-                  <p className="text-red-600 text-sm mt-1">{errors.supplierId.message}</p>
+                <Input
+                  type="number"
+                  min="1"
+                  {...register('orderId', { valueAsNumber: true })}
+                  className={errors.orderId ? 'border-red-500' : ''}
+                  placeholder="Nhập mã đơn hàng"
+                />
+                {errors.orderId && (
+                  <p className="text-red-600 text-sm mt-1">{errors.orderId.message}</p>
                 )}
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Ngày nhập *
+                  Ngày xuất *
                 </label>
                 <Input
-                  type="datetime-local"
-                  {...register('importDate')}
-                  className={errors.importDate ? 'border-red-500' : ''}
+                  type="date"
+                  {...register('exportDate')}
+                  className={errors.exportDate ? 'border-red-500' : ''}
                 />
-                {errors.importDate && (
-                  <p className="text-red-600 text-sm mt-1">{errors.importDate.message}</p>
+                {errors.exportDate && (
+                  <p className="text-red-600 text-sm mt-1">{errors.exportDate.message}</p>
                 )}
               </div>
             </div>
@@ -179,7 +174,7 @@ const StockImportCreatePage: React.FC = () => {
               </label>
               <Textarea
                 {...register('note')}
-                placeholder="Nhập ghi chú cho phiếu nhập..."
+                placeholder="Nhập ghi chú cho phiếu xuất..."
                 rows={3}
               />
             </div>
@@ -190,7 +185,7 @@ const StockImportCreatePage: React.FC = () => {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>Sản phẩm nhập kho</CardTitle>
+              <CardTitle>Sản phẩm xuất kho</CardTitle>
               <Button type="button" onClick={handleAddItem} className="flex items-center gap-2">
                 <FiPlus className="w-4 h-4" />
                 Thêm sản phẩm
@@ -316,33 +311,28 @@ const StockImportCreatePage: React.FC = () => {
 
                         <div>
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Giá nhập *
+                            Giá bán *
                           </label>
-                        <Input
-                          type="number"
-                          min="0"
-                          step="0.01"
-                          {...register(`items.${index}.costPrice`, { valueAsNumber: true })}
-                          className={errors.items?.[index]?.costPrice ? 'border-red-500' : ''}
-                          placeholder="Nhập giá nhập"
-                        />
-                        {errors.items?.[index]?.costPrice && (
-                          <p className="text-red-600 text-sm mt-1">
-                            {errors.items[index].costPrice.message}
-                          </p>
-                        )}
+                          <Input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            {...register(`items.${index}.sellingPrice`, { valueAsNumber: true })}
+                            className={errors.items?.[index]?.sellingPrice ? 'border-red-500' : ''}
+                            placeholder="Nhập giá bán"
+                          />
+                          {errors.items?.[index]?.sellingPrice && (
+                            <p className="text-red-600 text-sm mt-1">
+                              {errors.items[index].sellingPrice.message}
+                            </p>
+                          )}
                         </div>
                       </div>
 
-                    <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-                      Thành tiền: {(watchedItems?.[index]?.quantity * watchedItems?.[index]?.costPrice || 0).toLocaleString('vi-VN')}₫
+                      <div className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+                        Thành tiền: {(watchedItems?.[index]?.quantity * watchedItems?.[index]?.sellingPrice || 0).toLocaleString('vi-VN')}₫
+                      </div>
                     </div>
-                    </div>
-                    {/* ===============================
-                      THẺ DIV SỬA LỖI ĐƯỢC THÊM VÀO ĐÂY
-                      ===============================
-                      Thẻ này đóng <div key={field.id} ...> ở trên cùng của return
-                    */}
                   </div>
                 );
               })}
@@ -351,7 +341,7 @@ const StockImportCreatePage: React.FC = () => {
             {errors.items && typeof errors.items.message === 'string' && (
               <p className="text-red-600 text-sm mt-4">{errors.items.message}</p>
             )}
-          </CardContent>          
+          </CardContent>
         </Card>
 
         {/* Summary */}
@@ -374,7 +364,7 @@ const StockImportCreatePage: React.FC = () => {
                   ) : (
                     <>
                       <FiSave className="w-4 h-4" />
-                      Tạo phiếu nhập
+                      Tạo phiếu xuất
                     </>
                   )}
                 </Button>
@@ -387,4 +377,4 @@ const StockImportCreatePage: React.FC = () => {
   );
 };
 
-export default StockImportCreatePage;
+export default StockExportCreatePage;

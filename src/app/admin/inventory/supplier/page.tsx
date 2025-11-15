@@ -13,7 +13,6 @@ import { toast } from 'react-hot-toast';
 
 const SupplierPage: React.FC = () => {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState('supplier');
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -96,52 +95,12 @@ const SupplierPage: React.FC = () => {
               Quản lý danh sách nhà cung cấp của cửa hàng
             </p>
           </div>
-          {activeTab === 'supplier' && (
-            <Button onClick={handleCreate} className="flex items-center gap-2">
-              <FiPlus className="w-4 h-4" />
-              Thêm nhà cung cấp
-            </Button>
-          )}
+          <Button onClick={handleCreate} className="flex items-center gap-2">
+            <FiPlus className="w-4 h-4" />
+            Thêm nhà cung cấp
+          </Button>
         </div>
 
-        {/* Tabs */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
-          <div className="flex gap-0">
-            {[
-              { key: 'supplier', label: 'Nhà cung cấp' },
-              { key: 'adjustment', label: 'Điều chỉnh' },
-              { key: 'export', label: 'Xuất' },
-              { key: 'import', label: 'Nhập' },
-              { key: 'report', label: 'Báo cáo' },
-            ].map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => {
-                  if (tab.key === 'supplier') {
-                    setActiveTab(tab.key);
-                  } else if (tab.key === 'import') {
-                    router.push('/admin/inventory/import');
-                  } else if (tab.key === 'adjustment') {
-                    router.push('/admin/inventory/adjustment');
-                  } else if (tab.key === 'export') {
-                    router.push('/admin/inventory/export');
-                  } else if (tab.key === 'report') {
-                    router.push('/admin/inventory/report');
-                  }
-                }}
-                className={
-                  activeTab === tab.key
-                    ? "px-6 py-3 text-sm font-medium border-b-2 transition-colors border-blue-500 text-blue-600 dark:text-blue-400"
-                    : "px-6 py-3 text-sm font-medium border-b-2 transition-colors border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                }
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {activeTab === 'supplier' && (
         <div>
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
             <div className="flex flex-col sm:flex-row gap-4 items-center">
@@ -207,7 +166,6 @@ const SupplierPage: React.FC = () => {
             </div>
           )}
         </div>
-        )}
       </div>
     </>
   );
