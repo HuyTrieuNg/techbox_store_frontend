@@ -5,17 +5,36 @@ import Link from "next/link";
 import { FaChevronRight, FaHome } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/hooks/useCart";
+import { useAuthContext } from "@/contexts/AuthContext";
 
 export default function CartPage() {
+  const { user } = useAuthContext();
   const router = useRouter();
   const { cart, isLoading, isError, totalAmount } = useCart();
+
+  if (!user) {
+    return (
+      <div className="text-center py-20">
+        <h2 className="text-2xl font-semibold mb-4 text-red-500">
+          Bạn cần đăng nhập để xem giỏ hàng
+        </h2>
+
+        <Link
+          href="/login"
+          className="inline-block bg-[#E61E4D] text-white px-5 py-3 rounded-lg font-medium hover:bg-[#c71a3f] transition"
+        >
+          Đăng nhập ngay
+        </Link>
+      </div>
+    );
+  }
 
   // Tính tổng tiền giảm
   const totalDiscount = cart?.items.reduce((sum, item) => {
     return sum + (item.originalPrice - item.unitPrice) * item.quantity;
   }, 0) || 0;
 
-  const totalSubtotal = cart ? cart.subtotal + totalDiscount: 0;
+  const totalSubtotal = cart ? cart.subtotal + totalDiscount : 0;
   const finalTotal = totalSubtotal - totalDiscount;
 
 

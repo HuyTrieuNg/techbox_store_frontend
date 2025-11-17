@@ -71,78 +71,163 @@
 // export default ProductCard;
 
 
-// components/ProductCard.tsx
+
+// import React from "react";
+// import { Product } from "@/features/product";
+// import { FaStar, FaHeart, FaRegHeart } from "react-icons/fa";
+// import Link from "next/link";
+// import { useWishlist } from "@/hooks/useWishList";
+
+
+// // Nếu bạn truyền inWishlist từ ngoài vào (Server Component) thì dùng interface này
+// // interface Props { product: Product & { inWishlist?: boolean }; }
+
+// // Nếu dùng hook (Client Component) thì không cần inWishlist trong props
+// // interface Props {
+// //   product: Product;
+// // }
+// interface Props {
+//   product: any & { inWishlist?: boolean }; // Nhận từ ProductList
+// }
+
+// const formatPrice = (price: number) =>
+//   price.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
+
+// const ProductCard: React.FC<Props> = ({ product }) => {
+//   // ------------------- 2. DỮ LIỆU WISHLIST -------------------
+//   // const { wishlistIds, toggleWishlist, isLoading } = useWishlist(); // <-- LẤY STATE
+//   // const isInWishlist = wishlistIds.has(product.id);               // <-- KIỂM TRA
+
+//   return (
+//     <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-md p-3 flex flex-col hover:shadow-lg transition cursor-pointer relative">
+//       {/* ------------------- 3. NÚT TRÁI TIM ------------------- */}
+//       {/* <button
+//         onClick={(e) => {
+//           e.preventDefault();   // ngăn Link chuyển trang
+//           e.stopPropagation();
+//           if (!isLoading) toggleWishlist(product.id);
+//         }}
+//         disabled={isLoading}
+//         className="absolute top-2 right-2 p-2 rounded-full bg-white shadow-md hover:scale-110 transition disabled:opacity-50 cursor-pointer"
+//         aria-label={isInWishlist ? "Xóa khỏi wishlist" : "Thêm vào wishlist"}
+//       >
+//         {isLoading ? (
+//           <div className="w-5 h-5 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin" />
+//         ) : isInWishlist ? (
+//           <FaHeart className="text-red-500" size={18} />
+//         ) : (
+//           <FaRegHeart className="text-gray-600" size={18} />
+//         )}
+//       </button> */}
+
+//       {/* ------------------- NỘI DUNG SẢN PHẨM ------------------- */}
+//       <Link href={`/product/${product.id}`} className="flex flex-col flex-1">
+//         <img
+//           src={product.imageUrl || "/images/placeholder.png"}
+//           alt={product.name}
+//           className="w-full h-48 object-contain mb-3"
+//         />
+//         <h3 className="text-gray-800 dark:text-white font-bold mt-2 line-clamp-2">
+//           {product.name}
+//         </h3>
+
+//         <p className="text-gray-400 dark:text-gray-500 line-clamp-1 text-xs mt-2">
+//           {product.displayOriginalPrice ? formatPrice(product.displayOriginalPrice) : ""}
+//         </p>
+
+//         <p className="text-[#E61E4D] font-bold mt-2">
+//           {product.displaySalePrice ? formatPrice(product.displaySalePrice) : "Liên hệ"}
+//         </p>
+
+//         <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 mt-2 mb-2">
+//           <FaStar className="text-yellow-400" />
+//           <span>{product.averageRating.toFixed(1)}</span>
+//           <span>({product.totalRatings} đánh giá)</span>
+//         </div>
+//       </Link>
+//     </div>
+//   );
+// };
+
+// export default ProductCard;
+
+
+"use client";
+
 import React from "react";
-import { Product } from "@/features/product";
 import { FaStar, FaHeart, FaRegHeart } from "react-icons/fa";
 import Link from "next/link";
 import { useWishlist } from "@/hooks/useWishList";
+import { useAuthContext } from "@/contexts/AuthContext";
 
-
-// Nếu bạn truyền inWishlist từ ngoài vào (Server Component) thì dùng interface này
-// interface Props { product: Product & { inWishlist?: boolean }; }
-
-// Nếu dùng hook (Client Component) thì không cần inWishlist trong props
-// interface Props {
-//   product: Product;
-// }
 interface Props {
-  product: any & { inWishlist?: boolean }; // Nhận từ ProductList
+  product: any & { inWishlist?: boolean };
 }
 
 const formatPrice = (price: number) =>
   price.toLocaleString("vi-VN", { style: "currency", currency: "VND" });
 
 const ProductCard: React.FC<Props> = ({ product }) => {
-  // ------------------- 2. DỮ LIỆU WISHLIST -------------------
-  const { wishlistIds, toggleWishlist, isLoading } = useWishlist(); // <-- LẤY STATE
-  const isInWishlist = wishlistIds.has(product.id);               // <-- KIỂM TRA
+  const { toggleWishlist, isLoading } = useWishlist();
+  const { user } = useAuthContext();
+  const isLoggedIn = !!user;
 
   return (
-    <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-md p-3 flex flex-col hover:shadow-lg transition cursor-pointer relative">
-      {/* ------------------- 3. NÚT TRÁI TIM ------------------- */}
-      <button
-        onClick={(e) => {
-          e.preventDefault();   // ngăn Link chuyển trang
-          e.stopPropagation();
-          if (!isLoading) toggleWishlist(product.id);
-        }}
-        disabled={isLoading}
-        className="absolute top-2 right-2 p-2 rounded-full bg-white shadow-md hover:scale-110 transition disabled:opacity-50 cursor-pointer"
-        aria-label={isInWishlist ? "Xóa khỏi wishlist" : "Thêm vào wishlist"}
-      >
-        {isLoading ? (
-          <div className="w-5 h-5 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin" />
-        ) : isInWishlist ? (
-          <FaHeart className="text-red-500" size={18} />
-        ) : (
-          <FaRegHeart className="text-gray-600" size={18} />
-        )}
-      </button>
+    <div className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md p-3 flex flex-col hover:shadow-lg transition cursor-pointer relative">
+      {isLoggedIn && (
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleWishlist(product.id);
+          }}
+          disabled={isLoading}
+          className="absolute top-2 right-2 p-2 rounded-full bg-white shadow-md hover:scale-110 transition disabled:opacity-50 cursor-pointer"
+        >
+          {product.inWishlist ? (
+            <FaHeart className="text-red-500" size={18} />
+          ) : (
+            <FaRegHeart className="text-gray-600" size={18} />
+          )}
+        </button>
+      )}
 
-      {/* ------------------- NỘI DUNG SẢN PHẨM ------------------- */}
+
+      {/* NỘI DUNG */}
       <Link href={`/product/${product.id}`} className="flex flex-col flex-1">
         <img
-          src={product.imageUrl || "/images/placeholder.png"}
+          src={product.imageUrl}
           alt={product.name}
           className="w-full h-48 object-contain mb-3"
         />
+
         <h3 className="text-gray-800 dark:text-white font-bold mt-2 line-clamp-2">
           {product.name}
         </h3>
 
-        <p className="text-gray-400 dark:text-gray-500 line-clamp-1 text-xs mt-2">
-          {product.displayOriginalPrice ? formatPrice(product.displayOriginalPrice) : ""}
-        </p>
-
-        <p className="text-[#E61E4D] font-bold mt-2">
-          {product.displaySalePrice ? formatPrice(product.displaySalePrice) : "Liên hệ"}
-        </p>
+        {product.displaySalePrice ? (
+          <>
+            <p className="text-gray-400 dark:text-gray-500 line-clamp-1 text-xs mt-2 line-through">
+              {formatPrice(product.displayOriginalPrice)}
+            </p>
+            <p className="text-[#E61E4D] font-bold mt-2">
+              {formatPrice(product.displaySalePrice)}
+            </p>
+          </>
+        ) : product.displayOriginalPrice ? (
+          <p className="text-[#E61E4D] font-bold mt-2">
+            {formatPrice(product.displayOriginalPrice)}
+          </p>
+        ) : (
+          <p className="text-[#E61E4D] font-bold mt-2">
+            Liên hệ
+          </p>
+        )}
 
         <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 mt-2 mb-2">
           <FaStar className="text-yellow-400" />
-          <span>{product.averageRating.toFixed(1)}</span>
-          <span>({product.totalRatings} đánh giá)</span>
+          <span>{product.averageRating?.toFixed(1) ?? "0.0"}</span>
+          <span>({product.totalRatings ?? 0} đánh giá)</span>
         </div>
       </Link>
     </div>

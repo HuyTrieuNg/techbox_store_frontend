@@ -3,12 +3,29 @@
 import ProductCard from "@/components/ProductCard";
 import Link from "next/link";
 import { FaChevronRight, FaHeart, FaHome, FaShoppingCart } from "react-icons/fa";
-import toast from "react-hot-toast";
-import { useState } from "react";
 import { useWishlist } from "@/hooks/useWishList";
+import { useAuthContext } from "@/contexts/AuthContext";
 
 export default function WishlistPage() {
     const { wishlist, isLoading, isError, refreshWishlist } = useWishlist();
+    const { user } = useAuthContext();
+
+    if (!user) {
+        return (
+            <div className="text-center py-20">
+                <h2 className="text-2xl font-semibold mb-4 text-red-500">
+                    Bạn cần đăng nhập để xem Wishlist
+                </h2>
+
+                <Link
+                    href="/login"
+                    className="inline-block bg-[#E61E4D] text-white px-5 py-3 rounded-lg font-medium hover:bg-[#c71a3f] transition"
+                >
+                    Đăng nhập ngay
+                </Link>
+            </div>
+        );
+    }
 
     // === TRẠNG THÁI LOADING ===
     if (isLoading) {

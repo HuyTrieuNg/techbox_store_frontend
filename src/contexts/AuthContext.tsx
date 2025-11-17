@@ -2,15 +2,15 @@
 import { createContext, useContext, ReactNode } from "react";
 import useSWR from "swr";
 import { LoginPayload, RegisterPayload } from "../features/auth";
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { api } from '@/lib/axios'; // Import axios instance
-import { 
-  getRedirectPathByRole, 
-  hasRole as checkRole, 
+import {
+  getRedirectPathByRole,
+  hasRole as checkRole,
   isAdmin as checkIsAdmin,
   isStaff as checkIsStaff,
   isCustomer as checkIsCustomer,
-  type UserRole 
+  type UserRole
 } from '../utils/auth';
 
 // Re-export UserRole type for convenience
@@ -31,7 +31,7 @@ interface AuthContextType {
   isLoading: boolean;
   isError: boolean;
   handleLogin: (payload: LoginPayload) => Promise<{ user: User | null }>;
-  handleRegister: (payload: RegisterPayload) => Promise<void>;
+  handleRegister: (payload: RegisterPayload) => Promise<RegisterResult>;
   handleLogout: () => Promise<void>;
   mutateUser: () => void;
   // Helper functions để check roles
@@ -53,12 +53,12 @@ const fetcher = async (url: string): Promise<User | null> => {
     return data;
   } catch (error: any) {
     const status = error.response?.status;
-    
+
     // 401 Unauthorized hoặc 403 Forbidden → User chưa đăng nhập
     if (status === 401 || status === 403) {
       return null;
     }
-    
+
     // Các lỗi khác → throw để SWR handle
     throw error;
   }
@@ -68,14 +68,22 @@ interface AuthProviderProps {
   children: ReactNode;
   initialData?: User | null;
 }
+export type LoginResult = {
+  user: User | null;
+  error?: string;
+};
+export type RegisterResult = {
+  success: boolean;
+  error?: string;
+};
 
 export function AuthProvider({ children, initialData }: AuthProviderProps) {
   // Sử dụng useSWR để fetch user data qua proxy
   const { data: user, error, mutate, isLoading } = useSWR<User | null>(
-    '/users/me', 
+    '/users/me',
     fetcher,
     {
-      fallbackData: initialData, 
+      fallbackData: initialData,
       revalidateOnFocus: false,
       revalidateOnReconnect: true,
       shouldRetryOnError: false,
@@ -84,38 +92,86 @@ export function AuthProvider({ children, initialData }: AuthProviderProps) {
     }
   );
 
-  const handleLogin = async (payload: LoginPayload) => {
+  // const handleLogin = async (payload: LoginPayload) => {
+  //   try {
+  //     console.log('🔐 [Login] Starting login...');
+
+  //     // 1. Call login API - dùng axios thông thường cho login route
+  //     const { data } = await axios.post('/api/auth/login', payload, {
+  //       withCredentials: true,
+  //     });
+  //     console.log('[Login] Login API success:', data);
+
+  //     // 2. Revalidate user data và lấy kết quả trực tiếp
+  //     console.log('[Login] Revalidating user data...');
+  //     const freshUser = await mutate();
+
+  //     console.log('[Login] Login successful, fresh user data:', freshUser);
+
+  //     // 3. Return fresh user (handle undefined case)
+  //     return { user: freshUser || null };
+  //   } catch (error: any) {
+  //     console.error('[Login] Login error:', error);
+  //     // const errorMessage = error.response?.data?.error || 'Đăng nhập thất bại';
+  //     // throw new Error(errorMessage);
+  //     if (error.response?.status === 400) {
+  //       return {
+  //         user: null,
+  //         error: 'Email hoặc mật khẩu không đúng'
+  //       };
+  //     }
+
+  //     // Các lỗi khác
+  //     const errorMessage = error.response?.data?.error || 'Đăng nhập thất bại. Vui lòng thử lại.';
+  //     throw new Error(errorMessage);
+  //   }
+  // };
+
+  const handleLogin = async (payload: LoginPayload): Promise<LoginResult> => {
     try {
-      console.log('🔐 [Login] Starting login...');
-      
-      // 1. Call login API - dùng axios thông thường cho login route
+      console.log('Login Starting login...');
+
       const { data } = await axios.post('/api/auth/login', payload, {
         withCredentials: true,
       });
       console.log('[Login] Login API success:', data);
-      
-      // 2. Revalidate user data và lấy kết quả trực tiếp
+
       console.log('[Login] Revalidating user data...');
       const freshUser = await mutate();
-      
+
       console.log('[Login] Login successful, fresh user data:', freshUser);
-      
-      // 3. Return fresh user (handle undefined case)
+
       return { user: freshUser || null };
     } catch (error: any) {
       console.error('[Login] Login error:', error);
-      const errorMessage = error.response?.data?.error || 'Đăng nhập thất bại';
+
+      // XỬ LÝ RIÊNG 400 - Sai email/mật khẩu
+      if (error.response?.status === 400) {
+        return {
+          user: null,
+          error: 'Email hoặc mật khẩu không đúng'
+        };
+      }
+
+      // Các lỗi khác (500, network, v.v.)
+      const errorMessage = error.response?.data?.error || 'Đăng nhập thất bại. Vui lòng thử lại.';
       throw new Error(errorMessage);
     }
   };
 
-  const handleRegister = async (payload: RegisterPayload): Promise<void> => {
+  const handleRegister = async (payload: RegisterPayload): Promise<RegisterResult> => {
     try {
-      // Sử dụng api instance từ @/lib/axios
       await api.post('/auth/register', payload);
+      return { success: true };
     } catch (error: any) {
       console.error('Register error:', error);
-      const errorMessage = error.response?.data?.error || 'Đăng ký thất bại';
+      if (error.response?.status === 400) {
+        return {
+          success: false,
+          error: 'Email đã được sử dụng. Vui lòng thử email khác.'
+        };
+      }
+      const errorMessage = error.response?.data?.error || 'Đăng nhập thất bại. Vui lòng thử lại.';
       throw new Error(errorMessage);
     }
   };
@@ -123,17 +179,17 @@ export function AuthProvider({ children, initialData }: AuthProviderProps) {
   const handleLogout = async () => {
     try {
       console.log('[Logout] Starting logout...');
-      
+
       // Call logout API để xóa cookies
       await axios.post('/api/auth/logout', {}, {
         withCredentials: true,
       });
-      
+
       console.log('[Logout] Cookies cleared');
 
       // Clear user data trong SWR cache
       await mutate(null, false);
-      
+
       console.log('[Logout] User data cleared');
     } catch (error) {
       console.error('[Logout] Logout error:', error);
@@ -168,13 +224,13 @@ export function AuthProvider({ children, initialData }: AuthProviderProps) {
   };
 
   return (
-    <AuthContext.Provider 
-      value={{ 
-        user: user || null, 
+    <AuthContext.Provider
+      value={{
+        user: user || null,
         isLoading,
         isError: !!error,
-        handleLogin, 
-        handleRegister, 
+        handleLogin,
+        handleRegister,
         handleLogout,
         mutateUser: mutate,
         hasRole,
