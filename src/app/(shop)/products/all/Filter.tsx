@@ -49,9 +49,6 @@ export default function ProductFilters({
         onFiltersChange(emptyFilters);
     };
 
-    console.log("dm", categories)
-
-    // Memoize hasActiveFilters to avoid recalculation on every render
     const hasActiveFilters = useMemo(() => {
         return Object.keys(localFilters).some(key => {
             const value = localFilters[key as keyof ProductFilterParams];

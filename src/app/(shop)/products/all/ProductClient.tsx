@@ -92,8 +92,6 @@ export default function ProductsClient({ initialData, baseUrl, brands, categorie
     fetchProducts(); // giữ nguyên filter, chỉ đổi page
   };
 
-  console.log("danh muc", categories);
-
   return (
     <>
       <ProductFilters

@@ -1,6 +1,6 @@
 import ProductList from "./ProductList";
 
-const baseUrl = 'http://localhost:8080/api';
+const baseUrl =  (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080') + '/api';
 
 interface ProductSectionProps {
     categoryId?: number;
@@ -23,7 +23,7 @@ export default async function ProductSection({ categoryId, noSwiper }: ProductSe
     }
 
     const res = await fetch(`${baseUrl}/products?${query.toString()}`, {
-        next: { revalidate: 60 }
+        cache: 'no-store'
     });
 
     if (!res.ok) return <div className="text-red-500">Không thể tải sản phẩm.</div>;

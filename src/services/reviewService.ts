@@ -60,7 +60,6 @@ export class ReviewService {
 
         } catch (err: any) {
             if (err.response?.status === 403 || err.response?.status === 400) {
-                console.log("dcmm");
                 return null;
             }
             throw err;

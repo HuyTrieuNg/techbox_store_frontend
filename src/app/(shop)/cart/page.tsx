@@ -67,7 +67,7 @@ export default function CartPage() {
         <span className="font-medium text-gray-800">Giỏ hàng</span>
       </div>
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 m-5 lg:m-10">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 m-5">
         {/* Bảng sản phẩm */}
         <div className="lg:col-span-2 bg-white rounded-lg shadow overflow-hidden">
           <div className="bg-[#E61E4D] text-white grid grid-cols-[2fr_2fr_1fr_2fr] font-semibold py-3 px-6">

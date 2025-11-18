@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { FaSearch, FaTimes } from "react-icons/fa";
 import { useDebounce } from "@/hooks/useDebounce";
 
-const baseUrl = "http://localhost:8080/api";
+const baseUrl =  (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080') + '/api';
 
 export default function SearchBox() {
     const router = useRouter();

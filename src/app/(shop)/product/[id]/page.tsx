@@ -647,8 +647,9 @@
 import { notFound } from 'next/navigation';
 import ProductDetailClient from './ProductDetailClient';
 import React from 'react';
+import ProductSection from '@/components/ProductSection';
 
-const baseUrl = 'http://localhost:8080/api';
+const baseUrl =  (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080') + '/api';
 
 export default async function ProductDetailPage({
     params,
@@ -661,10 +662,21 @@ export default async function ProductDetailPage({
     if (isNaN(productId)) notFound();
 
     const res = await fetch(`${baseUrl}/products/${id}`, {
-        next: { revalidate: 60 }
+        cache: 'no-store'
     });
     const product = await res.json();
 
     if (!product) notFound();
-    return <ProductDetailClient initialProduct={product} />;
+    return (
+        <>
+            <ProductDetailClient initialProduct={product} />
+
+            <div className="max-w-7xl mt-12">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                    Sản phẩm tương tự
+                </h2>
+                <ProductSection categoryId={product.categoryId} />
+            </div>
+        </>
+    );
 }

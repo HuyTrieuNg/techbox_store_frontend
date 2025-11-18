@@ -3,7 +3,7 @@ import { FaChevronRight, FaHome } from "react-icons/fa";
 import Link from "next/link";
 import ProductsClient from "./ProductClient";
 
-const baseUrl = "http://localhost:8080/api";
+const baseUrl =  (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080') + '/api';
 
 export default async function AllProductsPage({
   searchParams,
@@ -21,9 +21,9 @@ export default async function AllProductsPage({
 
   // Fetch song song: sản phẩm + brands + categories
   const [productsRes, brandsRes, categoriesRes] = await Promise.all([
-    fetch(`${baseUrl}/products?${query.toString()}`, { next: { revalidate: 60 } }),
-    fetch(`${baseUrl}/brands`, { next: { revalidate: 3600 } }),
-    fetch(`${baseUrl}/categories`, { next: { revalidate: 3600 } }),
+    fetch(`${baseUrl}/products?${query.toString()}`, { cache: 'no-store' }),
+    fetch(`${baseUrl}/brands`, { cache: 'no-store' }),
+    fetch(`${baseUrl}/categories`, { cache: 'no-store' }),
   ]);
 
   const initialData = productsRes.ok ? await productsRes.json() : { content: [], page: { totalElements: 0, totalPages: 1 } };
