@@ -1,6 +1,7 @@
-import useSWR from "swr";
+
 import { ProductService } from "@/services/productService";
 import { Category } from "@/features/category";
+import useSWR from "swr";
 
 export function useCategories() {
   const { data, error, isLoading } = useSWR<Category[]>(
@@ -22,8 +23,7 @@ export function useCategories() {
   }
 
   const rootCategories = data?.filter((cat: any) => cat.parentCategoryId === null) ?? [];
-  
-  // Hàm lấy category theo ID từ cache
+
   const getCategoryById = (id: number): Category | undefined => {
     return categoryMap.get(id);
   };
@@ -38,13 +38,13 @@ export function useCategories() {
       current = categoryMap.get(current.parentCategoryId);
     }
 
-    return path; // Ví dụ: [Điện thoại, iPhone, iPhone 15 Series]
+    return path;
   };
   return {
     categories: rootCategories,
     allCategories: data ?? [],
-    getCategoryById,           // Hàm tiện ích
-    getBreadcrumbPath,     // Hàm tiện ích
+    getCategoryById,
+    getBreadcrumbPath,
     categoryMap,
     isLoading,
     error,

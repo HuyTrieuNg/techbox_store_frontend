@@ -4,7 +4,7 @@ import { useState } from "react";
 import { FaLock, FaEnvelope } from "react-icons/fa";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuthContext } from "@/contexts/AuthContext";
+import { LoginResult, useAuthContext } from "@/contexts/AuthContext";
 import { getRedirectPathByRole } from "@/utils/auth";
 
 export default function LoginPage() {
@@ -12,32 +12,78 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [emailError, setEmailError] = useState("");
   const router = useRouter();
-  
+
   async function onSubmit(e: React.FormEvent) {
+    // e.preventDefault();
+    // setError("");
+    // try {
+    //   // 1. Login và lấy fresh user data
+    //   const { user: freshUser } = await handleLogin({ email, password });
+
+    //   console.log('[LoginPage] Fresh user from login:', freshUser);
+
+    //   // 2. Get redirect path using helper function
+    //   const redirectPath = getRedirectPathByRole(freshUser);
+
+    //   console.log('[LoginPage] Redirecting to:', redirectPath);
+
+    //   // 3. Redirect
+    //   // Dùng window.location.href để force full reload
+    //   // Tránh mount Shop Layout khi redirect sang Admin/Staff
+    //   if (redirectPath.startsWith('/admin') || redirectPath.startsWith('/staff')) {
+    //     window.location.href = redirectPath;
+    //   } else {
+    //     router.push(redirectPath);
+    //   }
+    // } catch (err: any) {
+    //   setError(err.message || "Login failed");
+    // }
+
+
     e.preventDefault();
     setError("");
-    try {
-      // 1. Login và lấy fresh user data
-      const { user: freshUser } = await handleLogin({ email, password });
-      
-      console.log('[LoginPage] Fresh user from login:', freshUser);
-      
-      // 2. Get redirect path using helper function
-      const redirectPath = getRedirectPathByRole(freshUser);
-      
-      console.log('[LoginPage] Redirecting to:', redirectPath);
-      
-      // 3. Redirect
-      // Dùng window.location.href để force full reload
-      // Tránh mount Shop Layout khi redirect sang Admin/Staff
-      if (redirectPath.startsWith('/admin') || redirectPath.startsWith('/staff')) {
-        window.location.href = redirectPath;
-      } else {
-        router.push(redirectPath);
-      }
-    } catch (err: any) {
-      setError(err.message || "Login failed");
+    setEmailError("");
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email) {
+      setEmailError("Vui lòng nhập email");
+      return;
+    }
+    if (!emailRegex.test(email)) {
+      setEmailError("Email không hợp lệ. Vui lòng kiểm tra lại");
+      return;
+    }
+
+    if (!password) {
+      setError("Vui lòng nhập mật khẩu");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Mật khẩu phải có ít nhất 6 ký tự");
+      return;
+    }
+
+    const result: LoginResult = await handleLogin({ email, password });
+
+    if (result.error) {
+      setError(result.error);
+      return;
+    }
+
+    if (!result.user) {
+      setError("Không thể lấy thông tin người dùng");
+      return;
+    }
+
+    const redirectPath = getRedirectPathByRole(result.user);
+    console.log('[LoginPage] Redirecting to:', redirectPath);
+
+    if (redirectPath.startsWith('/admin') || redirectPath.startsWith('/staff')) {
+      window.location.href = redirectPath;
+    } else {
+      router.push(redirectPath);
     }
   }
 
@@ -74,10 +120,13 @@ export default function LoginPage() {
                   placeholder="Email"
                   className="w-full text-gray-700 placeholder-gray-400 focus:outline-none"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => { setEmail(e.target.value); setEmailError(""); }}
                   required
                 />
               </div>
+              {emailError && (
+                <p className="text-red-500 text-sm mt-2">{emailError}</p>
+              )}
             </div>
 
             {/* Password Input */}
@@ -89,25 +138,26 @@ export default function LoginPage() {
                   placeholder="Mật khẩu"
                   className="w-full text-gray-700 placeholder-gray-400 focus:outline-none"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => { setPassword(e.target.value); setError(""); }}
                   required
                 />
               </div>
+
+              {error && (
+                <p className="text-red-500 text-sm mt-2">{error}</p>
+              )}
             </div>
 
-            {/* Error Message */}
-            {error && (
-              <p className="text-red-500 text-sm text-center">{error}</p>
-            )}
 
-            <p className="text-sm text-gray-600">
+
+            {/* <p className="text-sm text-gray-600">
               <Link
                 href="/forgot-password"
                 className="text-[#E61E4D] hover:text-[#ff6a88] font-medium transition"
               >
                 Quên mật khẩu?
               </Link>
-            </p>
+            </p> */}
 
             {/* Login Button */}
             <button

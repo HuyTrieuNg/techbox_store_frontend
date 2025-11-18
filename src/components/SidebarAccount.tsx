@@ -1,18 +1,20 @@
 "use client";
+import { useAuthContext } from "@/contexts/AuthContext";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { FaUser, FaMapMarkerAlt, FaBox, FaLock, FaSignOutAlt } from "react-icons/fa";
 
 export default function SidebarAccount() {
   const pathname = usePathname();
+  const { handleLogout } = useAuthContext();
+  const router = useRouter();
 
   // Danh sách menu
   const menuItems = [
     { name: "Thông tin tài khoản", icon: <FaUser />, path: "/account" },
     { name: "Sổ địa chỉ", icon: <FaMapMarkerAlt />, path: "/account/address" },
     { name: "Quản lý đơn hàng", icon: <FaBox />, path: "/account/orders" },
-    { name: "Đặt lại mật khẩu", icon: <FaLock />, path: "/account/change-password" },
-    { name: "Đăng xuất", icon: <FaSignOutAlt />, path: "/logout" },
+    // { name: "Đặt lại mật khẩu", icon: <FaLock />, path: "/account/change-password" },
   ];
 
   return (
@@ -41,6 +43,17 @@ export default function SidebarAccount() {
             </li>
           );
         })}
+        <li>
+          <button
+            onClick={() => {
+              handleLogout();
+              router.push("/");
+            }}
+            className="flex items-center gap-3 transition-colors duration-150 hover:text-[#E61E4D] cursor-pointer"
+          >
+            <FaSignOutAlt /> Đăng xuất
+          </button>
+        </li>
       </ul>
     </aside>
   );
