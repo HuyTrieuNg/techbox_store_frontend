@@ -2,9 +2,31 @@
 "use client";
 
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 export default function ProductDescription({ product, selected }: any) {
     const [expanded, setExpanded] = useState(false);
+
+    const components = {
+        h1: ({ children }: any) => <h1 className="text-2xl font-bold text-gray-900 mb-4">{children}</h1>,
+        h2: ({ children }: any) => <h2 className="text-xl font-semibold text-gray-800 mb-3">{children}</h2>,
+        h3: ({ children }: any) => <h3 className="text-lg font-medium text-gray-700 mb-2">{children}</h3>,
+        p: ({ children }: any) => <p className="text-gray-600 mb-4 leading-relaxed">{children}</p>,
+        ul: ({ children }: any) => <ul className="list-disc list-inside text-gray-600 mb-4 space-y-1">{children}</ul>,
+        ol: ({ children }: any) => <ol className="list-decimal list-inside text-gray-600 mb-4 space-y-1">{children}</ol>,
+        li: ({ children }: any) => <li className="text-gray-600">{children}</li>,
+        strong: ({ children }: any) => <strong className="font-semibold text-gray-900">{children}</strong>,
+        em: ({ children }: any) => <em className="italic text-gray-700">{children}</em>,
+        code: ({ children }: any) => <code className="bg-gray-100 text-red-600 px-1 py-0.5 rounded text-sm font-mono">{children}</code>,
+        pre: ({ children }: any) => <pre className="bg-gray-100 p-4 rounded-lg overflow-x-auto text-sm font-mono text-gray-800 mb-4">{children}</pre>,
+        blockquote: ({ children }: any) => <blockquote className="border-l-4 border-gray-300 pl-4 italic text-gray-700 mb-4">{children}</blockquote>,
+        table: ({ children }: any) => <table className="w-full border-collapse border border-gray-300 mb-4">{children}</table>,
+        thead: ({ children }: any) => <thead className="bg-gray-100">{children}</thead>,
+        tbody: ({ children }: any) => <tbody>{children}</tbody>,
+        tr: ({ children }: any) => <tr className="border-b border-gray-200">{children}</tr>,
+        th: ({ children }: any) => <th className="px-4 py-2 text-left font-semibold text-gray-900">{children}</th>,
+        td: ({ children }: any) => <td className="px-4 py-2 text-gray-600">{children}</td>,
+    };
 
     return (
         <div className="max-w-7xl mt-10">
@@ -14,7 +36,7 @@ export default function ProductDescription({ product, selected }: any) {
                 className={`relative text-gray-700 leading-relaxed transition-all duration-200 overflow-hidden ${expanded ? "max-h-[2000px]" : "max-h-[200px]"
                     }`}
             >
-                <p className="text-gray-600">{product.description}</p>
+                <ReactMarkdown components={components}>{product.description}</ReactMarkdown>
                 {/* --- Bảng thông tin tổng hợp --- */}
                 {(product.attributes?.length > 0 || (selected?.attributes ?? []).length > 0) && (
                     <div className="mt-6">
