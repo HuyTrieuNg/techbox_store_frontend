@@ -132,7 +132,7 @@ const CreateAdjustmentPage: React.FC = () => {
           return {
             productVariationId: variant.productVariationId,
             realQty: variant.actualQuantity,
-            costPrice: originalVariation?.price || 0,
+            costPrice: originalVariation?.price || 0, // Using price as costPrice - may need to adjust based on API requirements
           };
         }),
       };

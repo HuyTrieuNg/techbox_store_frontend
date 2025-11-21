@@ -40,10 +40,10 @@ export const useProductVariationEdit = (variation: ProductVariation) => {
       variationName: variation.variationName,
       price: variation.price,
       sku: variation.sku,
-      variationAttributes: variation.attributes.map(attr => ({
+      variationAttributes: variation.attributes?.map(attr => ({
         attributeId: attr.attributeId,
         value: attr.attributeValue,
-      })),
+      })) || [],
     },
   });
 

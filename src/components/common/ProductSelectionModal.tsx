@@ -324,7 +324,7 @@ export default function ProductSelectionModal({
                     </div>
                     <div className="text-right">
                       <div className="flex flex-col items-end">
-                        {product.displaySalePrice && product.displaySalePrice < product.displayOriginalPrice ? (
+                        {product.displaySalePrice && product.displayOriginalPrice && product.displaySalePrice < product.displayOriginalPrice ? (
                           <>
                             <p className="font-medium text-red-600 dark:text-red-400">
                               {product.displaySalePrice.toLocaleString('vi-VN')}₫
@@ -340,12 +340,12 @@ export default function ProductSelectionModal({
                           </>
                         ) : (
                           <p className="font-medium text-gray-900 dark:text-white">
-                            {product.displayOriginalPrice?.toLocaleString('vi-VN')}₫
+                            {product.displayOriginalPrice ? product.displayOriginalPrice.toLocaleString('vi-VN') + '₫' : 'N/A'}
                           </p>
                         )}
                       </div>
                       <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        {product.averageRating?.toFixed(1)} ⭐ ({product.totalRatings || 0})
+                        {product.averageRating ? product.averageRating.toFixed(1) : '0.0'} ⭐ ({product.totalRatings || 0})
                       </p>
                     </div>
                   </div>

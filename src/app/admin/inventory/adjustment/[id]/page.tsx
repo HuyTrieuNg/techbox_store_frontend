@@ -64,7 +64,7 @@ const AdjustmentDetailPage: React.FC = () => {
               Chi tiết phiếu kiểm kho
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
-              Mã phiếu: {data.documentCode}
+              Mã phiếu: {data.id}
             </p>
           </div>
         </div>

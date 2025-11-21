@@ -34,17 +34,17 @@ function decodeJWT(token: string): { exp?: number } | null {
  * Kiểm tra xem token có sắp hết hạn không (trong vòng 5 phút)
  */
 function isTokenExpiringSoon(token: string): boolean {
-  const decoded = decodeJWT(token);
-  if (!decoded || !decoded.exp) return true;
+  // const decoded = decodeJWT(token);
+  // if (!decoded || !decoded.exp) return true;
 
-  const now = Math.floor(Date.now() / 1000);
-  const expiry = decoded.exp;
-  const bufferTime = 5 * 60; // 5 minutes
+  // const now = Math.floor(Date.now() / 1000);
+  // const expiry = decoded.exp;
+  // const bufferTime = 5 * 60; // 5 minutes
 
-  // Token hết hạn hoặc sắp hết hạn trong 5 phút
-  return expiry - now < bufferTime;
+  // // Token hết hạn hoặc sắp hết hạn trong 5 phút
+  // return expiry - now < bufferTime;
+  return false;
 }
-
 /**
  * Refresh access token
  */

@@ -64,7 +64,7 @@ const StockExportPage: React.FC = () => {
             Quản lý các phiếu xuất kho của cửa hàng
           </p>
         </div>
-        <Button onClick={handleCreate} className="flex items-center gap-2">
+        <Button onClick={handleCreate} className="hidden">
           <FiPlus className="w-4 h-4" />
           Tạo phiếu xuất
         </Button>
