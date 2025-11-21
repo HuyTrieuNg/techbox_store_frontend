@@ -77,11 +77,11 @@ export default function ProductDetailClient({ initialProduct }: { initialProduct
                 <FaHome className="mr-2 text-gray-500" />
                 <Link href="/" className="hover:text-[#E61E4D] transition">Trang chủ</Link>
                 <FaChevronRight className="mx-2 text-gray-400" />
-                <span className="font-medium text-gray-800 capitalize">{product.categoryName}</span>
+                <span className="font-medium text-gray-700 hover:text-[#E61E4D] capitalize"><Link href={`/products/${product.categoryId}`}>{product.categoryName}</Link></span>
                 <FaChevronRight className="mx-2 text-gray-400" />
-                <span className="font-medium text-gray-800 capitalize">{product.brandName}</span>
+                <span className="font-medium text-gray-700 hover:text-[#E61E4D] capitalize"><Link href={`/brand/${product.brandId}`}>{product.brandName}</Link></span>
                 <FaChevronRight className="mx-2 text-gray-400" />
-                <span className="font-medium text-gray-800 capitalize">{product.name}</span>
+                <span className="font-medium text-gray-700 capitalize">{product.name}</span>
             </div>
 
             {/* Main Grid */}

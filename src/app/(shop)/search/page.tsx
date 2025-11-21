@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
 import Link from "next/link";
 import { FaSearch, FaChevronLeft, FaChevronRight, FaHome } from "react-icons/fa";
+import BrandProductClient from "../brand/[name]/BrandProduct";
 
 const baseUrl =  (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080') + '/api';
 
@@ -60,11 +61,12 @@ export default async function SearchPage({
 
             {/* Danh sách sản phẩm */}
             {products.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 mb-8">
-                    {products.map((product: any) => (
-                        <ProductCard key={product.id} product={product} />
-                    ))}
-                </div>
+                <BrandProductClient products={products} />
+                // <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 mb-8">
+                //     {products.map((product: any) => (
+                //         <ProductCard key={product.id} product={product} />
+                //     ))}
+                // </div>
             ) : (
                 <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
                     <FaSearch className="mx-auto text-5xl text-gray-300 dark:text-gray-600 mb-4" />

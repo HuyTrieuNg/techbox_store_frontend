@@ -6,6 +6,7 @@ import Pagination from "./Pagination";
 import ProductCard from "@/components/ProductCard";
 import { ProductFilterParams } from "./Filter";
 import ProductFilters from "./Filter";
+import { useWishlist } from "@/hooks/useWishList";
 
 
 export type Product = {
@@ -38,6 +39,7 @@ type Props = {
 export default function ProductsClient({ initialData, baseUrl, brands, categories }: Props) {
   const [data, setData] = useState<ProductResponse>(initialData);
   const [loading, setLoading] = useState(false);
+  const { wishlistIds } = useWishlist();
 
   // Lấy filter từ URL khi load lần đầu (nếu có)
   const [filters, setFilters] = useState<ProductFilterParams>({
@@ -107,7 +109,10 @@ export default function ProductsClient({ initialData, baseUrl, brands, categorie
       {data.content.length > 0 ? (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
           {data.content.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product.id} product={{
+              ...product,
+              inWishlist: wishlistIds.has(product.id),
+            }} />
           ))}
         </div>
       ) : (

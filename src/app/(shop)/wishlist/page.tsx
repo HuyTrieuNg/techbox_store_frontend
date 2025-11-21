@@ -14,7 +14,7 @@ export default function WishlistPage() {
         return (
             <div className="text-center py-20">
                 <h2 className="text-2xl font-semibold mb-4 text-red-500">
-                    Bạn cần đăng nhập để xem Wishlist
+                    Bạn cần đăng nhập để xem danh sách sản phẩm yêu thích
                 </h2>
 
                 <Link

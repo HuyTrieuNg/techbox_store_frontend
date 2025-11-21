@@ -54,6 +54,19 @@ export default function AccountPage() {
         }
     };
 
+    const getAge = (dateString: string) => {
+        const today = new Date();
+        const birthDate = new Date(dateString);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+
+        // Nếu chưa tới ngày sinh trong năm → trừ 1 tuổi
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
+    };
+
     const validateForm = (): boolean => {
         const errors: Record<string, string> = {};
 
@@ -76,19 +89,26 @@ export default function AccountPage() {
 
 
         if (formData.phone.trim()) {
-        const plainPhone = formData.phone.replace(/\s/g, "");
+            const plainPhone = formData.phone.replace(/\s/g, "");
 
-        if (!/^[0-9]+$/.test(plainPhone)) {
-            errors.phone = "Số điện thoại chỉ được chứa ký tự số";
-        } else if (plainPhone.length < 10 || plainPhone.length > 11) {
-            errors.phone = "Số điện thoại phải có từ 10 đến 11 chữ số";
-        } else if (!isValidPhone(formData.phone)) {
-            errors.phone = "Số điện thoại không hợp lệ";
+            if (!/^[0-9]+$/.test(plainPhone)) {
+                errors.phone = "Số điện thoại chỉ được chứa ký tự số";
+            } else if (plainPhone.length < 10 || plainPhone.length > 11) {
+                errors.phone = "Số điện thoại phải có từ 10 đến 11 chữ số";
+            } else if (!isValidPhone(formData.phone)) {
+                errors.phone = "Số điện thoại không hợp lệ";
+            }
         }
-    }
 
-        if (formData.dateOfBirth && isFutureDate(formData.dateOfBirth)) {
-            errors.dateOfBirth = "Ngày sinh không được là tương lai";
+        if (formData.dateOfBirth) {
+            if (isFutureDate(formData.dateOfBirth)) {
+                errors.dateOfBirth = "Ngày sinh không được là tương lai";
+            } else {
+                const age = getAge(formData.dateOfBirth);
+                if (age < 18) {
+                    errors.dateOfBirth = "Bạn phải đủ 18 tuổi để sử dụng dịch vụ";
+                }
+            }
         }
 
         setFieldErrors(errors);
