@@ -1,7 +1,7 @@
 import React from 'react';
 import { Brand } from '@/features/category';
 import { FiEdit, FiTrash2 } from 'react-icons/fi';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/UI/button';
 
 type BrandListProps = {
   brands: Brand[];

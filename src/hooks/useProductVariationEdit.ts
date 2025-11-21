@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import { ProductVariation, VariationImage } from '@/features/productDetail';
 import { getAttributes, uploadImages } from '@/services/productManagementService';
 import { updateProductVariation } from '@/services/productDetailService';
-import { Attribute } from '@/features/category';
+import { Attribute } from '@/types/productCreate';
 
 // Zod schema for validation
 const variationEditSchema = z.object({
@@ -40,10 +40,10 @@ export const useProductVariationEdit = (variation: ProductVariation) => {
       variationName: variation.variationName,
       price: variation.price,
       sku: variation.sku,
-      variationAttributes: variation.attributes.map(attr => ({
+      variationAttributes: variation.attributes?.map(attr => ({
         attributeId: attr.attributeId,
         value: attr.attributeValue,
-      })),
+      })) || [],
     },
   });
 
@@ -134,7 +134,7 @@ export const useProductVariationEdit = (variation: ProductVariation) => {
     URL.revokeObjectURL(imagePreviews[index]);
   };
 
-  const onSubmit = async (data: VariationEditFormData) => {
+  const onSubmit = async (data: VariationEditFormData): Promise<any> => {
     setLoading(true);
     try {
       // Step 1: Upload new images first

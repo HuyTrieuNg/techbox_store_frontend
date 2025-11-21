@@ -41,4 +41,15 @@ export class ProductService {
       params: { categoryId, sortBy, sortDirection, page, size },
     });
   }
+
+  static async getProductVariations(params?: {
+    page?: number;
+    size?: number;
+  }): Promise<{ content: any[]; totalPages: number; totalElements: number }> {
+    const { page = 0, size = 20 } = params || {};
+
+    return api.get("product-variations", {
+      params: { page, size },
+    });
+  }
 }

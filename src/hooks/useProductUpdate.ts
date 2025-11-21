@@ -106,7 +106,7 @@ export const useProductUpdate = (productId: number, onSuccess?: () => void) => {
       } else {
         router.push(`/admin/products/${productId}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update product:', error);
 
       // Show detailed error message

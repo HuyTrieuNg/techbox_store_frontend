@@ -34,3 +34,23 @@ export function useProducts(params?: UseProductsParams) {
     error,
   };
 }
+
+export function useProductVariations(params?: { page?: number; size?: number }) {
+  const key = params ? ["product-variations", params] : ["product-variations", {}];
+
+  const fetcher = async () => {
+    const res = await ProductService.getProductVariations(params);
+    return res;
+  };
+
+  const { data, error, isLoading } = useSWR(key, fetcher, {
+    revalidateOnFocus: false,
+    keepPreviousData: true,
+  });
+
+  return {
+    data,
+    isLoading,
+    error,
+  };
+}

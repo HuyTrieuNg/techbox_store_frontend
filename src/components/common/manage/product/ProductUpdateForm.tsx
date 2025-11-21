@@ -25,7 +25,7 @@ import { ProductDetail } from '@/features/productDetail';
 const productUpdateSchema = z.object({
   name: z.string().max(255, 'Tên sản phẩm không được vượt quá 255 ký tự').optional(),
   description: z.string().max(5000, 'Mô tả không được vượt quá 5000 ký tự').optional(),
-  categoryId: z.number().min(1, 'Danh mục là bắt buộc').optional(),
+  categoryId: z.number().min(1, 'Danh mục là bắt buộc'),
   brandId: z.number().min(1, 'Thương hiệu là bắt buộc').optional(),
   warrantyMonths: z.number().min(0, 'Thời gian bảo hành phải >= 0').optional(),
   attributes: z.array(z.object({
@@ -167,7 +167,7 @@ export default function ProductUpdateForm({ product, onSuccess }: ProductUpdateF
           {/* Attributes */}
           <div>
             <Label>Thuộc tính</Label>
-            {watch('attributes')?.map((_, index) => (
+            {watch('attributes')!.map((_, index) => (
               <div key={`attribute-${index}`} className="flex items-center space-x-2 mt-2">
                 <Controller
                   name={`attributes.${index}.attributeId`}
@@ -194,7 +194,7 @@ export default function ProductUpdateForm({ product, onSuccess }: ProductUpdateF
                     <Input {...field} placeholder="Giá trị" className="flex-1" />
                   )}
                 />
-                {watch('attributes')?.length > 1 && (
+                {watch('attributes')!.length > 1 && (
                   <Button type="button" variant="outline" size="sm" onClick={() => removeAttribute(index)}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -217,7 +217,7 @@ export default function ProductUpdateForm({ product, onSuccess }: ProductUpdateF
               render={({ field }) => (
                 <CategoryTree
                   categories={categories}
-                  selectedId={field.value}
+                  selectedId={field.value!}
                   onSelect={field.onChange}
                 />
               )}
