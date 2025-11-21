@@ -201,28 +201,30 @@ const ProductCard: React.FC<Props> = ({ product }) => {
           className="w-full h-48 object-contain mb-3"
         />
 
-        <h3 className="text-gray-800 dark:text-white font-bold mt-2 line-clamp-2">
+        <h3 className="text-gray-800 dark:text-white font-bold mt-2 line-clamp-1">
           {product.name}
         </h3>
 
-        {product.displaySalePrice ? (
-          <>
-            <p className="text-gray-400 dark:text-gray-500 line-clamp-1 text-xs mt-2 line-through">
+        <div className="min-h-[50px] flex flex-col justify-center">
+          {product.displaySalePrice ? (
+            <>
+              <p className="text-gray-400 dark:text-gray-500 line-clamp-1 text-xs mt-1 line-through">
+                {formatPrice(product.displayOriginalPrice)}
+              </p>
+              <p className="text-[#E61E4D] font-bold mt-1">
+                {formatPrice(product.displaySalePrice)}
+              </p>
+            </>
+          ) : product.displayOriginalPrice ? (
+            <p className="text-[#E61E4D] font-bold mt-1">
               {formatPrice(product.displayOriginalPrice)}
             </p>
-            <p className="text-[#E61E4D] font-bold mt-2">
-              {formatPrice(product.displaySalePrice)}
+          ) : (
+            <p className="text-[#E61E4D] font-bold mt-1">
+              Liên hệ
             </p>
-          </>
-        ) : product.displayOriginalPrice ? (
-          <p className="text-[#E61E4D] font-bold mt-2">
-            {formatPrice(product.displayOriginalPrice)}
-          </p>
-        ) : (
-          <p className="text-[#E61E4D] font-bold mt-2">
-            Liên hệ
-          </p>
-        )}
+          )}
+        </div>
 
         <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 mt-2 mb-2">
           <FaStar className="text-yellow-400" />

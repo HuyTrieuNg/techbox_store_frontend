@@ -6,7 +6,6 @@ export async function POST(request: NextRequest) {
   try {
     // Lấy refreshToken từ cookie
     const refreshToken = request.cookies.get('refreshToken')?.value;
-
     if (!refreshToken) {
       return NextResponse.json(
         { error: 'Refresh token không tồn tại' },
@@ -15,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Gọi API backend để refresh token
-    const response = await fetch(`${BACKEND_URL}/api/auth/refresh`, {
+    const response = await fetch(`${BACKEND_URL}/api/auth/refresh-token`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

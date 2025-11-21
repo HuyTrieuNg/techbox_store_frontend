@@ -1,18 +1,19 @@
 "use client";
 import ProductCard from "@/components/ProductCard";
 import { useProducts } from "@/hooks/useProduct";
-import React, { useState } from "react";
-import { FaChevronRight, FaHome, FaChevronDown, FaChevronUp } from "react-icons/fa";
+import React from "react";
+import { FaChevronRight, FaHome } from "react-icons/fa";
 import Link from "next/link";
-import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import { useCategories } from "@/hooks/useCategory";
+import { useWishlist } from "@/hooks/useWishList";
 
 export default function CategoryPage({ params }: { params: Promise<{ category: string }> }) {
   const { category } = React.use(params);
   const categoryId = Number(category);
   const { getCategoryById } = useCategories();
   const categoryDetail = getCategoryById(categoryId);
+  const { wishlistIds } = useWishlist();
 
   const { getBreadcrumbPath, isLoading: loadingCategories } = useCategories();
   const breadcrumb = getBreadcrumbPath(categoryId);
@@ -23,7 +24,9 @@ export default function CategoryPage({ params }: { params: Promise<{ category: s
     page: 0,
     size: 20,
   });
-if (breadcrumb.length === 0) return <div className="text-center py-10 text-red-500">Danh mục không tồn tại</div>;
+  if (isLoading) return <div className="text-center py-10 text-red-500 mb-30">Đang tải</div>;
+
+  // if (breadcrumb.length === 0) return <div className="text-center py-10 text-red-500">Danh mục không tồn tại</div>;
 
   return (
     <>
@@ -57,11 +60,14 @@ if (breadcrumb.length === 0) return <div className="text-center py-10 text-red-5
       {products.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product.id} product={{
+              ...product,
+              inWishlist: wishlistIds.has(product.id),
+            }} />
           ))}
         </div>
       ) : (
-        <p className="text-gray-500 italic">Không có sản phẩm.</p>
+        <p className="text-gray-500 italic mb-30">Không có sản phẩm.</p>
       )}
     </>
   );

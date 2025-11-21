@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { FaSearch, FaTimes } from "react-icons/fa";
 import { useDebounce } from "@/hooks/useDebounce";
 
-const baseUrl =  (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080') + '/api';
+const baseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080') + '/api';
 
 export default function SearchBox() {
     const router = useRouter();
@@ -34,7 +34,7 @@ export default function SearchBox() {
                     const data = await res.json();
                     // Giả sử API trả về { content: [...] }
                     const products = data.content || [];
-                    setSuggestions(products.slice(0, 5)); // Chỉ lấy 5 gợi ý
+                    setSuggestions(products);
                 }
             } catch (error) {
                 console.error("Search error:", error);
@@ -92,10 +92,14 @@ export default function SearchBox() {
                 )}
             </form>
 
-            {showSuggestions && (suggestions.length > 0 || isLoading) && (
+            {showSuggestions && (
                 <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 rounded-md shadow-xl border border-gray-200 dark:border-gray-700 max-h-96 overflow-y-auto z-50">
                     {isLoading ? (
                         <div className="p-4 text-center text-gray-500">Đang tìm...</div>
+                    ) : (!isLoading && suggestions.length === 0) ? (
+                        <div className="p-4 text-center text-gray-500 italic">
+                            Không tìm thấy sản phẩm...
+                        </div>
                     ) : (
                         suggestions.map((product) => (
                             <div
