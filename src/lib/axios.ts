@@ -43,8 +43,8 @@ axiosInstance.interceptors.response.use(
       const { status, config } = error.response;
       
       // Không log 401/403 cho các endpoint này (normal behavior)
-      const silentEndpoints = ['/users/me', '/cart'];
-      const shouldSilent = (status === 401 || status === 403) && 
+      const silentEndpoints = ['/users/me', '/cart' '/reviews/me'];
+      const shouldSilent = (status === 401 || status === 403 || status === 400) && 
                            silentEndpoints.some(endpoint => config?.url?.includes(endpoint));
                            
       

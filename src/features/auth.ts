@@ -9,8 +9,6 @@ export interface RegisterPayload {
   firstName: string;
   lastName: string;
   phone: string;
-  address: string;
-  dateOfBirth: Date;
   roleNames: string[];
 }
 

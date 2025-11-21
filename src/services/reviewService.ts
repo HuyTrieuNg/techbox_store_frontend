@@ -57,9 +57,11 @@ export class ReviewService {
     static async getMyReview(productId: number): Promise<Review | null> {
         try {
             return await api.get<Review>(`/products/${productId}/reviews/me`);
-            
+
         } catch (err: any) {
-            if (err.response?.status === 404) return null;
+            if (err.response?.status === 403 || err.response?.status === 400) {
+                return null;
+            }
             throw err;
         }
     }

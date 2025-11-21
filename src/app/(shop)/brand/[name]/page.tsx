@@ -1,26 +1,30 @@
-"use client";
 import React, { use } from "react";
-import ProductCard from "@/components/ProductCard";
-import { products } from "@/data/products";
-import { brands } from "@/data/brand";
 import { FaChevronRight, FaHome } from "react-icons/fa";
 import Link from "next/link";
+import { notFound } from "next/navigation";
+import ProductCard from "@/components/ProductCard";
+import BrandProductClient from "./BrandProduct";
 
-export default function BrandPage({
+const baseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080') + '/api';
+
+export default async function BrandPage({
   params,
 }: {
   params: Promise<{ name: string }>;
 }) {
-  const { name } = use(params);
+  const { name } = await params;
+  const nameId = Number(name);
+  if (isNaN(nameId)) notFound();
 
-  // Tìm thương hiệu tương ứng
-  const brandObj = brands.find(
-    (b) => b.name.toLowerCase() === decodeURIComponent(name).toLowerCase()
-  );
+  const [productsRes, brandRes] = await Promise.all([
+    fetch(`${baseUrl}/products?brandId=${nameId}`, { cache: "no-store" }),
+    fetch(`${baseUrl}/brands/${nameId}`, { cache: "no-store" })
+  ]);
 
-  // Lọc sản phẩm theo brand
-  const filteredProducts = products.filter((p) => p.brand_id === brandObj?.id);
+  if (!productsRes.ok || !brandRes.ok) notFound();
 
+  const products = await productsRes.json();
+  const brand = await brandRes.json();
   return (
     <>
       <div className="flex items-center text-gray-600 text-base mb-6">
@@ -29,22 +33,22 @@ export default function BrandPage({
           Trang chủ
         </Link>
         <FaChevronRight className="mx-2 text-gray-400" />
-        <span className="font-medium text-gray-800 uppercase">{name}</span>
+        <span className="font-medium text-gray-800 capitalize">{brand.name}</span>
       </div>
-
-      {/* Tiêu đề */}
-      <h1 className="text-2xl font-bold mb-6 uppercase">{name}</h1>
-
-      {/* Danh sách sản phẩm */}
-      {filteredProducts.length > 0 ? (
+      <h1 className="text-2xl font-bold mb-6 capitalize">{brand.name}</h1>
+      {/* {products.content.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+          {products.content.map((product: any) => (
+            <ProductCard key={product.id} product={{
+              ...product,
+              inWishlist: wishlistIds.has(product.id),
+            }}  />
           ))}
         </div>
       ) : (
-        <p className="text-gray-500">Không có sản phẩm cho thương hiệu này.</p>
-      )}
+        <p className="text-gray-500 italic mb-30">Không có sản phẩm.</p>
+      )} */}
+      <BrandProductClient products={products.content} />
     </>
   );
 }

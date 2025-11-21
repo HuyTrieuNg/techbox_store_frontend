@@ -54,16 +54,21 @@ export default function AccountPage() {
         }
     };
 
+    const getAge = (dateString: string) => {
+        const today = new Date();
+        const birthDate = new Date(dateString);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+
+        // Nếu chưa tới ngày sinh trong năm → trừ 1 tuổi
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
+    };
+
     const validateForm = (): boolean => {
         const errors: Record<string, string> = {};
-
-        if (!formData.email.trim()) {
-            errors.email = "Email là bắt buộc";
-        } else if (!isValidEmail(formData.email)) {
-            errors.email = "Email không hợp lệ";
-        } else if (formData.email.length < 6 || formData.email.length > 32) {
-            errors.email = "Email phải có độ dài từ 6 đến 32 ký tự";
-        }
 
         const nameRegex = /^[A-Za-zÀ-ỹ\s]+$/u;
         if (!formData.firstName.trim()) {
@@ -82,19 +87,28 @@ export default function AccountPage() {
             errors.lastName = "Họ phải có độ dài nhỏ hơn hoặc bằng 30 ký tự";
         }
 
-        const plainPhone = formData.phone.replace(/\s/g, "");
-        if (!formData.phone.trim()) {
-            errors.phone = "Số điện thoại là bắt buộc";
-        } else if (!/^[0-9]+$/.test(plainPhone)) {
-            errors.phone = "Số điện thoại chỉ được chứa ký tự số";
-        } else if (plainPhone.length < 10 || plainPhone.length > 11) {
-            errors.phone = "Số điện thoại phải có từ 10 đến 11 chữ số";
-        } else if (!isValidPhone(formData.phone)) {
-            errors.phone = "Số điện thoại không hợp lệ";
+
+        if (formData.phone.trim()) {
+            const plainPhone = formData.phone.replace(/\s/g, "");
+
+            if (!/^[0-9]+$/.test(plainPhone)) {
+                errors.phone = "Số điện thoại chỉ được chứa ký tự số";
+            } else if (plainPhone.length < 10 || plainPhone.length > 11) {
+                errors.phone = "Số điện thoại phải có từ 10 đến 11 chữ số";
+            } else if (!isValidPhone(formData.phone)) {
+                errors.phone = "Số điện thoại không hợp lệ";
+            }
         }
 
-        if (formData.dateOfBirth && isFutureDate(formData.dateOfBirth)) {
-            errors.dateOfBirth = "Ngày sinh không được là tương lai";
+        if (formData.dateOfBirth) {
+            if (isFutureDate(formData.dateOfBirth)) {
+                errors.dateOfBirth = "Ngày sinh không được là tương lai";
+            } else {
+                const age = getAge(formData.dateOfBirth);
+                if (age < 18) {
+                    errors.dateOfBirth = "Bạn phải đủ 18 tuổi để sử dụng dịch vụ";
+                }
+            }
         }
 
         setFieldErrors(errors);
@@ -177,7 +191,7 @@ export default function AccountPage() {
                                     value={formData.email}
                                     onChange={handleInputChange}
                                     className="border border-gray-300 rounded-md px-3 py-2 w-full focus:outline-none"
-                                // readOnly
+                                    readOnly
                                 />
                                 {/* <span className="ml-2 text-green-600 font-bold">✔</span> */}
                                 {fieldErrors.email && (

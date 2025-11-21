@@ -13,6 +13,7 @@ export default function AddressPage() {
   const { addresses, addAddress, deleteAddress, updateAddress } = useUser();
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [modalMode, setModalMode] = useState<"add" | "edit">("add");
   const [form, setForm] = useState({
     streetAddress: "",
     ward: "",
@@ -23,32 +24,9 @@ export default function AddressPage() {
     addressType: "",
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      if (editingAddress) {
-        // đang sửa
-        await updateAddress(editingAddress.id, form);
-        toast.success("Cập nhật địa chỉ thành công!");
-        setEditingAddress(null); // reset trạng thái edit
-      } else {
-        // đang thêm mới
-        await addAddress(form);
-        toast.success("Thêm địa chỉ thành công!");
-      }
-      // await addAddress(form);
-      // toast.success("Thêm địa chỉ thành công!");
-    } catch (error) {
-      if (editingAddress) {
-        toast.error("Cập nhật thất bại. Vui lòng thử lại.");
-      } else {
-        toast.error("Thêm địa chỉ thất bại. Mỗi người chỉ tối đa 3 địa chỉ");
-      }
-      // toast.error("Thêm địa chỉ thất bại. Mỗi người chỉ tối đa 3 địa chỉ");
-    }
-    // await addAddress(form);
-    console.log("Sending address:", form);
-    setIsOpen(false);
+  const openAddModal = () => {
+    setModalMode("add");
+    setEditingAddress(null);
     setForm({
       streetAddress: "",
       ward: "",
@@ -57,8 +35,95 @@ export default function AddressPage() {
       postalCode: "",
       isDefault: false,
       addressType: "",
-
     });
+    setIsOpen(true);
+  };
+
+  // Hàm mở modal SỬA
+  const handleEdit = (address: Address) => {
+    setModalMode("edit");
+    setEditingAddress(address);
+    setForm({
+      streetAddress: address.streetAddress,
+      ward: address.ward,
+      district: address.district,
+      city: address.city,
+      postalCode: address.postalCode || "",
+      isDefault: address.isDefault,
+      addressType: address.addressType,
+    });
+    setIsOpen(true);
+  };
+
+  // Khi đóng modal → reset hết
+  const closeModal = () => {
+    setIsOpen(false);
+    setEditingAddress(null);
+    setModalMode("add");
+    setForm({
+      streetAddress: "",
+      ward: "",
+      district: "",
+      city: "",
+      postalCode: "",
+      isDefault: false,
+      addressType: "",
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // try {
+    //   if (editingAddress) {
+    //     // đang sửa
+    //     await updateAddress(editingAddress.id, form);
+    //     toast.success("Cập nhật địa chỉ thành công!");
+    //     setEditingAddress(null); // reset trạng thái edit
+    //   } else {
+    //     // đang thêm mới
+    //     await addAddress(form);
+    //     toast.success("Thêm địa chỉ thành công!");
+    //   }
+    //   // await addAddress(form);
+    //   // toast.success("Thêm địa chỉ thành công!");
+    // } catch (error) {
+    //   if (editingAddress) {
+    //     toast.error("Cập nhật thất bại. Vui lòng thử lại.");
+    //   } else {
+    //     toast.error("Thêm địa chỉ thất bại. Mỗi người chỉ tối đa 3 địa chỉ");
+    //   }
+    //   // toast.error("Thêm địa chỉ thất bại. Mỗi người chỉ tối đa 3 địa chỉ");
+    // }
+    try {
+    if (modalMode === "edit" && editingAddress) {
+      await updateAddress(editingAddress.id, form);
+      toast.success("Cập nhật địa chỉ thành công!");
+    } else {
+      await addAddress(form);
+      toast.success("Thêm địa chỉ thành công!");
+    }
+    closeModal(); // Đóng và reset sạch
+  } catch (error: any) {
+    const msg = error?.message || "";
+    if (msg.includes("tối đa") || msg.includes("3")) {
+      toast.error("Mỗi tài khoản chỉ được có tối đa 3 địa chỉ!");
+    } else {
+      toast.error(modalMode === "edit" ? "Cập nhật thất bại!" : "Thêm địa chỉ thất bại!");
+    }
+  }
+    // await addAddress(form);
+    // console.log("Sending address:", form);
+    // setIsOpen(false);
+    // setForm({
+    //   streetAddress: "",
+    //   ward: "",
+    //   district: "",
+    //   city: "",
+    //   postalCode: "",
+    //   isDefault: false,
+    //   addressType: "",
+
+    // });
   };
 
 
@@ -75,19 +140,19 @@ export default function AddressPage() {
     }
   };
 
-  const handleEdit = (address: Address) => {
-    setEditingAddress(address);
-    setForm({
-      streetAddress: address.streetAddress,
-      ward: address.ward,
-      district: address.district,
-      city: address.city,
-      postalCode: address.postalCode,
-      isDefault: address.isDefault,
-      addressType: address.addressType,
-    });
-    setIsOpen(true); // mở Dialog
-  };
+  // const handleEdit = (address: Address) => {
+  //   setEditingAddress(address);
+  //   setForm({
+  //     streetAddress: address.streetAddress,
+  //     ward: address.ward,
+  //     district: address.district,
+  //     city: address.city,
+  //     postalCode: address.postalCode,
+  //     isDefault: address.isDefault,
+  //     addressType: address.addressType,
+  //   });
+  //   setIsOpen(true); // mở Dialog
+  // };
 
   // if (loading) return <p>Đang tải...</p>;
 
@@ -112,12 +177,34 @@ export default function AddressPage() {
           {/* Header */}
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-bold text-gray-800">Sổ địa chỉ</h2>
-            <button
+            {/* <button
               onClick={() => setIsOpen(true)}
               className="bg-[#E61E4D] text-white px-5 py-2 rounded-md hover:bg-[#c71a44] transition cursor-pointer"
             >
               + Thêm địa chỉ mới
-            </button>
+            </button> */}
+            {addresses.length < 3 ? (
+              // Chưa đủ 3 → cho thêm bình thường
+              <button
+                onClick={openAddModal}
+                className="bg-[#E61E4D] text-white px-5 py-2 rounded-md hover:bg-[#c71a44] transition cursor-pointer flex items-center gap-2"
+              >
+                <span className="text-xl leading-none">+</span>
+                Thêm địa chỉ mới
+              </button>
+            ) : (
+              // Đã đủ 3 → disable + thông báo
+              <div className="flex items-center gap-3">
+                <button
+                  disabled
+                  className="bg-gray-300 text-gray-500 px-5 py-2 rounded-md cursor-not-allowed flex items-center gap-2 opacity-70"
+                  title="Bạn đã đạt tối đa 3 địa chỉ"
+                >
+                  <span className="text-xl leading-none">+</span>
+                  Thêm địa chỉ mới
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Danh sách địa chỉ */}
@@ -186,14 +273,14 @@ export default function AddressPage() {
           <Dialog.Panel className="bg-white rounded-xl w-full max-w-lg p-6 shadow-xl relative">
             {/* Nút Đóng góc trên */}
             <button
-              onClick={() => setIsOpen(false)}
+              onClick={closeModal}
               className="absolute top-4 right-4 text-gray-500 hover:text-gray-600 transition cursor-pointer"
             >
               ✕
             </button>
 
             <Dialog.Title className="text-xl font-bold mb-6 text-gray-800">
-              {editingAddress ? "Cập nhật địa chỉ" : "Thêm địa chỉ mới"}
+              {modalMode === "edit" ? "Cập nhật địa chỉ" : "Thêm địa chỉ mới"}
             </Dialog.Title>
 
             <form onSubmit={handleSubmit} className="space-y-4">
