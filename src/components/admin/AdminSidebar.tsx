@@ -4,11 +4,11 @@ import { useState } from "react";
 import { Bell, DollarSign, House, Info, Mail, Menu, Settings, ShoppingBag, ShoppingCart, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { 
-  FiHome, 
-  FiPackage, 
-  FiShoppingCart, 
-  FiUsers, 
+import {
+  FiHome,
+  FiPackage,
+  FiShoppingCart,
+  FiUsers,
   FiBarChart2,
   FiSettings,
   FiGrid,
@@ -42,7 +42,7 @@ export default function AdminSidebar() {
   const menuItems = [
     { href: "/admin/dashboard", label: "Dashboard", icon: "FiHome" },
     { href: "/admin/products", label: "Sản phẩm", icon: "FiPackage" },
-    { href: "/admin/inventory/supplier", label: "Kho hàng", icon: "FiBox" },
+    { href: "/admin/inventory/low-stock", label: "Kho hàng", icon: "FiBox" },
     { href: "/admin/orders", label: "Đơn hàng", icon: "FiShoppingCart" },
     { href: "/admin/categories", label: "Danh mục", icon: "FiList" },
     { href: "/admin/brands", label: "Thương hiệu", icon: "FiTag" },

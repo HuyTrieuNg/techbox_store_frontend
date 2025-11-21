@@ -9,7 +9,8 @@ import {
   FiArrowDown,
   FiTrendingUp,
   FiFileText,
-  FiSettings
+  FiSettings,
+  FiAlertTriangle
 } from "react-icons/fi";
 
 export default function InventoryLayout({ children }: { children: React.ReactNode }) {
@@ -20,7 +21,7 @@ export default function InventoryLayout({ children }: { children: React.ReactNod
     { href: "/admin/inventory/adjustment", label: "Kiểm kho", icon: FiSettings },
     { href: "/admin/inventory/export", label: "Xuất", icon: FiArrowUp },
     { href: "/admin/inventory/import", label: "Nhập", icon: FiArrowDown },
-    { href: "/admin/inventory/report", label: "Báo cáo", icon: FiFileText },
+    { href: "/admin/inventory/low-stock", label: "Tồn kho thấp", icon: FiAlertTriangle },
   ];
 
   return (
@@ -39,11 +40,10 @@ export default function InventoryLayout({ children }: { children: React.ReactNod
 
             return (
               <Link key={item.href} href={item.href}>
-                <div className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                  isActive
+                <div className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${isActive
                     ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300'
                     : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-700'
-                }`}>
+                  }`}>
                   <IconComponent className="w-4 h-4" />
                   {item.label}
                 </div>
