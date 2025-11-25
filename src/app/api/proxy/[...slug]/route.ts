@@ -19,13 +19,13 @@ async function handleRequest(
   try {
     const { slug } = await params; // Next.js 15: params is async
     const apiPath = slug.join('/');
-    
+
     // Lấy accessToken từ cookie
     const accessToken = request.cookies.get('accessToken')?.value;
 
     // Build URL cho backend
     const backendUrl = `${BACKEND_URL}/api/${apiPath}`;
-    
+
     // Lấy query parameters từ request
     const { searchParams } = new URL(request.url);
     const queryString = searchParams.toString();
@@ -54,23 +54,14 @@ async function handleRequest(
 
     // Thêm body cho POST, PUT, PATCH
     if (['POST', 'PUT', 'PATCH'].includes(method)) {
-      try {
-        const contentType = request.headers.get('content-type') || '';
-        
-        if (contentType.includes('multipart/form-data')) {
-          // FormData: Pass directly
-          requestOptions.body = await request.formData() as any;
-          // Remove Content-Type để browser tự set với boundary
-          delete (headers as any)['Content-Type'];
-        } else {
-          // JSON/Text: Parse as text
-          const body = await request.text();
-          if (body) {
-            requestOptions.body = body;
-          }
-        }
-      } catch (error) {
-        console.error('Error reading request body:', error);
+      // Stream request body directly to backend
+      // This avoids buffering the entire request in memory
+      if (request.body) {
+        requestOptions.body = request.body;
+        // Important: Do NOT set duplex: 'half' for Node.js runtime in Next.js 13+ unless using edge runtime
+        // But for native fetch in Node 18+, we might need it if we pass a ReadableStream
+        // Next.js Request body is a ReadableStream.
+        (requestOptions as any).duplex = 'half';
       }
     }
 

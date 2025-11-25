@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
       } catch {
         // Backend không trả JSON, dùng message mặc định
       }
-      
+
       return NextResponse.json(
         { error: errorMessage },
         { status: response.status }
@@ -65,21 +65,21 @@ export async function POST(request: NextRequest) {
     );
 
     // Set HTTP-only cookies cho tokens
-    // Access Token - thời gian ngắn (15 phút)
+    // Access Token 
     res.cookies.set('accessToken', accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 60 * 15, // 15 phút
+      maxAge: 60 * 60 * 24 * 30, // 30 ngày
       path: '/',
     });
 
-    // Refresh Token - thời gian dài (7 ngày)
+    // Refresh Token 
     res.cookies.set('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 7 ngày
+      maxAge: 60 * 60 * 24 * 30,
       path: '/',
     });
 
