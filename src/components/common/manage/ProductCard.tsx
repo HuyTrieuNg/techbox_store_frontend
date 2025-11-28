@@ -95,7 +95,7 @@ export default function ProductCard({
       {/* Content */}
       <div className="p-4">
         {/* Product Name */}
-        <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[3rem]">
+        <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[3rem] break-words" title={product.name}>
           {product.name}
         </h3>
 

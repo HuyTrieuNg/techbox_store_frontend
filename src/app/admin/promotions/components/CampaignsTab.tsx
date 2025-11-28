@@ -169,10 +169,10 @@ export default function CampaignsTab() {
               className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
             >
               {/* Image */}
-              {campaign.imageUrl ? (
+              {(campaign.image || campaign.imageUrl) ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img
-                  src={campaign.imageUrl}
+                  src={campaign.image || campaign.imageUrl}
                   alt={campaign.name}
                   className="w-full h-48 object-cover"
                 />

@@ -9,12 +9,15 @@ export interface Campaign {
   description?: string;
   startDate: string;
   endDate: string;
-  imageUrl?: string;
+  image?: string;
+  imageID?: string;
+  imageUrl?: string; // Deprecated, use 'image' instead
   isActive: boolean;
   status?: 'ACTIVE' | 'SCHEDULED' | 'EXPIRED';
   createdAt: string;
   updatedAt: string;
   deleted?: boolean;
+  promotionCount?: number;
 }
 
 export interface Promotion {

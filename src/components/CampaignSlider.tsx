@@ -22,8 +22,8 @@ interface CampaignSliderProps {
     campaigns: Campaign[];
 }
 
-const CampaignPlaceholder = ({ name }: { name: string }) => (
-    <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white text-lg md:text-2xl font-bold h-full">
+const CampaignPlaceholder = ({ name, className = '' }: { name: string; className?: string }) => (
+    <div className={`bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white text-lg md:text-2xl font-bold h-full w-full ${className}`}>
         {name}
     </div>
 );
@@ -56,7 +56,7 @@ export default function CampaignSlider({ campaigns }: CampaignSliderProps) {
                                             src={campaign.image}
                                             alt={campaign.name}
                                             fill
-                                            className="object-obtain rounded-md"
+                                            className="object-cover rounded-md"
                                             priority
                                         />
                                         {/* <div className="absolute inset-0 bg-black bg-opacity-20 rounded-lg" /> */}
@@ -67,7 +67,7 @@ export default function CampaignSlider({ campaigns }: CampaignSliderProps) {
                                     </div>
 
                                 ) : (
-                                    <div className="h-48 md:h-64">
+                                    <div className="relative w-full h-full min-h-48 md:min-h-64">
                                         <CampaignPlaceholder name={campaign.name} />
                                     </div>
                                 )}

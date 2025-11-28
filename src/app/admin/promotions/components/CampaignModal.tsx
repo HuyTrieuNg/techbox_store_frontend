@@ -21,7 +21,7 @@ export default function CampaignModal({ campaign, onClose }: CampaignModalProps)
     endDate: campaign?.endDate ? new Date(campaign.endDate).toISOString().slice(0, 16) : '',
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string>(campaign?.imageUrl || '');
+  const [imagePreview, setImagePreview] = useState<string>(campaign?.image || campaign?.imageUrl || '');
   const [loading, setLoading] = useState(false);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {

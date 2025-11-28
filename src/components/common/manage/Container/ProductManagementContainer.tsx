@@ -80,7 +80,7 @@ export default function ProductManagementContainer() {
   }, [handleSortChange]);
 
   return (
-    <div className="space-y-6 bg-white dark:bg-gray-900 min-h-screen p-6">
+    <div className="space-y-6 bg-white dark:bg-gray-900 min-h-screen p-6 max-w-full overflow-x-hidden">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Quản lý sản phẩm</h1>
         <button 

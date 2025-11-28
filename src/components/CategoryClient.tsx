@@ -14,6 +14,63 @@ export default function CategoryMenuClient({ categories, type }: CategoryMenuCli
 
     console.log("Categories data:", categories);
 
+    // Giới hạn số danh mục hiển thị
+    const MAX_CATEGORIES = 10;
+    const MAX_SUBCATEGORIES = 8;
+    
+    const processCategories = (cats: Category[]) => {
+        if (!cats || cats.length === 0) return [];
+        
+        const processed = cats.map(cat => ({
+            ...cat,
+            childCategories: cat.childCategories && cat.childCategories.length > MAX_SUBCATEGORIES
+                ? [
+                    ...cat.childCategories.slice(0, MAX_SUBCATEGORIES),
+                    {
+                        id: `${cat.id}-other`,
+                        name: 'Khác',
+                        slug: 'other',
+                        childCategories: cat.childCategories.slice(MAX_SUBCATEGORIES).map(sub => ({
+                            ...sub,
+                            childCategories: sub.childCategories && sub.childCategories.length > MAX_SUBCATEGORIES
+                                ? [...sub.childCategories.slice(0, MAX_SUBCATEGORIES)]
+                                : sub.childCategories
+                        }))
+                    } as Category
+                ]
+                : cat.childCategories?.map(sub => ({
+                    ...sub,
+                    childCategories: sub.childCategories && sub.childCategories.length > MAX_SUBCATEGORIES
+                        ? [
+                            ...sub.childCategories.slice(0, MAX_SUBCATEGORIES),
+                            {
+                                id: `${sub.id}-other`,
+                                name: 'Khác',
+                                slug: 'other',
+                                childCategories: []
+                            } as Category
+                        ]
+                        : sub.childCategories
+                }))
+        }));
+        
+        if (processed.length > MAX_CATEGORIES) {
+            return [
+                ...processed.slice(0, MAX_CATEGORIES),
+                {
+                    id: 'other-main',
+                    name: 'Khác',
+                    slug: 'other',
+                    childCategories: processed.slice(MAX_CATEGORIES)
+                } as Category
+            ];
+        }
+        
+        return processed;
+    };
+    
+    const displayCategories = processCategories(categories);
+
     // if (error) return <div>Error: {error.message}</div>;
 
     // Menu cấp 2
@@ -27,7 +84,7 @@ export default function CategoryMenuClient({ categories, type }: CategoryMenuCli
                             <li key={brand.id} className="group/brand relative">
                                 <Link href={`/products/${brand.id}`} key={brand.id}>
                                     <div
-                                        className="w-full text-left px-6 py-3 text-gray-800 dark:text-gray-200 
+                                        className="w-full text-left px-4 py-2 text-sm text-gray-800 dark:text-gray-200 
                                                transition-all duration-200 flex items-center justify-between 
                                                cursor-pointer rounded-md 
                                                group-hover/brand:text-[#E61E4D]"
@@ -57,7 +114,7 @@ export default function CategoryMenuClient({ categories, type }: CategoryMenuCli
                                                 // className="text-gray-600 hover:text-[#E61E4D] px-6 py-3 cursor-pointer transition-colors duration-150"
                                                 >
                                                     <Link href={`/products/${series.id}`} key={series.id}>
-                                                        <div className="w-full text-left px-6 py-3 text-gray-800 dark:text-gray-200 transition-all duration-200 flex items-center justify-between cursor-pointer rounded-md hover:text-[#E61E4D]"
+                                                        <div className="w-full text-left px-4 py-2 text-sm text-gray-800 dark:text-gray-200 transition-all duration-200 flex items-center justify-between cursor-pointer rounded-md hover:text-[#E61E4D]"
                                                         >
                                                             {series.name}
                                                         </div>
@@ -86,13 +143,13 @@ export default function CategoryMenuClient({ categories, type }: CategoryMenuCli
                         z-20 transition-all duration-200 ease-in-out`}
         >
             <ul className="flex flex-col divide-y divide-gray-100 dark:divide-gray-700">
-                {categories?.map((category:any) => (
+                {displayCategories?.map((category:any) => (
 
                     <li key={category.id} className="group relative">
                         <Link href={`/products/${category.id}`} key={category.id}>
                             {/* Khi hover vào cả cha hoặc con, màu vẫn giữ */}
                             <div
-                                className="w-full text-left px-6 py-3 text-gray-800 dark:text-gray-200 
+                                className="w-full text-left px-4 py-2 text-sm text-gray-800 dark:text-gray-200 
                                        transition-all duration-200 flex items-center justify-between 
                                        cursor-pointer rounded-md 
                                        group-hover:bg-[#E61E4D]/90 group-hover:text-white"
