@@ -47,8 +47,8 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
         >
             <div className="space-y-2">
                 {messages.map((message, index) => {
-                    // Extract products array from paginated response: {content: [...], page: {...}}
-                    const productsToDisplay = (message.products as any)?.content || [];
+                    // message.products is already an array of products
+                    const productsToDisplay = message.products || [];
 
                     return (
                         <div key={index}>

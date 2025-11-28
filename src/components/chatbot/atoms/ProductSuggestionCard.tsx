@@ -10,7 +10,7 @@ import { FaStar } from 'react-icons/fa';
 
 interface ProductSuggestionCardProps {
     product: {
-        id: string;
+        id: number;
         name: string;
         imageUrl: string;
         displaySalePrice?: number;

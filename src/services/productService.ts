@@ -56,7 +56,7 @@ export class ProductService {
   }
 
   /**
-   * Fetch products by SPU IDs for chatbot suggestions
+   * Fetch products by SPU IDs (for both chatbot and AI search)
    * @param spus - Array of SPU IDs
    */
   static async fetchProductsBySpus(spus: string[]): Promise<any[]> {
@@ -65,8 +65,6 @@ export class ProductService {
     }
 
     try {
-      console.log('[ProductService] Fetching products for SPUs:', spus);
-
       const response = await axiosInstance.get('/products/by-spus', {
         params: {
           spus: spus,
@@ -77,11 +75,7 @@ export class ProductService {
         },
       });
 
-      console.log('[ProductService] Response from /products/by-spus:', response);
-
-      // The response from axiosInstance is already the data (due to interceptor)
-      // API returns paginated response: {content: [...], page: {...}}
-      // We need to extract the content array
+      // Extract content array from paginated response
       let products: any[] = [];
       if (response && typeof response === 'object') {
         if (Array.isArray(response)) {
@@ -90,8 +84,6 @@ export class ProductService {
           products = response.content;
         }
       }
-
-      console.log('[ProductService] Returning products:', products);
 
       return products;
     } catch (error) {

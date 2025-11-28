@@ -81,7 +81,9 @@ export function useChatbot() {
             let products = undefined;
             if (response.related_products && response.related_products.length > 0) {
                 console.log('[useChatbot] Fetching products for SPUs:', response.related_products);
-                products = await ProductService.fetchProductsBySpus(response.related_products);
+                const productResponse = await ProductService.fetchProductsBySpus(response.related_products);
+                // fetchProductsBySpus already returns the products array
+                products = Array.isArray(productResponse) ? productResponse : [];
                 console.log('[useChatbot] Fetched products:', products);
             }
 
