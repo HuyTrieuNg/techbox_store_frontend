@@ -14,6 +14,7 @@ import ProductReviewsSection from "./ProductReview";
 import { useProductReviews } from "@/hooks/useReview";
 import { useMyReview } from "@/hooks/useMyReview";
 import { useReviewSummary } from "@/hooks/useReviewSummary";
+import PersonalizedRecommendation from "@/components/PersonalizedRecommendation";
 
 export default function ProductDetailClient({ initialProduct }: { initialProduct: any }) {
     const { user } = useAuthContext();
@@ -144,6 +145,9 @@ export default function ProductDetailClient({ initialProduct }: { initialProduct
                 initialData={editingReview}
 
             />
+
+            {/* Gợi ý cho bạn */}
+            <PersonalizedRecommendation currentSpu={product.spu} />
         </>
     );
 }
