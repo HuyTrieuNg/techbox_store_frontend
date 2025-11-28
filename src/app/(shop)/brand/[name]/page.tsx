@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import ProductCard from "@/components/ProductCard";
 import BrandProductClient from "./BrandProduct";
 
-const baseUrl = (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080') + '/api';
+const baseUrl = (process.env.SPRING_BACKEND_URL || 'http://localhost:8080') + '/api';
 
 export default async function BrandPage({
   params,

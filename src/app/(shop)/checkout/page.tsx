@@ -10,6 +10,8 @@ import { useUser } from "@/hooks/useUser";               // <-- NEW
 import { useRouter } from "next/navigation";
 import { CartService } from "@/services/cartService";
 
+const baseUrl = (process.env.SPRING_BACKEND_URL || 'http://localhost:8080') + '/api';
+
 export default function CheckoutPage() {
   const router = useRouter();
 
@@ -256,7 +258,7 @@ export default function CheckoutPage() {
     }));
 
     try {
-      const res = await fetch(`http://localhost:8080/api/orders/calculate-discount`, {
+      const res = await fetch(`${baseUrl}/orders/calculate-discount`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -267,12 +269,13 @@ export default function CheckoutPage() {
 
       const data = await res.json();
 
-      if (!res.ok) {
+      if (!res.ok || data.voucherDetails.valid === false) {
         setVoucherError(data.message || "Mã không hợp lệ");
         setDiscountInfo(null);
       } else {
         setDiscountInfo(data);
         setVoucherError("");
+        
       }
     } catch (err) {
       setVoucherError("Lỗi kết nối, thử lại sau");

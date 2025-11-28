@@ -3,7 +3,7 @@ import ProductCard from "@/components/ProductCard";
 import { FaCalendarAlt, FaChevronRight, FaHome } from "react-icons/fa";
 import Link from "next/link";
 
-const baseUrl =  (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080') + '/api';
+const baseUrl =  (process.env.SPRING_BACKEND_URL || 'http://localhost:8080') + '/api';
 
 export default async function CampaignPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;

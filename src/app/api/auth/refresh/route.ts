@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+const BACKEND_URL = process.env.SPRING_BACKEND_URL || 'http://localhost:8080';
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,8 +18,8 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${refreshToken}`,
       },
+      body: JSON.stringify({ refreshToken }),
     });
 
     if (!response.ok) {
@@ -58,7 +58,8 @@ export async function POST(request: NextRequest) {
     // Access Token mới
     res.cookies.set('accessToken', accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      // secure: process.env.NODE_ENV === 'production',
+      secure: false,
       sameSite: 'lax',
       maxAge: 60 * 15, // 15 phút
       path: '/',
@@ -68,7 +69,8 @@ export async function POST(request: NextRequest) {
     if (newRefreshToken) {
       res.cookies.set('refreshToken', newRefreshToken, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        // secure: process.env.NODE_ENV === 'production',
+        secure: false,
         sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 7, // 7 ngày
         path: '/',

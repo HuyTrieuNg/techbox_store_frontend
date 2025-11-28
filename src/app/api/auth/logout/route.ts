@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080';
+const BACKEND_URL = process.env.SPRING_BACKEND_URL || 'http://localhost:8080';
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,21 +12,6 @@ export async function POST(request: NextRequest) {
         { error: 'No refresh token found' },
         { status: 401 }
       );
-    }
-
-    // Gọi backend logout endpoint (nếu có)
-    // Một số backend có endpoint để invalidate refresh token
-    try {
-      await fetch(`${BACKEND_URL}/api/auth/logout/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ refresh: refreshToken }),
-      });
-    } catch (backendError) {
-      // Backend logout failed, but we still clear cookies on frontend
-      console.error('[Logout] Backend logout failed:', backendError);
     }
 
     // Clear cookies

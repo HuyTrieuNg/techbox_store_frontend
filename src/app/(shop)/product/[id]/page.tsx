@@ -649,7 +649,7 @@ import ProductDetailClient from './ProductDetailClient';
 import React from 'react';
 import ProductSection from '@/components/ProductSection';
 
-const baseUrl =  (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080') + '/api';
+const baseUrl =  (process.env.SPRING_BACKEND_URL || 'http://localhost:8080') + '/api';
 
 export default async function ProductDetailPage({
     params,

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+const BACKEND_URL = process.env.SPRING_BACKEND_URL || 'http://localhost:8080';
 
 /**
  * Proxy handler cho tất cả API requests
@@ -39,7 +39,7 @@ async function handleRequest(
       headers['Authorization'] = `Bearer ${accessToken}`;
     }
 
-    // Copy Content-Type từ request (quan trọng cho FormData)
+    // Copy Content-Type từ request
     const contentType = request.headers.get('content-type');
     if (contentType) {
       headers['Content-Type'] = contentType;
@@ -55,22 +55,15 @@ async function handleRequest(
     // Thêm body cho POST, PUT, PATCH
     if (['POST', 'PUT', 'PATCH'].includes(method)) {
       // Stream request body directly to backend
-      // This avoids buffering the entire request in memory
       if (request.body) {
         requestOptions.body = request.body;
-        // Important: Do NOT set duplex: 'half' for Node.js runtime in Next.js 13+ unless using edge runtime
-        // But for native fetch in Node 18+, we might need it if we pass a ReadableStream
-        // Next.js Request body is a ReadableStream.
         (requestOptions as any).duplex = 'half';
       }
     }
 
     // DUMB PROXY: Chỉ stream request/response
-    // Token đã được refresh bởi Middleware (nếu cần)
     const response = await fetch(fullUrl, requestOptions);
 
-    // Stream response trực tiếp (không buffer, không retry)
-    // Middleware đã đảm bảo token valid, nên không cần xử lý 401
     return new NextResponse(response.body, {
       status: response.status,
       headers: {

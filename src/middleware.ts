@@ -34,63 +34,51 @@ function decodeJWT(token: string): { exp?: number } | null {
  * Kiểm tra xem token có sắp hết hạn không (trong vòng 5 phút)
  */
 function isTokenExpiringSoon(token: string): boolean {
-  // const decoded = decodeJWT(token);
-  // if (!decoded || !decoded.exp) return true;
+  const decoded = decodeJWT(token);
+  if (!decoded || !decoded.exp) return true;
 
-  // const now = Math.floor(Date.now() / 1000);
-  // const expiry = decoded.exp;
-  // const bufferTime = 5 * 60; // 5 minutes
+  const now = Math.floor(Date.now() / 1000);
+  const expiry = decoded.exp;
+  const bufferTime = 5 * 60; // 5 minutes
 
-  // // Token hết hạn hoặc sắp hết hạn trong 5 phút
-  // return expiry - now < bufferTime;
-  return false;
+  // Token hết hạn hoặc sắp hết hạn trong 5 phút
+  return expiry - now < bufferTime;
 }
 /**
  * Refresh access token
  */
-async function refreshAccessToken(
-  request: NextRequest,
-  refreshToken: string
-): Promise<string | null> {
+async function refreshAccessToken(request: NextRequest): Promise<NextResponse | null> {
   try {
-    console.log('🔄 [Middleware] Refreshing access token...');
-    
-    const refreshResponse = await fetch(
-      `${request.nextUrl.origin}/api/auth/refresh`,
-      {
-        method: 'POST',
-        headers: {
-          Cookie: `refreshToken=${refreshToken}`,
-        },
-      }
-    );
+    const response = await fetch(`${request.nextUrl.origin}/api/auth/refresh`, {
+      method: 'POST',
+      headers: { cookie: request.headers.get('cookie') || '' },
+      credentials: 'include',
+    });
 
-    if (!refreshResponse.ok) {
-      console.error('❌ [Middleware] Refresh failed:', refreshResponse.status);
-      return null;
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    const { accessToken, refreshToken: newRefreshToken } = data;
+    if (!accessToken) return null;
+
+    const res = NextResponse.next();
+    res.cookies.set('accessToken', accessToken, { httpOnly: true, secure: false, sameSite: 'lax', path: '/' });
+    if (newRefreshToken) {
+      res.cookies.set('refreshToken', newRefreshToken, { httpOnly: true, secure: false, sameSite: 'lax', path: '/' });
     }
 
-    // Extract new access token from Set-Cookie header
-    const setCookie = refreshResponse.headers.get('set-cookie');
-    const match = setCookie?.match(/accessToken=([^;]+)/);
-    
-    if (match && match[1]) {
-      console.log('[Middleware] Token refreshed successfully');
-      return match[1];
-    }
-
-    return null;
+    return res;
   } catch (error) {
-    console.error('[Middleware] Refresh error:', error);
+    console.error(error);
     return null;
   }
 }
+
 
 /**
  * Next.js Middleware
  * Reference: https://nextjs.org/docs/15/app/api-reference/file-conventions/middleware
  * 
- * Chức năng:
  * - Smart Token Management: Auto refresh token trước khi hết hạn
  * - Bảo vệ guest-only routes: Nếu đã login → redirect to home
  * - Đảm bảo token luôn hợp lệ trước khi request đến API Route
@@ -98,58 +86,36 @@ async function refreshAccessToken(
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
-  console.log('\n🔥 [Middleware] Request:', pathname);
+  console.log('\n [Middleware] Request:', pathname);
   
-  // Skip token check for auth routes
-  if (pathname.startsWith('/api/auth')) {
-    console.log('⏭️ [Middleware] Skipping auth routes');
-    return NextResponse.next();
-  }
+  // Đã bỏ qua trong matcher config
+  // if (pathname.startsWith('/api/auth')) {
+  //   console.log('⏭️ [Middleware] Skipping auth routes');
+  //   return NextResponse.next();
+  // }
   
   // Lấy tokens từ cookie
   const accessToken = request.cookies.get('accessToken')?.value;
   const refreshToken = request.cookies.get('refreshToken')?.value;
   const hasToken = !!accessToken;
 
-  // 🔐 SMART TOKEN MANAGEMENT
-  // Nếu có access token, kiểm tra xem có sắp hết hạn không
-  if (accessToken && refreshToken) {
-    if (isTokenExpiringSoon(accessToken)) {
-      console.log('⚠️ [Middleware] Token expiring soon, refreshing...');
-      
-      const newAccessToken = await refreshAccessToken(request, refreshToken);
-      
-      if (newAccessToken) {
-        // Clone response và set cookie mới
-        const response = NextResponse.next();
-        response.cookies.set('accessToken', newAccessToken, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          path: '/',
-        });
-        
-        console.log('[Middleware] Token refreshed, continuing request');
-        return response;
-      } else {
-        // Refresh thất bại → Clear cookies và redirect to login (nếu cần)
-        console.log('[Middleware] Refresh failed, clearing cookies');
-        const response = NextResponse.next();
-        response.cookies.delete('accessToken');
-        response.cookies.delete('refreshToken');
-        
-        // Nếu đang truy cập protected route → redirect to login
-        if (pathname.startsWith('/api/proxy')) {
-          return NextResponse.json(
-            { error: 'Phiên đăng nhập đã hết hạn' },
-            { status: 401 }
-          );
-        }
-        
-        return response;
-      }
+  // Tự động refresh token nếu sắp hết hạn
+  if (accessToken && refreshToken && isTokenExpiringSoon(accessToken)) {
+    console.log(' Token expiring soon → refreshing');
+    const refreshedResponse = await refreshAccessToken(request);
+
+    if (!refreshedResponse) {
+      // Refresh thất bại → clear cookies
+      const res = NextResponse.next();
+      res.cookies.delete('accessToken');
+      res.cookies.delete('refreshToken');
+      return res;
     }
+
+    // Refresh thành công → trả về response đã set cookie mới
+    return refreshedResponse;
   }
+
 
   // GUEST ONLY ROUTES PROTECTION
   const isGuestOnlyRoute = GUEST_ONLY_ROUTES.some(route => 
@@ -163,8 +129,6 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  // Token valid, continue
-  console.log('[Middleware] Request allowed');
   return NextResponse.next();
 }
 

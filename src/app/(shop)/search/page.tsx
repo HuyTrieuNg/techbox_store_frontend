@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FaSearch, FaChevronLeft, FaChevronRight, FaHome } from "react-icons/fa";
 import BrandProductClient from "../brand/[name]/BrandProduct";
 
-const baseUrl =  (process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8080') + '/api';
+const baseUrl =  (process.env.SPRING_BACKEND_URL || 'http://localhost:8080') + '/api';
 
 export default async function SearchPage({
     searchParams,

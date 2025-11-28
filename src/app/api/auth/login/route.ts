@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+const BACKEND_URL = process.env.SPRING_BACKEND_URL || 'http://localhost:8080';
+const ACCESS_TOKEN_EXPIRY = parseInt(process.env.ACCESS_TOKEN_EXPIRY || '3600', 10);
+const REFRESH_TOKEN_EXPIRY = parseInt(process.env.REFRESH_TOKEN_EXPIRY || '2592000', 10);
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,24 +26,18 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({ email, password }),
     });
 
-    // Kiểm tra response status TRƯỚC KHI parse JSON
     if (!response.ok) {
-      // Thử parse error message từ backend (nếu có)
       let errorMessage = 'Đăng nhập thất bại';
       try {
         const errorData = await response.json();
         errorMessage = errorData.message || errorMessage;
-      } catch {
-        // Backend không trả JSON, dùng message mặc định
-      }
+      } catch {}
 
       return NextResponse.json(
         { error: errorMessage },
         { status: response.status }
       );
     }
-
-    // Response OK → Parse JSON an toàn
     const data = await response.json();
 
     // Lấy token từ response
@@ -68,18 +64,20 @@ export async function POST(request: NextRequest) {
     // Access Token 
     res.cookies.set('accessToken', accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      // secure: process.env.NODE_ENV === 'production',
+      secure: false,
       sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 30, // 30 ngày
+      maxAge: ACCESS_TOKEN_EXPIRY,
       path: '/',
     });
 
     // Refresh Token 
     res.cookies.set('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
+      // secure: process.env.NODE_ENV === 'production',
+      secure: false,
       sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 30,
+      maxAge: REFRESH_TOKEN_EXPIRY,
       path: '/',
     });
 
