@@ -1,0 +1,96 @@
+/* Custom scrollbar styles for chatbot */
+.chatbot-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chatbot-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chatbot-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 3px;
+}
+
+.chatbot-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
+
+/* Dark mode scrollbar */
+.dark .chatbot-scrollbar::-webkit-scrollbar-thumb {
+  background: #4a5568;
+}
+
+.dark .chatbot-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #718096;
+}
+
+/* Markdown styles for chat messages */
+.prose-chatbot {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.prose-chatbot p {
+  margin: 0.5em 0;
+}
+
+.prose-chatbot p:first-child {
+  margin-top: 0;
+}
+
+.prose-chatbot p:last-child {
+  margin-bottom: 0;
+}
+
+.prose-chatbot ul,
+.prose-chatbot ol {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+
+.prose-chatbot li {
+  margin: 0.25em 0;
+}
+
+.prose-chatbot code {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 0.125em 0.25em;
+  border-radius: 0.25em;
+  font-size: 0.85em;
+}
+
+.prose-chatbot pre {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 0.75em;
+  border-radius: 0.375em;
+  overflow-x: auto;
+  margin: 0.5em 0;
+}
+
+.prose-chatbot pre code {
+  background: transparent;
+  padding: 0;
+}
+
+.prose-chatbot strong {
+  font-weight: 600;
+}
+
+.prose-chatbot a {
+  color: #3b82f6;
+  text-decoration: underline;
+}
+
+.prose-chatbot a:hover {
+  color: #2563eb;
+}
+
+/* Dark mode markdown styles */
+.dark .prose-chatbot code {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dark .prose-chatbot pre {
+  background: rgba(255, 255, 255, 0.1);
+}

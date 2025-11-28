@@ -13,6 +13,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  rewrites: async () => {
+    return [
+      {
+        source: '/aiproxy/:path*',
+        destination: `${process.env.AI_SERVICE_URL}/:path*`,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

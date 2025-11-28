@@ -1,6 +1,8 @@
 import { api } from "@/lib/axios";
 import { Category } from "@/features/category";
 import { ProductDetail } from "@/features/product";
+import axiosInstance from "@/lib/axios";
+import qs from "qs";
 
 export class ProductService {
   static async getAllCategories(): Promise<Category[]> {
@@ -51,5 +53,42 @@ export class ProductService {
     return api.get("product-variations", {
       params: { page, size },
     });
+  }
+
+  /**
+   * Fetch products by SPU IDs (for both chatbot and AI search)
+   * @param spus - Array of SPU IDs
+   */
+  static async fetchProductsBySpus(spus: string[]): Promise<any[]> {
+    if (!spus || spus.length === 0) {
+      return [];
+    }
+
+    try {
+      const response = await axiosInstance.get('/products/by-spus', {
+        params: {
+          spus: spus,
+          size: spus.length,
+        },
+        paramsSerializer: (params) => {
+          return qs.stringify(params, { arrayFormat: 'repeat' });
+        },
+      });
+
+      // Extract content array from paginated response
+      let products: any[] = [];
+      if (response && typeof response === 'object') {
+        if (Array.isArray(response)) {
+          products = response;
+        } else if (response.content && Array.isArray(response.content)) {
+          products = response.content;
+        }
+      }
+
+      return products;
+    } catch (error) {
+      console.error('[ProductService] Error fetching products by SPUs:', error);
+      return [];
+    }
   }
 }

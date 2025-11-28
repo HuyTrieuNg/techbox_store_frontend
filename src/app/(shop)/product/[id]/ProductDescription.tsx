@@ -26,6 +26,11 @@ export default function ProductDescription({ product, selected }: any) {
         tr: ({ children }: any) => <tr className="border-b border-gray-200">{children}</tr>,
         th: ({ children }: any) => <th className="px-4 py-2 text-left font-semibold text-gray-900">{children}</th>,
         td: ({ children }: any) => <td className="px-4 py-2 text-gray-600">{children}</td>,
+        img: ({ src, alt }: any) => {
+            // Prevent empty src attribute error
+            if (!src || src === '') return null;
+            return <img src={src} alt={alt || ''} className="max-w-full h-auto rounded-lg my-4" />;
+        },
     };
 
     return (
@@ -52,7 +57,7 @@ export default function ProductDescription({ product, selected }: any) {
                                 {product.attributes?.length > 0 && (
                                     <>
 
-                                        {product.attributes.map((attr:any) => (
+                                        {product.attributes.map((attr: any) => (
                                             <tr
                                                 key={`prod-${attr.id}`}
                                                 className="border border-gray-200 hover:bg-gray-50 transition"
@@ -70,7 +75,7 @@ export default function ProductDescription({ product, selected }: any) {
                                 {/* --- Nhóm thông tin biến thể (nếu có) --- */}
                                 {(selected?.attributes ?? []).length > 0 && (
                                     <>
-                                        {selected?.attributes.map((attr:any) => (
+                                        {selected?.attributes.map((attr: any) => (
                                             <tr
                                                 key={`var-${attr.id}`}
                                                 className="border border-gray-200 hover:bg-gray-50 transition"
@@ -97,13 +102,13 @@ export default function ProductDescription({ product, selected }: any) {
             </div>
 
             <div className="flex justify-center mt-4">
-                    <span
-                        onClick={() => setExpanded(!expanded)}
-                        className="text-[#E61E4D] hover:text-[#d41b46ff] cursor-pointer text-base font-medium transition-colors duration-200"
-                    >
-                        {expanded ? "Thu gọn" : "Xem thêm"}
-                    </span>
-                </div>
+                <span
+                    onClick={() => setExpanded(!expanded)}
+                    className="text-[#E61E4D] hover:text-[#d41b46ff] cursor-pointer text-base font-medium transition-colors duration-200"
+                >
+                    {expanded ? "Thu gọn" : "Xem thêm"}
+                </span>
+            </div>
         </div>
     );
 }
