@@ -17,6 +17,8 @@ export interface SearchResponse {
 const TEXT_SEARCH_ENDPOINT = '/aiproxy/search/text';
 const IMAGE_SEARCH_ENDPOINT = '/aiproxy/search/image';
 
+const RECOMMEND_ENDPOINT = '/aiproxy/recommend';
+
 export class SearchService {
     /**
      * Search products by text query (semantic search)
@@ -57,6 +59,25 @@ export class SearchService {
             return response.data.data || [];
         } catch (error) {
             console.error('[SearchService] Error searching by image:', error);
+            return [];
+        }
+    }
+
+    /**
+     * Get personalized product recommendations
+     * @param spus - List of SPUs from user history or current product
+     * @param topK - Number of recommendations to return (default: 5)
+     */
+    static async getRecommendations(spus: string[], topK: number = 5): Promise<SearchResult[]> {
+        try {
+            const response = await axios.post<SearchResponse>(RECOMMEND_ENDPOINT, {
+                spus,
+                top_k: topK,
+            });
+
+            return response.data.data || [];
+        } catch (error) {
+            console.error('[SearchService] Error getting recommendations:', error);
             return [];
         }
     }

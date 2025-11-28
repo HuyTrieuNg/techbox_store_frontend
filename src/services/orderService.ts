@@ -50,4 +50,9 @@ export class OrderService {
   static async cancelOrder(orderId: number): Promise<OrderResponse> {
     return api.put<OrderResponse>(`/orders/${orderId}/cancel`);
   }
+
+  // Lấy danh sách SPU từ các đơn hàng gần đây của user
+  static async getRecentProductSpus(k: number = 10): Promise<string[]> {
+    return api.get<string[]>(`/orders/recent-products-spus?k=${k}`);
+  }
 }

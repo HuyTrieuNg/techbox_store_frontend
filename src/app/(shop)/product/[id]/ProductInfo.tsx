@@ -37,7 +37,7 @@ export default function ProductInfo({ product, selected, selectedVariation, setS
             await CartService.addItem(selected.id, 1);
             await refreshCart();
             toast.success("Đã thêm vào giỏ hàng!");
-        } catch (err:any){
+        } catch (err: any) {
             // toast.error("Thêm giỏ hàng thất bại!");
             if (err?.response?.status === 401) {
                 requireLoginAddToCart();
@@ -72,6 +72,9 @@ export default function ProductInfo({ product, selected, selectedVariation, setS
                     </span>
                 )}
             </h1>
+            {product.spu && (
+                <p className="text-sm text-gray-500 mb-2">SPU: {product.spu}</p>
+            )}
 
             <p onClick={() => document.getElementById("reviews")?.scrollIntoView({ behavior: "smooth" })}
                 className="text-gray-600 mt-3 cursor-pointer hover:text-red-500 transition-colors">
@@ -155,7 +158,7 @@ export default function ProductInfo({ product, selected, selectedVariation, setS
                 </button>
             </div>
 
-            
+
         </div>
     );
 }

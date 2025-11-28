@@ -6,6 +6,7 @@ import 'swiper/css/pagination';
 import CampaignSection from "@/components/Campaign";
 import CategoryMenuServer from "@/components/CategoryServer";
 import ProductSection from "@/components/ProductSection";
+import PersonalizedRecommendation from "@/components/PersonalizedRecommendation";
 
 const HomePage = () => {
   return (
@@ -19,6 +20,9 @@ const HomePage = () => {
           <CampaignSection />
         </div>
       </div>
+
+      {/* Gợi ý cho bạn */}
+      <PersonalizedRecommendation />
 
       {/* Danh sách sản phẩm */}
       <section className="mb-10">

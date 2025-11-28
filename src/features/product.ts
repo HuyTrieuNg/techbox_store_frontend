@@ -100,6 +100,7 @@ export interface ProductVariation2 {
 export interface ProductDetail {
   id: number;
   name: string;
+  spu: string;
   description: string;
   categoryId: number;
   categoryName: string;
