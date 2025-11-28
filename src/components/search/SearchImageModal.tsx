@@ -4,7 +4,7 @@
 
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/UI/dialog';
 import { Button } from '@/components/UI/button';
@@ -22,6 +22,15 @@ export function SearchImageModal({ isOpen, onClose }: SearchImageModalProps) {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
+
+    // Reset state when modal opens
+    useEffect(() => {
+        if (isOpen) {
+            setSelectedFile(null);
+            setPreviewUrl(null);
+            if (fileInputRef.current) fileInputRef.current.value = '';
+        }
+    }, [isOpen]);
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];

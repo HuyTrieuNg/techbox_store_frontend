@@ -4,7 +4,7 @@ import Link from "next/link";
 import { FaSearch, FaChevronLeft, FaChevronRight, FaHome } from "react-icons/fa";
 import BrandProductClient from "../brand/[name]/BrandProduct";
 
-const baseUrl =  (process.env.SPRING_BACKEND_URL || 'http://localhost:8080') + '/api';
+const baseUrl = (process.env.SPRING_BACKEND_URL || 'http://localhost:8080') + '/api';
 
 export default async function SearchPage({
     searchParams,
@@ -62,11 +62,6 @@ export default async function SearchPage({
             {/* Danh sách sản phẩm */}
             {products.length > 0 ? (
                 <BrandProductClient products={products} />
-                // <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 mb-8">
-                //     {products.map((product: any) => (
-                //         <ProductCard key={product.id} product={product} />
-                //     ))}
-                // </div>
             ) : (
                 <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
                     <FaSearch className="mx-auto text-5xl text-gray-300 dark:text-gray-600 mb-4" />
@@ -82,16 +77,18 @@ export default async function SearchPage({
             {/* Phân trang */}
             {totalPages > 1 && (
                 <div className="flex justify-center items-center gap-2 mt-8">
-                    <Link
-                        href={`/search?q=${encodeURIComponent(query)}&page=${Math.max(0, page - 1)}`}
-                        className={`p-2 rounded-lg border ${page === 0
-                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                            : "bg-white hover:bg-gray-50 text-gray-700"
-                            } dark:border-gray-700`}
-                        onClick={(e) => page === 0 && e.preventDefault()}
-                    >
-                        <FaChevronLeft />
-                    </Link>
+                    {page === 0 ? (
+                        <div className="p-2 rounded-lg border bg-gray-100 text-gray-400 cursor-not-allowed dark:border-gray-700">
+                            <FaChevronLeft />
+                        </div>
+                    ) : (
+                        <Link
+                            href={`/search?q=${encodeURIComponent(query)}&page=${Math.max(0, page - 1)}`}
+                            className="p-2 rounded-lg border bg-white hover:bg-gray-50 text-gray-700 dark:border-gray-700"
+                        >
+                            <FaChevronLeft />
+                        </Link>
+                    )}
 
                     <div className="flex gap-1">
                         {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
@@ -114,16 +111,18 @@ export default async function SearchPage({
                         )}
                     </div>
 
-                    <Link
-                        href={`/search?q=${encodeURIComponent(query)}&page=${page + 1}`}
-                        className={`p-2 rounded-lg border ${page >= totalPages - 1
-                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                            : "bg-white hover:bg-gray-50 text-gray-700"
-                            } dark:border-gray-700`}
-                        onClick={(e) => page >= totalPages - 1 && e.preventDefault()}
-                    >
-                        <FaChevronRight />
-                    </Link>
+                    {page >= totalPages - 1 ? (
+                        <div className="p-2 rounded-lg border bg-gray-100 text-gray-400 cursor-not-allowed dark:border-gray-700">
+                            <FaChevronRight />
+                        </div>
+                    ) : (
+                        <Link
+                            href={`/search?q=${encodeURIComponent(query)}&page=${page + 1}`}
+                            className="p-2 rounded-lg border bg-white hover:bg-gray-50 text-gray-700 dark:border-gray-700"
+                        >
+                            <FaChevronRight />
+                        </Link>
+                    )}
                 </div>
             )}
 
