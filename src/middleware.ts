@@ -144,7 +144,7 @@ export const config = {
      * 
      * ✅ INCLUDE /api/proxy/* để check token!
      */
-    '/((?!_next/static|_next/image|favicon.ico|api/auth).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api/auth|api/generate).*)',
   ],
 };
 
