@@ -1,6 +1,8 @@
 import { api } from "@/lib/axios";
 import { Category } from "@/features/category";
 import { ProductDetail } from "@/features/product";
+import axiosInstance from "@/lib/axios";
+import qs from "qs";
 
 export class ProductService {
   static async getAllCategories(): Promise<Category[]> {
@@ -51,5 +53,50 @@ export class ProductService {
     return api.get("product-variations", {
       params: { page, size },
     });
+  }
+
+  /**
+   * Fetch products by SPU IDs for chatbot suggestions
+   * @param spus - Array of SPU IDs
+   */
+  static async fetchProductsBySpus(spus: string[]): Promise<any[]> {
+    if (!spus || spus.length === 0) {
+      return [];
+    }
+
+    try {
+      console.log('[ProductService] Fetching products for SPUs:', spus);
+
+      const response = await axiosInstance.get('/products/by-spus', {
+        params: {
+          spus: spus,
+          size: spus.length,
+        },
+        paramsSerializer: (params) => {
+          return qs.stringify(params, { arrayFormat: 'repeat' });
+        },
+      });
+
+      console.log('[ProductService] Response from /products/by-spus:', response);
+
+      // The response from axiosInstance is already the data (due to interceptor)
+      // API returns paginated response: {content: [...], page: {...}}
+      // We need to extract the content array
+      let products: any[] = [];
+      if (response && typeof response === 'object') {
+        if (Array.isArray(response)) {
+          products = response;
+        } else if (response.content && Array.isArray(response.content)) {
+          products = response.content;
+        }
+      }
+
+      console.log('[ProductService] Returning products:', products);
+
+      return products;
+    } catch (error) {
+      console.error('[ProductService] Error fetching products by SPUs:', error);
+      return [];
+    }
   }
 }
