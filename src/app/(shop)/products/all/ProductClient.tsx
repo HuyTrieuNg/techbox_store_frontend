@@ -121,12 +121,33 @@ export default function ProductsClient({ initialData, baseUrl, brands, categorie
     fetchProducts(newFilters);
   };
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = async (page: number) => {
+    setLoading(true);
     const params = new URLSearchParams(window.location.search);
     params.set("page", page.toString());
 
+    // Thêm các filter hiện tại vào params
+    if (filters.name) params.set("name", filters.name);
+    if (filters.brandId) params.set("brandId", filters.brandId.toString());
+    if (filters.categoryId) params.set("categoryId", filters.categoryId.toString());
+    if (filters.minPrice !== undefined) params.set("minPrice", filters.minPrice.toString());
+    if (filters.maxPrice !== undefined) params.set("maxPrice", filters.maxPrice.toString());
+
     window.history.replaceState({}, "", `${window.location.pathname}?${params.toString()}`);
-    fetchProducts();
+
+    try {
+      const res = await fetch(`${baseUrl}/products?${params.toString()}`);
+      if (res.ok) {
+        const newData = await res.json();
+        setData(newData);
+        // Scroll to top khi chuyển trang
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const searchType = searchParams.get('search_type');
