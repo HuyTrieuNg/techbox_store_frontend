@@ -51,39 +51,33 @@ export default function PaymentResultPage() {
         }
     };
     return (
-        <>
-            <div className="bg-gray-50 flex flex-col items-center justify-center px-4">
-                <div className="bg-white shadow-lg rounded-2xl p-8 max-w-xl w-full text-center border">
+        <div className="min-h-[calc(100vh-300px)] flex flex-col items-center justify-center px-4 py-12">
+            <div className="bg-white shadow-lg rounded-2xl p-8 max-w-xl w-full text-center border">
+                <div className="flex justify-center">
                     {renderIcon()}
-                    <h1 className={`text-2xl font-bold mb-3 ${result.type === "success" ? "text-green-600" : result.type === "warning" ? "text-yellow-600" : "text-red-600"}`}>
-                        {result.title}
-                    </h1>
-                    <p className="text-gray-700 mb-6">{result.message}</p>
+                </div>
+                <h1 className={`text-2xl font-bold mb-3 ${result.type === "success" ? "text-green-600" : result.type === "warning" ? "text-yellow-600" : "text-red-600"}`}>
+                    {result.title}
+                </h1>
+                <p className="text-gray-700 mb-6">{result.message}</p>
 
-                    <div className="mt-8 flex justify-center gap-4">
-                        {/* <Link
+                <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4">
+                    {responseCode === "00" && (
+                        <Link
                             href="/account/orders"
-                            className="bg-[#E61E4D] text-white px-5 py-2 rounded-lg font-semibold hover:bg-[#d41b46] transition"
+                            className="bg-[#E61E4D] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#d41b46] transition shadow-md text-center"
                         >
                             Xem đơn hàng
-                        </Link> */}
-                        {responseCode === "00" && (
-                            <Link
-                                href="/account/orders"
-                                className="bg-[#E61E4D] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#d41b46] transition shadow-md text-center"
-                            >
-                                Xem đơn hàng
-                            </Link>
-                        )}
-                        <button
-                            onClick={() => router.push("/")}
-                            className="flex items-center gap-2 px-5 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition cursor-pointer"
-                        >
-                            <FaArrowLeft /> Quay về trang chủ
-                        </button>
-                    </div>
+                        </Link>
+                    )}
+                    <button
+                        onClick={() => router.push("/")}
+                        className="flex items-center justify-center gap-2 px-5 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition cursor-pointer"
+                    >
+                        <FaArrowLeft /> Quay về trang chủ
+                    </button>
+                </div>
                 </div>
             </div>
-        </>
     );
 }

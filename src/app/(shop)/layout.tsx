@@ -21,7 +21,7 @@ export default function ShopLayout({ children }: { children: ReactNode }) {
       <Header />
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-6 py-6">
+      <main className="max-w-7xl mx-auto px-6 py-6 min-h-[calc(100vh-200px)]">
         {children}
       </main>
 
