@@ -23,8 +23,8 @@ export default function Header() {
 
         {/* Logo + Danh mục */}
         <div className="flex items-center">
-          <Link href="/" className="text-2xl font-bold text-[#E61E4D]">
-            TechBox
+          <Link href="/" className="flex items-center gap-3">
+            <img src="/techbox.png" alt="Techbox" className="h-12 w-auto" />
           </Link>
 
           <CategoryButton />

@@ -43,7 +43,10 @@ const AdminHeader = () => {
   return (
     <header className="bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700 mx-4 sm:mx-6 lg:mx-8 mt-4 mb-2 rounded-lg">
       <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 flex items-center justify-between">
-        <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900 dark:text-white">Techbox Store</h1>
+        <div className="flex items-center gap-3">
+          <img src="/techbox.png" alt="Techbox" className="h-12 w-auto" />
+          <span className="hidden sm:inline text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900 dark:text-white">Techbox Store</span>
+        </div>
 
         <div className="flex items-center space-x-3 sm:space-x-6">
           {/* Theme Toggle */}
