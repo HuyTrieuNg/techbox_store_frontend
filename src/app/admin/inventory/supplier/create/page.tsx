@@ -32,7 +32,7 @@ const CreateSupplierPage: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className=" mx-auto px-4 py-8">
       <div className="mb-8">
         <Button
           variant="ghost"

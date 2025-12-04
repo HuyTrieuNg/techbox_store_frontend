@@ -12,7 +12,6 @@ import { getBrands, getCategories, getAttributes, flattenCategories, uploadProdu
 import { Brand, Category } from '@/features/category';
 import axios from '@/lib/axios';
 import { useRouter } from 'next/navigation';
-import { sampleAttributes } from '@/components/common/manage/product/dump';
 
 // Zod schema for validation
 const productSchema = z.object({

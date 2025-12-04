@@ -31,18 +31,30 @@ async function handleRequest(
     const queryString = searchParams.toString();
     const fullUrl = queryString ? `${backendUrl}?${queryString}` : backendUrl;
 
-    // Chuẩn bị headers - KHÔNG set Content-Type mặc định
-    const headers: HeadersInit = {};
+    // Prepare headers - copy most headers from the incoming request, but filter hop-by-hop headers
+    // Also, automatically add Authorization header when we have access token.
+    const hopByHop = new Set([
+      'connection',
+      'keep-alive',
+      'proxy-authenticate',
+      'proxy-authorization',
+      'te',
+      'trailers',
+      'transfer-encoding',
+      'upgrade',
+    ]);
 
-    // Tự động gắn token nếu có
-    if (accessToken) {
-      headers['Authorization'] = `Bearer ${accessToken}`;
+    const headers: Record<string, string> = {};
+    for (const [key, value] of request.headers.entries()) {
+      const lower = key.toLowerCase();
+      if (hopByHop.has(lower)) continue;
+      if (lower === 'host') continue; // backend will set host
+      // copy all other headers
+      headers[key] = value;
     }
 
-    // Copy Content-Type từ request
-    const contentType = request.headers.get('content-type');
-    if (contentType) {
-      headers['Content-Type'] = contentType;
+    if (accessToken) {
+      headers['Authorization'] = `Bearer ${accessToken}`;
     }
 
     // Chuẩn bị request options
@@ -64,11 +76,20 @@ async function handleRequest(
     // DUMB PROXY: Chỉ stream request/response
     const response = await fetch(fullUrl, requestOptions);
 
+    // Copy response headers except hop-by-hop and keep set-cookie so browser can get cookies
+    const respHeaders: Record<string, string> = {};
+    for (const [key, value] of response.headers.entries()) {
+      const lower = key.toLowerCase();
+      if (hopByHop.has(lower)) continue;
+      // Some servers return multiple set-cookie headers which may need special handling.
+      // NextResponse supports 'set-cookie' in headers, but Node's fetch may return multiple values joined.
+      respHeaders[key] = value;
+    }
+
+    // Make the proxied response as close as possible to backend's response
     return new NextResponse(response.body, {
       status: response.status,
-      headers: {
-        'Content-Type': response.headers.get('Content-Type') || 'application/json',
-      },
+      headers: respHeaders,
     });
   } catch (error) {
     console.error('Proxy error:', error);

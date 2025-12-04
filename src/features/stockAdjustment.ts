@@ -15,6 +15,7 @@ export interface StockAdjustment {
   id: number;
   userId: number;
   userName: string | null;
+  documentCode: string;
   checkName: string;
   adjustmentDate: string;
   note: string;

@@ -142,7 +142,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - api/auth/* (auth routes don't need token check)
      * 
-     * ✅ INCLUDE /api/proxy/* để check token!
      */
     '/((?!_next/static|_next/image|favicon.ico|api/auth|api/generate).*)',
   ],

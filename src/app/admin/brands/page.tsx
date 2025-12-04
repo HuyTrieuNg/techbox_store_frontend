@@ -95,7 +95,7 @@ const AdminBrandsPage = () => {
   };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto bg-white dark:bg-gray-900 min-h-screen">
+    <div className="p-6 mx-auto bg-white dark:bg-gray-900 min-h-screen">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Brand Management</h1>
         <Button
