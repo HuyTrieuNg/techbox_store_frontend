@@ -7,6 +7,7 @@ import { FaHome, FaChevronRight, FaCalendarAlt, FaTruck, FaTimes } from "react-i
 import Image from "next/image";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
+import InvoicePdfDownload from '@/components/pdf/InvoicePdfDownload';
 import { useOrders } from "@/hooks/useOrder";
 
 export default function ManageOrderPage() {
@@ -201,13 +202,18 @@ export default function ManageOrderPage() {
                 leaveTo="opacity-0 translate-y-4 scale-95"
               >
                 <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                  <div className="flex justify-between items-center border-b border-gray-300 pb-3 mb-4">
+                      <div className="flex justify-between items-center border-b border-gray-300 pb-3 mb-4">
                     <Dialog.Title as="h3" className="text-xl font-bold text-gray-800">
                       Chi tiết đơn hàng #{selectedOrder?.orderCode}
                     </Dialog.Title>
-                    <button onClick={closeModal} className="text-gray-500 hover:text-red-500 cursor-pointer transition">
-                      <FaTimes size={20} />
-                    </button>
+                      <div className="flex items-center gap-2">
+                        {selectedOrder?.status === 'DELIVERED' && selectedOrder?.id && (
+                          <InvoicePdfDownload id={selectedOrder.id} type="order" />
+                        )}
+                        <button onClick={closeModal} className="text-gray-500 hover:text-red-500 cursor-pointer transition">
+                          <FaTimes size={20} />
+                        </button>
+                      </div>
                   </div>
 
                   {/* Thông tin chung */}

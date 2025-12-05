@@ -5,7 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { useStockExportDetail } from '@/hooks/useStockExport';
 import { Button } from '@/components/UI/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/UI/card';
-import { FiArrowLeft, FiDownload } from 'react-icons/fi';
+import { FiArrowLeft } from 'react-icons/fi';
+import InvoicePdfDownload from '@/components/pdf/InvoicePdfDownload';
 import { format } from 'date-fns';
 
 const StockExportDetailPage: React.FC = () => {
@@ -15,35 +16,11 @@ const StockExportDetailPage: React.FC = () => {
 
   const { data, loading, error } = useStockExportDetail(id);
 
-  const [exporting, setExporting] = useState(false);
 
   const handleBack = () => {
     router.push('/admin/inventory/export');
   };
 
-  const handleExportPdf = async () => {
-    try {
-      setExporting(true);
-      const res = await fetch(`/api/pdf/export?id=${id}`);
-      if (!res.ok) {
-        const text = await res.text();
-        console.error('Export failed', text);
-        setExporting(false);
-        return;
-      }
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `export-${data.documentCode || id}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error('Error exporting pdf', err);
-    } finally { setExporting(false); }
-  };
 
 
   if (loading) {
@@ -86,15 +63,12 @@ const StockExportDetailPage: React.FC = () => {
               Chi tiết phiếu xuất
             </h1>
             <p className="text-gray-600 dark:text-gray-400 mt-2">
-              Mã phiếu: {data.id}
+              Mã phiếu: {data.documentCode}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button onClick={handleExportPdf} className="flex items-center gap-2" disabled={exporting}>
-            <FiDownload className="w-4 h-4" />
-            {exporting ? 'Đang xuất...' : 'Xuất PDF'}
-          </Button>
+          <InvoicePdfDownload id={id} type="export" />
         </div>
       </div>
 

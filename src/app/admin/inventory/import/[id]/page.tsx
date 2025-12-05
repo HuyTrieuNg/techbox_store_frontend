@@ -5,7 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { useStockImportDetail } from '@/hooks/useStockImport';
 import { Button } from '@/components/UI/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/UI/card';
-import { FiArrowLeft, FiDownload } from 'react-icons/fi';
+import { FiArrowLeft } from 'react-icons/fi';
+import InvoicePdfDownload from '@/components/pdf/InvoicePdfDownload';
 import { format } from 'date-fns';
 
 const StockImportDetailPage: React.FC = () => {
@@ -15,37 +16,11 @@ const StockImportDetailPage: React.FC = () => {
 
   const { data, loading, error } = useStockImportDetail(id);
 
-  const [exporting, setExporting] = useState(false);
 
   const handleBack = () => {
     router.push('/admin/inventory/import');
   };
 
-  const handleExportPdf = async () => {
-    try {
-      setExporting(true);
-      const res = await fetch(`/api/pdf/import?id=${id}`);
-      if (!res.ok) {
-        const text = await res.text();
-        console.error('Export failed', text);
-        setExporting(false);
-        return;
-      }
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `import-${data.documentCode || id}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error('Error exporting pdf', err);
-    } finally {
-      setExporting(false);
-    }
-  };
 
 
   if (loading) {
@@ -93,10 +68,7 @@ const StockImportDetailPage: React.FC = () => {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button onClick={handleExportPdf} className="flex items-center gap-2" disabled={exporting}>
-            <FiDownload className="w-4 h-4" />
-            {exporting ? 'Đang xuất...' : 'Xuất PDF'}
-          </Button>
+          <InvoicePdfDownload id={id} type="import" />
         </div>
       </div>
 
@@ -244,7 +216,7 @@ const StockImportDetailPage: React.FC = () => {
                       {item.costPrice.toLocaleString('vi-VN')}₫
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                      {item.totalValue.toLocaleString('vi-VN')}₫
+                      {item.totalValue?.toLocaleString('vi-VN')}₫
                     </td>
                   </tr>
                 ))}

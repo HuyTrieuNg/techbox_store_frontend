@@ -36,9 +36,18 @@ export default function ProductSelectionModal({
   const { categories, isLoading: categoriesLoading } = useCategories();
 
   const [filters, setFilters] = useState<ProductFilterParams>({});
-  const [selectedProductIds, setSelectedProductIds] = useState<Set<number>>(
-    new Set(initialSelectedProducts.map(p => p.id))
+  // Maintain a map of selected product id => product object so we can return
+  // the full product data even if it's not in the currently displayed list
+  const [selectedProductsMap, setSelectedProductsMap] = useState<Map<number, any>>(
+    new Map(initialSelectedProducts.map(p => [p.id, p]))
   );
+  const [selectedProductIds, setSelectedProductIds] = useState<Set<number>>(new Set(initialSelectedProducts.map(p => p.id)));
+
+  // Keep the map in sync if initialSelectedProducts prop changes
+  useEffect(() => {
+    setSelectedProductsMap(new Map(initialSelectedProducts.map(p => [p.id, p])));
+    setSelectedProductIds(new Set(initialSelectedProducts.map(p => p.id)));
+  }, [initialSelectedProducts]);
 
   const { data: productsData, isLoading: productsLoading } = useSWR(
     ['products-management', filters, 0, 100], // page 0, size 100 for selection
@@ -69,13 +78,30 @@ export default function ProductSelectionModal({
     setFilters({});
   };
 
-  const toggleProductSelection = (productId: number) => {
+  const toggleProductSelection = (productId: number, productObj?: any) => {
     setSelectedProductIds(prev => {
       const newSet = new Set(prev);
       if (newSet.has(productId)) {
         newSet.delete(productId);
+        // also remove from the map
+        setSelectedProductsMap(map => {
+          const newMap = new Map(map);
+          newMap.delete(productId);
+          return newMap;
+        });
       } else {
         newSet.add(productId);
+        // add to map if provided (productObj) or if we can find it in current products
+        setSelectedProductsMap(map => {
+          const newMap = new Map(map);
+          if (productObj) {
+            newMap.set(productId, productObj);
+          } else {
+            const p = products?.find(p => p.id === productId);
+            if (p) newMap.set(productId, p);
+          }
+          return newMap;
+        });
       }
       return newSet;
     });
@@ -84,15 +110,33 @@ export default function ProductSelectionModal({
   const selectAllProducts = () => {
     if (products) {
       setSelectedProductIds(new Set(products.map(p => p.id)));
+      setSelectedProductsMap(map => {
+        const newMap = new Map(map);
+        products.forEach((p) => newMap.set(p.id, p));
+        return newMap;
+      });
     }
   };
 
   const clearSelection = () => {
     setSelectedProductIds(new Set());
+    setSelectedProductsMap(new Map());
   };
 
-  const handleConfirm = () => {
-    const selectedProducts = products?.filter(p => selectedProductIds.has(p.id)) || [];
+  const handleConfirm = async () => {
+    // Build the list of selected product objects from our map and the currently available products
+    const selectedProductsFromList = products?.filter(p => selectedProductIds.has(p.id)) || [];
+    const resultMap = new Map<number, any>(selectedProductsMap);
+    selectedProductsFromList.forEach(p => resultMap.set(p.id, p));
+
+    // For any selected ids not present in resultMap, try to find from initialSelectedProducts
+    initialSelectedProducts.forEach(p => {
+      if (selectedProductIds.has(p.id) && !resultMap.has(p.id)) {
+        resultMap.set(p.id, p);
+      }
+    });
+
+    const selectedProducts = Array.from(resultMap.values());
     onConfirm(selectedProducts);
     onClose();
   };
@@ -258,7 +302,7 @@ export default function ProductSelectionModal({
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-4">
                 <span className="text-sm text-gray-600 dark:text-gray-400">
-                  Đã chọn: {selectedProductIds.size} sản phẩm
+                  Đã chọn: {selectedProductsMap.size} sản phẩm
                 </span>
                 <button
                   onClick={selectAllProducts}
@@ -266,7 +310,7 @@ export default function ProductSelectionModal({
                 >
                   Chọn tất cả
                 </button>
-                {selectedProductIds.size > 0 && (
+                {selectedProductsMap.size > 0 && (
                   <button
                     onClick={clearSelection}
                     className="text-sm text-red-600 hover:text-red-800"
@@ -292,14 +336,14 @@ export default function ProductSelectionModal({
                   <div
                     key={product.id}
                     className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${
-                      selectedProductIds.has(product.id)
+                      selectedProductsMap.has(product.id)
                         ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
                         : 'bg-white dark:bg-gray-700 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
                     }`}
-                    onClick={() => toggleProductSelection(product.id)}
+                    onClick={() => toggleProductSelection(product.id, product)}
                   >
                     <div className="flex-shrink-0">
-                      {selectedProductIds.has(product.id) ? (
+                      {selectedProductsMap.has(product.id) ? (
                         <FiCheck className="w-5 h-5 text-blue-600" />
                       ) : (
                         <FiSquare className="w-5 h-5 text-gray-400" />
@@ -362,12 +406,12 @@ export default function ProductSelectionModal({
           >
             Hủy
           </button>
-          <button
+            <button
             onClick={handleConfirm}
-            disabled={selectedProductIds.size === 0}
+            disabled={selectedProductsMap.size === 0}
             className="w-full sm:w-auto px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
           >
-            Tiến hành kiểm kho ({selectedProductIds.size} sản phẩm)
+            Tiến hành kiểm kho ({selectedProductsMap.size} sản phẩm)
           </button>
         </div>
       </div>

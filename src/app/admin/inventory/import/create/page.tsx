@@ -338,11 +338,7 @@ const StockImportCreatePage: React.FC = () => {
                       Thành tiền: {(watchedItems?.[index]?.quantity * watchedItems?.[index]?.costPrice || 0).toLocaleString('vi-VN')}₫
                     </div>
                     </div>
-                    {/* ===============================
-                      THẺ DIV SỬA LỖI ĐƯỢC THÊM VÀO ĐÂY
-                      ===============================
-                      Thẻ này đóng <div key={field.id} ...> ở trên cùng của return
-                    */}
+                    
                   </div>
                 );
               })}

@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import React from 'react';
 import { pdf } from '@react-pdf/renderer';
 import AdjustmentDocument from '@/lib/pdfTemplates/AdjustmentDocument';
+import QRCode from 'qrcode';
 
 export const runtime = 'nodejs';
 
@@ -23,11 +24,15 @@ export async function GET(request: NextRequest) {
     }
 
     // Use react-pdf to render PDF directly from data
-    const doc = <AdjustmentDocument data={data} />;
-    const buffer = await pdf(doc).toBuffer();
-    const pdfBuffer: Buffer = buffer;
+    const frontendBase = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    // Link QR to inventory adjustment page instead of a /verify page
+    const verificationUrl = `${frontendBase}/admin/inventory/adjustment/${id}`;
+    const qrDataUrl = await QRCode.toDataURL(verificationUrl);
 
-    return new Response(pdfBuffer, {
+    const doc = <AdjustmentDocument data={data} qrImage={qrDataUrl} />;
+    const buffer = await pdf(doc).toBuffer();
+
+    return new Response(buffer as any, {
       status: 200,
       headers: {
         'Content-Type': 'application/pdf',

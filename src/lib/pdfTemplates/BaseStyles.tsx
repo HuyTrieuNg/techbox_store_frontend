@@ -13,6 +13,14 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 12,
   },
+  companyTitle: {
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  companyDetails: {
+    fontSize: 9,
+    color: '#333',
+  },
   title: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -22,14 +30,12 @@ export const styles = StyleSheet.create({
     color: '#444',
   },
   table: {
-    display: 'table',
     width: '100%',
     borderStyle: 'solid',
     borderColor: '#bfbfbf',
     borderWidth: 1,
     marginTop: 8,
   },
-  tableRow: { flexDirection: 'row' },
   tableRow: { flexDirection: 'row', alignItems: 'flex-start', flexWrap: 'nowrap', marginVertical: 2 },
   tableColHeader: { width: 'auto', padding: 6, backgroundColor: '#eee', borderRight: 1, borderColor: '#bfbfbf' },
   tableCol: { width: 'auto', padding: 6, borderRight: 1, borderColor: '#bfbfbf' },

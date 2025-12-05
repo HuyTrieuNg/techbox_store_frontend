@@ -5,7 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { useStockAdjustmentDetail } from '@/hooks/useStockAdjustment';
 import { Button } from '@/components/UI/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/UI/card';
-import { FiArrowLeft, FiDownload } from 'react-icons/fi';
+import { FiArrowLeft } from 'react-icons/fi';
+import InvoicePdfDownload from '@/components/pdf/InvoicePdfDownload';
 import { format } from 'date-fns';
 
 const AdjustmentDetailPage: React.FC = () => {
@@ -20,33 +21,6 @@ const AdjustmentDetailPage: React.FC = () => {
   };
 
 
-  const [exporting, setExporting] = useState(false);
-
-  const handleExportPdf = async () => {
-    try {
-      setExporting(true);
-      const res = await fetch(`/api/pdf/adjustment?id=${id}`);
-      if (!res.ok) {
-        const text = await res.text();
-        console.error('Export failed', text);
-        setExporting(false);
-        return;
-      }
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `adjustment-${data.documentCode || id}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error('Error exporting pdf', err);
-      setExporting(false);
-    }
-    setExporting(false);
-  };
 
   if (loading) {
     return (
@@ -95,10 +69,7 @@ const AdjustmentDetailPage: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button onClick={handleExportPdf} className="flex items-center gap-2" disabled={exporting}>
-            <FiDownload className="w-4 h-4" />
-            {exporting ? 'Đang xuất...' : 'Xuất PDF'}
-          </Button>
+          <InvoicePdfDownload id={id} type="adjustment" />
         </div>
       </div>
 

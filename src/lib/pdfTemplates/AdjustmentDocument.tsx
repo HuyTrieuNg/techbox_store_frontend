@@ -1,27 +1,36 @@
 import React from 'react';
-import { Document, Page, Text, View, Font, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, Text, View, Font, StyleSheet, Image } from '@react-pdf/renderer';
 import styles from './BaseStyles';
+import TechboxHeader from './TechboxHeader';
 import path from 'path';
 
 // Register fonts
 const registerRoboto = () => {
   try {
-    Font.register({
-      family: 'Roboto',
-      fonts: [
-        { src: path.join(process.cwd(), 'public/fonts/Roboto-Regular.ttf') },
-        { src: path.join(process.cwd(), 'public/fonts/Roboto-Bold.ttf'), fontWeight: 'bold' },
-      ],
-    });
+    const isBrowser = typeof window !== 'undefined';
+    const fonts = isBrowser
+      ? [
+          { src: '/fonts/Roboto-Regular.ttf', fontWeight: 'normal' as const },
+          { src: '/fonts/Roboto-Bold.ttf', fontWeight: 'bold' as const },
+        ]
+      : [
+          { src: path.join(process.cwd(), 'public/fonts/Roboto-Regular.ttf'), fontWeight: 'normal' as const },
+          { src: path.join(process.cwd(), 'public/fonts/Roboto-Bold.ttf'), fontWeight: 'bold' as const },
+        ];
+    Font.register({ family: 'Roboto', fonts });
   } catch (e) { console.warn('Failed to register fonts', e); }
 };
 
-export const AdjustmentDocument = ({ data }: { data: any }) => {
+export const AdjustmentDocument = ({ data, qrImage }: { data: any, qrImage?: string }) => {
   registerRoboto();
+  const items = data.items || [];
+  const numItemTypes = items.length;
+  const sumQuantities = items.reduce((t: number, it: any) => t + (it.realQty ?? it.quantity ?? it.systemQty ?? 0), 0);
 
   return (
     <Document>
       <Page size="A4" style={styles.page} wrap>
+        <TechboxHeader />
         <View style={styles.headerContainer} fixed>
           <View>
             <Text style={styles.title}>{`Phiếu kiểm kho: ${data.documentCode}`}</Text>
@@ -31,7 +40,8 @@ export const AdjustmentDocument = ({ data }: { data: any }) => {
           </View>
           <View>
             <Text style={styles.meta}>{`Tạo lúc: ${new Date(data.createdAt).toLocaleString('vi-VN')}`}</Text>
-            <Text style={styles.meta}>{`Tổng: ${data.totalItems ?? data.items?.length ?? 0} sản phẩm`}</Text>
+            <Text style={styles.meta}>{`Số loại mặt hàng: ${numItemTypes}`}</Text>
+            <Text style={styles.meta}>{`Tổng số sản phẩm: ${sumQuantities} sản phẩm`}</Text>
           </View>
         </View>
 
@@ -114,6 +124,11 @@ export const AdjustmentDocument = ({ data }: { data: any }) => {
           render={({ pageNumber, totalPages }) => `Trang ${pageNumber} / ${totalPages}`}
           fixed
         />
+        {qrImage && (
+          <View style={{ position: 'absolute', right: 40, bottom: 80 }}>
+            <Image src={qrImage} style={{ width: 82, height: 82 }} />
+          </View>
+        )}
       </Page>
     </Document>
   );

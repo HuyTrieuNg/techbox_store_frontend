@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import React from 'react';
 import { pdf } from '@react-pdf/renderer';
 import ImportDocument from '@/lib/pdfTemplates/ImportDocument';
+import QRCode from 'qrcode';
 
 export const runtime = 'nodejs';
 
@@ -17,11 +18,15 @@ export async function GET(request: NextRequest) {
     if (!data) {
       return new Response('Not found or unauthorized', { status: 404 });
     }
-    const doc = <ImportDocument data={data} />;
-    const buffer = await pdf(doc).toBuffer();
-    const pdfBuffer: Buffer = buffer;
+    const frontendBase = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    // Link QR to inventory import page instead of a /verify page
+    const verificationUrl = `${frontendBase}/admin/inventory/import/${id}`;
+    const qrDataUrl = await QRCode.toDataURL(verificationUrl);
 
-    return new Response(pdfBuffer, {
+    const doc = <ImportDocument data={data} qrImage={qrDataUrl} />;
+    const buffer = await pdf(doc).toBuffer();
+
+    return new Response(buffer as any, {
       status: 200,
       headers: { 'Content-Type': 'application/pdf', 'Content-Disposition': `attachment; filename=import-${data.documentCode || id}.pdf` },
     });

@@ -1,26 +1,39 @@
 import React from 'react';
-import { Document, Page, Text, View, Font } from '@react-pdf/renderer';
+import { Document, Page, Text, View, Font, Image } from '@react-pdf/renderer';
 import styles from './BaseStyles';
+import TechboxHeader from './TechboxHeader';
 import path from 'path';
 
 const registerRoboto = () => {
   try {
+    const isBrowser = typeof window !== 'undefined';
+    const fonts = isBrowser
+      ? [
+          { src: '/fonts/Roboto-Regular.ttf', fontWeight: 'normal' as const },
+          { src: '/fonts/Roboto-Bold.ttf', fontWeight: 'bold' as const },
+        ]
+      : [
+          { src: path.join(process.cwd(), 'public/fonts/Roboto-Regular.ttf'), fontWeight: 'normal' as const },
+          { src: path.join(process.cwd(), 'public/fonts/Roboto-Bold.ttf'), fontWeight: 'bold' as const },
+        ];
+
     Font.register({
       family: 'Roboto',
-      fonts: [
-        { src: path.join(process.cwd(), 'public/fonts/Roboto-Regular.ttf') },
-        { src: path.join(process.cwd(), 'public/fonts/Roboto-Bold.ttf'), fontWeight: 'bold' },
-      ],
+      fonts,
     });
   } catch (e) { console.warn('Failed to register fonts', e); }
 };
 
-export const ExportDocument = ({ data }: { data: any }) => {
+export const ExportDocument = ({ data, qrImage }: { data: any, qrImage?: string }) => {
   registerRoboto();
+  const items = data.items || [];
+  const numItemTypes = items.length;
+  const sumQuantities = items.reduce((t: number, it: any) => t + (it.quantity ?? 0), 0);
   return (
     <Document>
       <Page size="A4" style={styles.page} wrap>
-          <View style={styles.headerContainer} fixed>
+        <TechboxHeader />
+        <View style={styles.headerContainer} fixed>
           <View>
             <Text style={styles.title}>{`Phiếu xuất: ${data.documentCode}`}</Text>
             <Text style={styles.meta}>{`Mã đơn: ${data.orderCode || `#${data.orderId}`}`}</Text>
@@ -28,7 +41,8 @@ export const ExportDocument = ({ data }: { data: any }) => {
             <Text style={styles.meta}>{`Ngày xuất: ${new Date(data.createdAt).toLocaleString('vi-VN')}`}</Text>
           </View>
           <View>
-            <Text style={styles.meta}>{`Tổng: ${data.items?.length ?? data.totalItems ?? 0} sản phẩm`}</Text>
+            <Text style={styles.meta}>{`Số loại mặt hàng: ${numItemTypes}`}</Text>
+            <Text style={styles.meta}>{`Tổng số sản phẩm: ${sumQuantities} sản phẩm`}</Text>
             <Text style={styles.meta}>{`Tổng giá trị: ${data.totalCogsValue?.toLocaleString('vi-VN') ?? 0}₫`}</Text>
           </View>
         </View>
@@ -59,6 +73,11 @@ export const ExportDocument = ({ data }: { data: any }) => {
           <View style={styles.signatureCol}><Text>Người kiểm</Text><Text>________________________</Text></View>
           <View style={styles.signatureCol}><Text>Người duyệt</Text><Text>________________________</Text></View>
         </View>
+        {qrImage && (
+          <View style={{ position: 'absolute', right: 40, bottom: 80 }}>
+            <Image src={qrImage} style={{ width: 82, height: 82 }} />
+          </View>
+        )}
         <Text style={styles.footer} render={({ pageNumber, totalPages }) => `Trang ${pageNumber} / ${totalPages}`} fixed />
       </Page>
     </Document>
