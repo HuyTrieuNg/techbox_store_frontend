@@ -55,8 +55,12 @@ const AdminBrandsPage = () => {
       setBrands(brands.filter((b) => b.id !== id));
       toast.success('Brand deleted successfully!');
     } catch (error: any) {
-      const message = error?.response?.data?.message || 'Failed to delete brand';
-      toast.error(message);
+      if (error?.response?.status === 409) {
+        toast.error('Không thể xóa thương hiệu: còn sản phẩm');
+      } else {
+        const message = error?.response?.message || 'Failed to delete brand';
+        toast.error(message);
+      }
     } finally {
       setFormLoading(false);
     }

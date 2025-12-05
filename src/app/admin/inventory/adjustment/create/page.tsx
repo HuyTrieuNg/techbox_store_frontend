@@ -24,7 +24,7 @@ const adjustmentVariantSchema = z.object({
   variationName: z.string(),
   sku: z.string(),
   currentStock: z.number(),
-  actualQuantity: z.number().min(0, 'Số lượng thực tế không được âm'),
+  actualQuantity: z.number().min(0, 'Số lượng thực tế không được âm').nullable(),
   isChecked: z.boolean(),
 });
 
@@ -101,7 +101,7 @@ const CreateAdjustmentPage: React.FC = () => {
             variationName: variation.variationName,
             sku: variation.sku,
             currentStock: Number(variation.availableQuantity || 0),
-            actualQuantity: Number(variation.availableQuantity || 0),
+            actualQuantity: variation.availableQuantity === 0 ? null : Number(variation.availableQuantity || 0),
             isChecked: true,
           });
         });
@@ -144,7 +144,7 @@ const CreateAdjustmentPage: React.FC = () => {
 
           return {
             productVariationId: variant.productVariationId,
-            realQty: variant.actualQuantity,
+            realQty: variant.actualQuantity ?? 0,
             costPrice: originalVariation?.price || 0, // Using price as costPrice - may need to adjust based on API requirements
           };
         }),
@@ -362,8 +362,16 @@ const CreateAdjustmentPage: React.FC = () => {
                                     type="number"
                                     min="0"
                                     {...field}
-                                    value={field.value || ''}
-                                    onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                                    value={field.value === null ? '' : String(field.value)}
+                                    onChange={(e) => {
+                                      const val = e.target.value;
+                                      if (val === '') {
+                                        field.onChange(null);
+                                      } else {
+                                        const parsed = Number(val);
+                                        field.onChange(Number.isNaN(parsed) ? null : parsed);
+                                      }
+                                    }}
                                     className={`w-24 ${errors.variants?.[index]?.actualQuantity ? 'border-red-500' : ''}`}
                                   />
                                 )}

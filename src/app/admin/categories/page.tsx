@@ -60,8 +60,13 @@ export default function AdminCategoriesPage() {
       toast.success('Category deleted successfully!');
     } catch (e: any) {
       console.error("Error deleting category:", e);
-      const message = e?.response?.data?.message || 'Failed to delete category';
-      toast.error(message);
+      // If the API returns HTTP 409 Conflict, it means the category still has products
+      if (e?.response?.status === 409) {
+        toast.error('Không thể xóa danh mục: còn sản phẩm');
+      } else {
+        const message = e?.response?.data?.message || 'Failed to delete category';
+        toast.error(message);
+      }
     }
     setFormLoading(false);
   };

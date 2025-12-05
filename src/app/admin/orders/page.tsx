@@ -4,9 +4,12 @@ import { useState } from "react";
 import InvoicePdfDownload from '@/components/pdf/InvoicePdfDownload';
 import { useAdminOrders } from "@/hooks/useAdminOrders";
 import { OrderResponse } from "@/features/order";
+import { Button } from "@/components/UI/button";
+import { FaFileInvoice } from "react-icons/fa";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const ORDER_STATUS_MESSAGES: Record<string, string> = {
-  PENDING: "Đang chờ xử lý",
   CONFIRMED: "Đã xác nhận",
   PROCESSING: "Đang xử lý",
   SHIPPING: "Đang giao hàng",
@@ -170,7 +173,6 @@ export default function AdminOrders() {
             className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="ALL">Tất cả trạng thái</option>
-            <option value="PENDING">Đang chờ xử lý</option>
             <option value="CONFIRMED">Đã xác nhận</option>
             <option value="PROCESSING">Đang xử lý</option>
             <option value="SHIPPING">Đang giao hàng</option>
@@ -286,13 +288,18 @@ export default function AdminOrders() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {formatDate(order.createdAt)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex flex-row items-center">
                         <button
                           onClick={() => handleViewDetail(order)}
                           className="text-blue-600 hover:text-blue-900 mr-4"
                         >
                           Chi tiết
                         </button>
+
+                        <Link href={`/admin/orders/${order.id}`}>
+                            <FaFileInvoice className="w-5 h-5" />
+                        </Link>
+
                       </td>
                     </tr>
                   ))
