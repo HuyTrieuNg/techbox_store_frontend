@@ -55,8 +55,12 @@ const AdminBrandsPage = () => {
       setBrands(brands.filter((b) => b.id !== id));
       toast.success('Brand deleted successfully!');
     } catch (error: any) {
-      const message = error?.response?.data?.message || 'Failed to delete brand';
-      toast.error(message);
+      if (error?.response?.status === 409) {
+        toast.error('Không thể xóa thương hiệu: còn sản phẩm');
+      } else {
+        const message = error?.response?.message || 'Failed to delete brand';
+        toast.error(message);
+      }
     } finally {
       setFormLoading(false);
     }
@@ -95,7 +99,7 @@ const AdminBrandsPage = () => {
   };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto bg-white dark:bg-gray-900 min-h-screen">
+    <div className="p-6 mx-auto bg-white dark:bg-gray-900 min-h-screen">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Brand Management</h1>
         <Button

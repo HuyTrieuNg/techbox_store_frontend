@@ -33,7 +33,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
       {/* Main Content Area */}
       <div className="flex flex-col flex-1 overflow-auto">
-        <div className="max-w-7xl mx-auto w-full">
+        <div className=" mx-auto w-full">
           {/* Header - Sticky top */}
           <AdminHeader />
 

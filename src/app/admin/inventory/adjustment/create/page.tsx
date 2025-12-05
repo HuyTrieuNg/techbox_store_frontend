@@ -24,7 +24,7 @@ const adjustmentVariantSchema = z.object({
   variationName: z.string(),
   sku: z.string(),
   currentStock: z.number(),
-  actualQuantity: z.number().min(0, 'Số lượng thực tế không được âm'),
+  actualQuantity: z.number().min(0, 'Số lượng thực tế không được âm').nullable(),
   isChecked: z.boolean(),
 });
 
@@ -76,8 +76,14 @@ const CreateAdjustmentPage: React.FC = () => {
   const watchedVariants = watch('variants');
 
   const handleProductSelection = (products: any[]) => {
+  
     setSelectedProducts(products);
     // The productDetailQueries will update automatically when selectedProducts changes
+  };
+
+  // Allow explicitly removing selected product
+  const removeSelectedProduct = (productId: number) => {
+    setSelectedProducts((prev) => prev.filter((p) => p.id !== productId));
   };
 
   // Effect to create variant entries when product variations are loaded
@@ -95,7 +101,7 @@ const CreateAdjustmentPage: React.FC = () => {
             variationName: variation.variationName,
             sku: variation.sku,
             currentStock: Number(variation.availableQuantity || 0),
-            actualQuantity: Number(variation.availableQuantity || 0),
+            actualQuantity: variation.availableQuantity === 0 ? null : Number(variation.availableQuantity || 0),
             isChecked: true,
           });
         });
@@ -104,6 +110,13 @@ const CreateAdjustmentPage: React.FC = () => {
       replace(variantEntries);
     }
   }, [selectedProducts, variationsLoading, productVariations, replace]);
+
+  // Clear variants if user deselects all products
+  React.useEffect(() => {
+    if (selectedProducts.length === 0) {
+      replace([]);
+    }
+  }, [selectedProducts, replace]);
 
   const toggleVariantCheck = (index: number) => {
     const currentValue = watchedVariants[index]?.isChecked;
@@ -131,7 +144,7 @@ const CreateAdjustmentPage: React.FC = () => {
 
           return {
             productVariationId: variant.productVariationId,
-            realQty: variant.actualQuantity,
+            realQty: variant.actualQuantity ?? 0,
             costPrice: originalVariation?.price || 0, // Using price as costPrice - may need to adjust based on API requirements
           };
         }),
@@ -145,12 +158,12 @@ const CreateAdjustmentPage: React.FC = () => {
   };
 
   const adjustmentReasons = [
-    { value: 'damaged_goods', label: 'Hàng hỏng' },
-    { value: 'lost_goods', label: 'Hàng thất lạc' },
-    { value: 'inventory_count', label: 'Kiểm kê kho' },
-    { value: 'supplier_return', label: 'Trả nhà cung cấp' },
-    { value: 'customer_return', label: 'Hàng trả lại từ khách' },
-    { value: 'system_error', label: 'Lỗi hệ thống' },
+    { value: 'Hàng hỏng', label: 'Hàng hỏng' },
+    { value: 'Hàng thất lạc', label: 'Hàng thất lạc' },
+    { value: 'Kiểm kê kho', label: 'Kiểm kê kho' },
+    { value: 'Trả nhà cung cấp', label: 'Trả nhà cung cấp' },
+    { value: 'Hàng trả lại từ khách', label: 'Hàng trả lại từ khách' },
+    { value: 'Lỗi hệ thống', label: 'Lỗi hệ thống' },
     { value: 'other', label: 'Khác' },
   ];
 
@@ -320,7 +333,16 @@ const CreateAdjustmentPage: React.FC = () => {
                               </button>
                             </td>
                             <td className="border border-gray-200 dark:border-gray-700 px-4 py-2 text-sm">
-                              {field.productName}
+                              <div className="flex items-center justify-between">
+                                <span>{field.productName}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => removeSelectedProduct(field.productId)}
+                                  className="ml-2 text-xs px-2 py-1 rounded bg-red-50 text-red-600 hover:bg-red-100"
+                                >
+                                  Bỏ chọn
+                                </button>
+                              </div>
                             </td>
                             <td className="border border-gray-200 dark:border-gray-700 px-4 py-2 text-sm">
                               {field.variationName}
@@ -340,8 +362,16 @@ const CreateAdjustmentPage: React.FC = () => {
                                     type="number"
                                     min="0"
                                     {...field}
-                                    value={field.value || ''}
-                                    onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                                    value={field.value === null ? '' : String(field.value)}
+                                    onChange={(e) => {
+                                      const val = e.target.value;
+                                      if (val === '') {
+                                        field.onChange(null);
+                                      } else {
+                                        const parsed = Number(val);
+                                        field.onChange(Number.isNaN(parsed) ? null : parsed);
+                                      }
+                                    }}
                                     className={`w-24 ${errors.variants?.[index]?.actualQuantity ? 'border-red-500' : ''}`}
                                   />
                                 )}

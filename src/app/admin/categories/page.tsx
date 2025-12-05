@@ -11,6 +11,7 @@ import {
   checkCategoryExistsForUpdate,
   Category,
 } from "@/services/categoryService";
+import { Button } from "@/components/UI/button";
 import { toast } from "sonner";
 
 export default function AdminCategoriesPage() {
@@ -59,8 +60,13 @@ export default function AdminCategoriesPage() {
       toast.success('Category deleted successfully!');
     } catch (e: any) {
       console.error("Error deleting category:", e);
-      const message = e?.response?.data?.message || 'Failed to delete category';
-      toast.error(message);
+      // If the API returns HTTP 409 Conflict, it means the category still has products
+      if (e?.response?.status === 409) {
+        toast.error('Không thể xóa danh mục: còn sản phẩm');
+      } else {
+        const message = e?.response?.data?.message || 'Failed to delete category';
+        toast.error(message);
+      }
     }
     setFormLoading(false);
   };
@@ -139,16 +145,16 @@ export default function AdminCategoriesPage() {
   };
 
   return (
-    <div className="p-6 max-w-2xl mx-auto bg-white dark:bg-gray-900 min-h-screen">
+    <div className="p-6 mx-auto bg-white dark:bg-gray-900 min-h-screen">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Quản lý Danh mục</h1>
-        <button
-          className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 text-white px-4 py-2 rounded transition"
+        
+        <Button
           onClick={handleAdd}
           disabled={formLoading}
         >
-          Thêm mới
-        </button>
+          + Thêm mới
+        </Button>
       </div>
       {error && <div className="text-red-500 dark:text-red-400 mb-2">{error}</div>}
       <CategoryList

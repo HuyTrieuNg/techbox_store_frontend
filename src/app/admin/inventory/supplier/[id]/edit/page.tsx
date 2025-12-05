@@ -57,7 +57,7 @@ const EditSupplierPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className=" mx-auto px-4 py-8">
         <div className="animate-pulse">
           <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4"></div>
           <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded"></div>
@@ -68,7 +68,7 @@ const EditSupplierPage: React.FC = () => {
 
   if (!supplier) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className=" mx-auto px-4 py-8">
         <div className="text-center">
           <p className="text-gray-500 dark:text-gray-400">
             Không tìm thấy nhà cung cấp
@@ -79,7 +79,7 @@ const EditSupplierPage: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className=" mx-auto px-4 py-8">
       <div className="mb-8">
         <Button
           variant="ghost"

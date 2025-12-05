@@ -1,11 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useStockExportDetail } from '@/hooks/useStockExport';
 import { Button } from '@/components/UI/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/UI/card';
-import { FiArrowLeft, FiPrinter } from 'react-icons/fi';
+import { FiArrowLeft } from 'react-icons/fi';
+import InvoicePdfDownload from '@/components/pdf/InvoicePdfDownload';
 import { format } from 'date-fns';
 
 const StockExportDetailPage: React.FC = () => {
@@ -15,13 +16,12 @@ const StockExportDetailPage: React.FC = () => {
 
   const { data, loading, error } = useStockExportDetail(id);
 
+
   const handleBack = () => {
     router.push('/admin/inventory/export');
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
+
 
   if (loading) {
     return (
@@ -63,14 +63,13 @@ const StockExportDetailPage: React.FC = () => {
               Chi tiết phiếu xuất
             </h1>
             <p className="text-gray-600 dark:text-gray-400 mt-2">
-              Mã phiếu: {data.id}
+              Mã phiếu: {data.documentCode}
             </p>
           </div>
         </div>
-        <Button onClick={handlePrint} className="flex items-center gap-2">
-          <FiPrinter className="w-4 h-4" />
-          In phiếu
-        </Button>
+        <div className="flex items-center gap-2">
+          <InvoicePdfDownload id={id} type="export" />
+        </div>
       </div>
 
       {/* Basic Information */}

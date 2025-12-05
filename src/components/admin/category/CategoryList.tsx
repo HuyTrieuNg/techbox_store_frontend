@@ -81,13 +81,15 @@ const CategoryList: React.FC<CategoryListProps> = ({ categories, onEdit, onDelet
                 >
                   <FiEdit size={18} />
                 </button>
-                <button 
-                  title="Xóa danh mục"
-                  className="p-1 text-red-500 hover:bg-red-100 rounded transition-colors" 
-                  onClick={() => onDelete(cat)}
-                >
-                  <FiTrash2 size={18} />
-                </button>
+                {!hasChildren && (
+                  <button 
+                    title="Xóa danh mục"
+                    className="p-1 text-red-500 hover:bg-red-100 rounded transition-colors" 
+                    onClick={() => onDelete(cat)}
+                  >
+                    <FiTrash2 size={18} />
+                  </button>
+                )}
               </div>
             </div>
             

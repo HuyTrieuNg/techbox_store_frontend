@@ -25,7 +25,7 @@ export default function InventoryLayout({ children }: { children: React.ReactNod
   ];
 
   return (
-    <div className="container mx-auto px-4 py-6">
+    <div className="mx-auto px-4 py-6">
       {/* Inventory Navigation */}
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-4">

@@ -1,11 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import InvoicePdfDownload from '@/components/pdf/InvoicePdfDownload';
 import { useAdminOrders } from "@/hooks/useAdminOrders";
 import { OrderResponse } from "@/features/order";
+import { Button } from "@/components/UI/button";
+import { FaFileInvoice } from "react-icons/fa";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const ORDER_STATUS_MESSAGES: Record<string, string> = {
-  PENDING: "Đang chờ xử lý",
   CONFIRMED: "Đã xác nhận",
   PROCESSING: "Đang xử lý",
   SHIPPING: "Đang giao hàng",
@@ -169,7 +173,6 @@ export default function AdminOrders() {
             className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="ALL">Tất cả trạng thái</option>
-            <option value="PENDING">Đang chờ xử lý</option>
             <option value="CONFIRMED">Đã xác nhận</option>
             <option value="PROCESSING">Đang xử lý</option>
             <option value="SHIPPING">Đang giao hàng</option>
@@ -285,13 +288,18 @@ export default function AdminOrders() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {formatDate(order.createdAt)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex flex-row items-center">
                         <button
                           onClick={() => handleViewDetail(order)}
                           className="text-blue-600 hover:text-blue-900 mr-4"
                         >
                           Chi tiết
                         </button>
+
+                        <Link href={`/admin/orders/${order.id}`}>
+                            <FaFileInvoice className="w-5 h-5" />
+                        </Link>
+
                       </td>
                     </tr>
                   ))
@@ -373,34 +381,39 @@ export default function AdminOrders() {
 
       {/* Detail Modal */}
       {showDetailModal && selectedOrder && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex justify-between items-start mb-4">
                 <h2 className="text-2xl font-bold">
                   Chi tiết đơn hàng #{selectedOrder.orderCode}
                 </h2>
-                <button
-                  onClick={() => {
-                    setShowDetailModal(false);
-                    setSelectedOrder(null);
-                  }}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                <div className="flex items-center gap-2">
+                  {selectedOrder?.status === 'DELIVERED' && (
+                    <InvoicePdfDownload id={selectedOrder.id} type="order" />
+                  )}
+                  <button
+                    onClick={() => {
+                      setShowDetailModal(false);
+                      setSelectedOrder(null);
+                    }}
+                    className="text-gray-500 hover:text-gray-700"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
               </div>
 
               {/* Order Info */}

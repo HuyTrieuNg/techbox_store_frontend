@@ -65,6 +65,7 @@ export interface LowStockProductDTO {
   spu: string;
   variationId: number;
   variationSku: string;
+  variationName: string;
   currentStock: number;
   threshold: number;
 }

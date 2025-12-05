@@ -27,11 +27,16 @@ import {
     getLowStockProductsPaged,
     getInventoryConfig,
 } from '@/services/reportsService';
+import { useToast } from '@/hooks/use-toast';
 
 export default function LowStockPage() {
     const [data, setData] = useState<PagedLowStockProductDTO | null>(null);
     const [config, setConfig] = useState<InventoryConfigDTO | null>(null);
     const [loading, setLoading] = useState(true);
+    const { toast } = useToast();
+    const [editingThreshold, setEditingThreshold] = useState(false);
+    const [newThreshold, setNewThreshold] = useState<number | ''>('');
+    const [isUpdating, setIsUpdating] = useState(false);
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(10);
     const [searchTerm, setSearchTerm] = useState('');
@@ -41,6 +46,7 @@ export default function LowStockPage() {
             try {
                 const configData = await getInventoryConfig();
                 setConfig(configData);
+                setNewThreshold(configData.minStockThreshold);
             } catch (error) {
                 console.error('Failed to fetch config:', error);
             }
@@ -72,7 +78,8 @@ export default function LowStockPage() {
 
     const filteredProducts = data?.content.filter(product =>
         product.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.variationSku.toLowerCase().includes(searchTerm.toLowerCase())
+        product.variationSku.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (product.variationName || '').toLowerCase().includes(searchTerm.toLowerCase())
     ) || [];
 
     const getStockStatus = (current: number, threshold: number) => {
@@ -110,7 +117,7 @@ export default function LowStockPage() {
                                 {data?.totalElements || 0} biến thể cần chú ý
                             </CardDescription>
                         </div>
-                        <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-4">
                             <div className="relative w-64">
                                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                                 <Input
@@ -120,7 +127,7 @@ export default function LowStockPage() {
                                     className="pl-8"
                                 />
                             </div>
-                            <Select
+                                <Select
                                 value={pageSize.toString()}
                                 onValueChange={(value) => {
                                     setPageSize(parseInt(value));
@@ -136,7 +143,50 @@ export default function LowStockPage() {
                                     <SelectItem value="50">50 / trang</SelectItem>
                                     <SelectItem value="100">100 / trang</SelectItem>
                                 </SelectContent>
-                            </Select>
+                                </Select>
+                                {/* Threshold control */}
+                                <div className="flex items-center gap-2">
+                                    {!editingThreshold ? (
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-sm text-muted-foreground">Ngưỡng: </span>
+                                            <span className="font-medium">{config?.minStockThreshold}</span>
+                                            <Button size="sm" variant="ghost" onClick={() => setEditingThreshold(true)}>
+                                                Sửa
+                                            </Button>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="number"
+                                                min={0}
+                                                value={typeof newThreshold === 'number' ? newThreshold : ''}
+                                                onChange={(e) => setNewThreshold(Number(e.target.value))}
+                                                className="w-24 px-2 py-1 border rounded"
+                                            />
+                                            <Button size="sm" variant="outline" onClick={async () => {
+                                                setIsUpdating(true);
+                                                if (typeof newThreshold !== 'number' || newThreshold < 0) {
+                                                    toast({ title: 'Giá trị không hợp lệ', description: 'Ngưỡng phải là số >= 0', variant: 'destructive' });
+                                                    setIsUpdating(false);
+                                                    return;
+                                                }
+                                                try {
+                                                    // Only update UI: set config locally, do not call backend
+                                                    setConfig((prev) => ({ ...(prev ?? {}), minStockThreshold: newThreshold } as InventoryConfigDTO));
+                                                    setEditingThreshold(false);
+                                                    setPage(0);
+                                                    toast({ title: 'Cập nhật ngưỡng (local)', description: 'Ngưỡng chỉ cập nhật ở front-end cho lần lọc hiện tại.' });
+                                                } catch (error) {
+                                                    console.error('Failed to update config', error);
+                                                    const message = (error as any)?.message || 'Không thể cập nhật ngưỡng.';
+                                                    toast({ title: 'Cập nhật thất bại', description: message, variant: 'destructive' });
+                                                }
+                                                setIsUpdating(false);
+                                            }}>Lưu</Button>
+                                            <Button size="sm" variant="outline" onClick={() => { setEditingThreshold(false); setNewThreshold(config?.minStockThreshold ?? ''); }} disabled={isUpdating}>Hủy</Button>
+                                        </div>
+                                    )}
+                                </div>
                         </div>
                     </div>
                 </CardHeader>
@@ -154,6 +204,7 @@ export default function LowStockPage() {
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead>Sản phẩm</TableHead>
+                                        <TableHead>Tên biến thể</TableHead>
                                         <TableHead>SKU</TableHead>
                                         <TableHead className="text-right">Tồn kho hiện tại</TableHead>
                                         <TableHead className="text-right">Ngưỡng</TableHead>
@@ -170,6 +221,9 @@ export default function LowStockPage() {
                                                     <div className="text-sm text-muted-foreground">
                                                         SPU: {product.spu}
                                                     </div>
+                                                </TableCell>
+                                                <TableCell className="text-sm">
+                                                    {product.variationName || '—'}
                                                 </TableCell>
                                                 <TableCell className="font-mono text-sm">
                                                     {product.variationSku}

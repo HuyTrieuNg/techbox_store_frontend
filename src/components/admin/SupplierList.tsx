@@ -63,32 +63,38 @@ const SupplierList: React.FC<SupplierListProps> = ({
                 )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm text-gray-600 dark:text-gray-400">
-                <div>
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 text-sm text-gray-600 dark:text-gray-400">
+                <div className="break-words">
                   <span className="font-medium">ID:</span> #{supplier.supplierId}
                 </div>
+
                 {supplier.phone && (
-                  <div>
+                  <div className="break-words">
                     <span className="font-medium">Điện thoại:</span> {supplier.phone}
                   </div>
                 )}
+
                 {supplier.email && (
-                  <div>
+                  <div className="break-words">
                     <span className="font-medium">Email:</span> {supplier.email}
                   </div>
                 )}
+
                 {supplier.taxCode && (
-                  <div>
+                  <div className="break-words">
                     <span className="font-medium">Mã số thuế:</span> {supplier.taxCode}
+                  </div>
+                )}
+
+                {supplier.address && (
+                  <div className="break-words">
+                    <span className="font-medium">Địa chỉ:</span> {supplier.address}
                   </div>
                 )}
               </div>
 
-              {supplier.address && (
-                <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                  <span className="font-medium">Địa chỉ:</span> {supplier.address}
-                </div>
-              )}
+
+              
 
               <div className="mt-3 text-xs text-gray-500 dark:text-gray-500">
                 Tạo: {new Date(supplier.createdAt).toLocaleDateString('vi-VN')} |
