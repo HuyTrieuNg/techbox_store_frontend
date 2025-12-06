@@ -15,6 +15,7 @@ import {
   FiBox,
   FiList,
   FiTag,
+  FiShield,
 } from "react-icons/fi";
 
 /**
@@ -37,6 +38,7 @@ export default function AdminSidebar() {
     FiBox,
     FiList,
     FiTag,
+    FiShield,
   };
 
   const menuItems = [
@@ -47,6 +49,7 @@ export default function AdminSidebar() {
     { href: "/admin/categories", label: "Danh mục", icon: "FiList" },
     { href: "/admin/brands", label: "Thương hiệu", icon: "FiTag" },
     { href: "/admin/users", label: "Người dùng", icon: "FiUsers" },
+    { href: "/admin/roles", label: "Vai trò & Quyền", icon: "FiShield" },
     { href: "/admin/promotions", label: "Khuyến mãi", icon: "FiTag" },
     { href: "/admin/settings", label: "Cài đặt", icon: "FiSettings" },
   ];
