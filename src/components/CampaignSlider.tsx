@@ -22,15 +22,56 @@ interface CampaignSliderProps {
     campaigns: Campaign[];
 }
 
+// const CampaignPlaceholder = ({ name, className = '' }: { name: string; className?: string }) => (
+//     <div className={`bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white text-lg md:text-2xl font-bold h-full w-full ${className}`}>
+//         {name}
+//     </div>
+// );
 const CampaignPlaceholder = ({ name, className = '' }: { name: string; className?: string }) => (
-    <div className={`bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-white text-lg md:text-2xl font-bold h-full w-full ${className}`}>
-        {name}
+    <div
+        className={`relative rounded-lg flex items-center justify-center text-white font-bold h-full w-full bg-cover bg-center overflow-hidden ${className}`}
+        style={{ backgroundImage: "url('/banner.jpg')" }}
+    >
+        {/* Làm mờ background nhẹ để chữ nổi */}
+        <div className="absolute inset-0 bg-white/30 blur-sm"></div>
+        {/* Overlay đen để tạo depth */}
+        <div className="absolute inset-0 bg-black/55"></div>
+
+        {/* Overlay gradient nhẹ giữ phong cách cũ */}
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 opacity-20"></div>
+
+        {/* Text với hiệu ứng nổi */}
+        <div
+            className="relative z-10 px-6 text-3xl md:text-5xl font-extrabold tracking-wide"
+            style={{
+                textShadow: `
+                    0px 2px 2px rgba(0, 0, 0, 0.7),
+                    0px 4px 4px rgba(0, 0, 0, 0.6),
+                    0px 6px 6px rgba(0, 0, 0, 0.5),
+                    0px 8px 12px rgba(0, 0, 0, 0.4)
+                `
+            }}
+        >
+            {name}
+        </div>
     </div>
 );
 
+
 export default function CampaignSlider({ campaigns }: CampaignSliderProps) {
     if (!campaigns || campaigns.length === 0) {
-        return null;
+        return (
+        <div className="w-full h-full rounded-lg overflow-hidden relative">
+            <Image
+                src="/banner.jpg"
+                alt="Default banner"
+                fill
+                className="object-cover rounded-md"
+                priority
+            />
+        </div>
+    );
+
     }
 
     const hasMultiple = campaigns.length > 1;

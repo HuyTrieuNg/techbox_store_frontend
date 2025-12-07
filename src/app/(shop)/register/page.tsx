@@ -201,6 +201,16 @@ export default function RegisterPage() {
                             Đăng ký
                         </button>
 
+                        {/* Forgot Password Link */}
+                        <p className="text-sm text-center text-gray-600">
+                            <Link
+                                href="/forgot-password"
+                                className="text-[#E61E4D] hover:text-[#ff6a88] font-medium transition"
+                            >
+                                Quên mật khẩu?
+                            </Link>
+                        </p>
+
                         {/* Login Link */}
                         <p className="text-sm text-center text-gray-500">
                             Bạn đã có tài khoản?{" "}

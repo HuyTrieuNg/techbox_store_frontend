@@ -148,16 +148,14 @@ export default function LoginPage() {
               )}
             </div>
 
-
-
-            {/* <p className="text-sm text-gray-600">
+            <p className="text-sm text-gray-600">
               <Link
                 href="/forgot-password"
                 className="text-[#E61E4D] hover:text-[#ff6a88] font-medium transition"
               >
                 Quên mật khẩu?
               </Link>
-            </p> */}
+            </p>
 
             {/* Login Button */}
             <button
