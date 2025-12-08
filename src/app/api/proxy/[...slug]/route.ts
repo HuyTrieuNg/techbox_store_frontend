@@ -5,11 +5,49 @@ const BACKEND_URL = process.env.SPRING_BACKEND_URL || 'http://localhost:8080';
 /**
  * Proxy handler cho tất cả API requests
  * Tự động gắn accessToken từ cookie vào header Authorization
+ * Tự động refresh token khi nhận 401 từ backend
  * 
  * Usage từ client:
  * - GET /api/proxy/products -> GET http://backend:8080/api/products
  * - POST /api/proxy/orders -> POST http://backend:8080/api/orders
  */
+
+/**
+ * Refresh access token bằng cách gọi internal refresh endpoint
+ * Returns null nếu refresh thất bại (401) → trigger logout
+ */
+async function refreshAccessToken(request: NextRequest): Promise<{ accessToken: string; refreshToken?: string } | null> {
+  try {
+    const response = await fetch(`${request.nextUrl.origin}/api/auth/refresh`, {
+      method: 'POST',
+      headers: {
+        cookie: request.headers.get('cookie') || '',
+      },
+    });
+
+    // Nếu refresh endpoint trả về 401 → refresh token không hợp lệ → return null để trigger logout
+    if (!response.ok) {
+      if (response.status === 401) {
+        console.log('❌ [Proxy] Refresh token invalid/expired (401) → will trigger logout');
+      }
+      return null;
+    }
+    
+    // Lấy tokens mới từ cookie trong response
+    const accessTokenCookie = response.headers.get('set-cookie')?.match(/accessToken=([^;]+)/)?.[1];
+    const refreshTokenCookie = response.headers.get('set-cookie')?.match(/refreshToken=([^;]+)/)?.[1];
+    
+    if (!accessTokenCookie) return null;
+
+    return {
+      accessToken: accessTokenCookie,
+      refreshToken: refreshTokenCookie,
+    };
+  } catch (error) {
+    console.error('❌ [Proxy] Refresh token failed:', error);
+    return null;
+  }
+}
 
 async function handleRequest(
   request: NextRequest,
@@ -17,7 +55,7 @@ async function handleRequest(
   params: Promise<{ slug: string[] }>
 ) {
   try {
-    const { slug } = await params; // Next.js 15: params is async
+    const { slug } = await params;
     const apiPath = slug.join('/');
 
     // Lấy accessToken từ cookie
@@ -31,8 +69,7 @@ async function handleRequest(
     const queryString = searchParams.toString();
     const fullUrl = queryString ? `${backendUrl}?${queryString}` : backendUrl;
 
-    // Prepare headers - copy most headers from the incoming request, but filter hop-by-hop headers
-    // Also, automatically add Authorization header when we have access token.
+    // Prepare headers
     const hopByHop = new Set([
       'connection',
       'keep-alive',
@@ -48,8 +85,7 @@ async function handleRequest(
     for (const [key, value] of request.headers.entries()) {
       const lower = key.toLowerCase();
       if (hopByHop.has(lower)) continue;
-      if (lower === 'host') continue; // backend will set host
-      // copy all other headers
+      if (lower === 'host') continue;
       headers[key] = value;
     }
 
@@ -61,38 +97,120 @@ async function handleRequest(
     const requestOptions: RequestInit = {
       method,
       headers,
-      cache: 'no-store', // Disable cache cho proxy
+      cache: 'no-store',
     };
 
     // Thêm body cho POST, PUT, PATCH
     if (['POST', 'PUT', 'PATCH'].includes(method)) {
-      // Stream request body directly to backend
       if (request.body) {
         requestOptions.body = request.body;
-        (requestOptions as any).duplex = 'half';
+        // @ts-expect-error - duplex is needed for streaming body
+        requestOptions.duplex = 'half';
       }
     }
 
-    // DUMB PROXY: Chỉ stream request/response
-    const response = await fetch(fullUrl, requestOptions);
+    // Gửi request đến backend
+    let response = await fetch(fullUrl, requestOptions);
 
-    // Copy response headers except hop-by-hop and keep set-cookie so browser can get cookies
+    // Nếu nhận 401 và có requiresRefresh = true, thử refresh token
+    if (response.status === 401) {
+      try {
+        const errorData = await response.json();
+        
+        if (errorData.requiresRefresh) {
+          console.log('🔄 [Proxy] Token expired, attempting refresh...');
+          
+          // Thử refresh token
+          const refreshResult = await refreshAccessToken(request);
+          
+          if (refreshResult) {
+            console.log('✅ [Proxy] Token refreshed successfully, retrying request...');
+            
+            // Cập nhật accessToken mới
+            headers['Authorization'] = `Bearer ${refreshResult.accessToken}`;
+            
+            // Retry request với token mới
+            response = await fetch(fullUrl, {
+              ...requestOptions,
+              headers,
+            });
+            
+            // Nếu retry thành công, trả về response với cookies mới
+            if (response.ok) {
+              const respHeaders: Record<string, string> = {};
+              for (const [key, value] of response.headers.entries()) {
+                const lower = key.toLowerCase();
+                if (hopByHop.has(lower)) continue;
+                respHeaders[key] = value;
+              }
+              
+              const nextResponse = new NextResponse(response.body, {
+                status: response.status,
+                headers: respHeaders,
+              });
+              
+              // Set cookies mới
+              nextResponse.cookies.set('accessToken', refreshResult.accessToken, {
+                httpOnly: true,
+                secure: false,
+                sameSite: 'lax',
+                maxAge: 60 * 15, // 15 phút
+                path: '/',
+              });
+              
+              if (refreshResult.refreshToken) {
+                nextResponse.cookies.set('refreshToken', refreshResult.refreshToken, {
+                  httpOnly: true,
+                  secure: false,
+                  sameSite: 'lax',
+                  maxAge: 60 * 60 * 24 * 7, // 7 ngày
+                  path: '/',
+                });
+              }
+              
+              return nextResponse;
+            }
+          } else {
+            console.log('❌ [Proxy] Refresh failed (401 from refresh endpoint) → auto logout, clearing cookies');
+            
+            // Refresh thất bại (refresh token không hợp lệ/hết hạn)
+            // → Tự động logout: xóa cookies, không cần gọi backend vì token đã không hợp lệ
+            const nextResponse = NextResponse.json(
+              { error: 'REFRESH_FAILED', message: 'Session expired. Please login again.' },
+              { status: 401 }
+            );
+            
+            nextResponse.cookies.delete('accessToken');
+            nextResponse.cookies.delete('refreshToken');
+            
+            return nextResponse;
+          }
+        }
+        
+        // Không phải lỗi requiresRefresh, trả về lỗi gốc
+        return NextResponse.json(errorData, { status: 401 });
+      } catch {
+        // Không parse được JSON, trả về response gốc
+        return new NextResponse(response.body, {
+          status: response.status,
+        });
+      }
+    }
+
+    // Copy response headers
     const respHeaders: Record<string, string> = {};
     for (const [key, value] of response.headers.entries()) {
       const lower = key.toLowerCase();
       if (hopByHop.has(lower)) continue;
-      // Some servers return multiple set-cookie headers which may need special handling.
-      // NextResponse supports 'set-cookie' in headers, but Node's fetch may return multiple values joined.
       respHeaders[key] = value;
     }
 
-    // Make the proxied response as close as possible to backend's response
     return new NextResponse(response.body, {
       status: response.status,
       headers: respHeaders,
     });
   } catch (error) {
-    console.error('Proxy error:', error);
+    console.error('❌ [Proxy] Error:', error);
     return NextResponse.json(
       { error: 'Có lỗi xảy ra khi gọi API' },
       { status: 500 }

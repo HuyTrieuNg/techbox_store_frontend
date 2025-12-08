@@ -2,10 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const BACKEND_URL = process.env.SPRING_BACKEND_URL || 'http://localhost:8080';
 
+/**
+ * Refresh Token Endpoint
+ * - Lấy refreshToken từ httpOnly cookie
+ * - Gọi backend để refresh và nhận tokens mới
+ * - Lưu tokens mới vào httpOnly cookies
+ * - Implement token rotation: old refresh token bị revoke
+ */
 export async function POST(request: NextRequest) {
   try {
     // Lấy refreshToken từ cookie
     const refreshToken = request.cookies.get('refreshToken')?.value;
+    
     if (!refreshToken) {
       return NextResponse.json(
         { error: 'Refresh token không tồn tại' },
@@ -23,9 +31,9 @@ export async function POST(request: NextRequest) {
     });
 
     if (!response.ok) {
-      // Nếu refresh token không hợp lệ, xóa cookies
+      // Refresh token không hợp lệ hoặc hết hạn → xóa cookies
       const res = NextResponse.json(
-        { error: 'Refresh token không hợp lệ' },
+        { error: 'REFRESH_FAILED', message: 'Refresh token không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.' },
         { status: 401 }
       );
       
@@ -36,7 +44,7 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await response.json();
-    const { accessToken, refreshToken: newRefreshToken } = data;
+    const { accessToken, refreshToken: newRefreshToken, expiresIn } = data;
 
     if (!accessToken) {
       return NextResponse.json(
@@ -58,59 +66,28 @@ export async function POST(request: NextRequest) {
     // Access Token mới
     res.cookies.set('accessToken', accessToken, {
       httpOnly: true,
-      // secure: process.env.NODE_ENV === 'production',
-      secure: false,
+      secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 60 * 15, // 15 phút
+      maxAge: Math.floor((expiresIn || 900000) / 1000), // Convert ms to seconds
       path: '/',
     });
 
-    // Refresh Token mới (nếu backend trả về)
+    // Refresh Token mới (backend implement token rotation)
     if (newRefreshToken) {
       res.cookies.set('refreshToken', newRefreshToken, {
         httpOnly: true,
-        // secure: process.env.NODE_ENV === 'production',
-        secure: false,
+        secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
         maxAge: 60 * 60 * 24 * 7, // 7 ngày
         path: '/',
       });
     }
 
-    // KHÔNG cần revalidate cache
-    // - API Public (products, categories) vẫn valid sau khi refresh token
-    // - API Private (user, cart, orders) tự động revalidate qua useSWR client-side
-
     return res;
   } catch (error) {
-    console.error('Refresh token error:', error);
+    console.error('❌ [Refresh] Error:', error);
     return NextResponse.json(
       { error: 'Có lỗi xảy ra khi refresh token' },
-      { status: 500 }
-    );
-  }
-}
-
-// Logout endpoint - xóa cookies
-export async function DELETE(request: NextRequest) {
-  try {
-    const res = NextResponse.json(
-      {
-        success: true,
-        message: 'Đăng xuất thành công',
-      },
-      { status: 200 }
-    );
-
-    // Xóa cookies
-    res.cookies.delete('accessToken');
-    res.cookies.delete('refreshToken');
-
-    return res;
-  } catch (error) {
-    console.error('Logout error:', error);
-    return NextResponse.json(
-      { error: 'Có lỗi xảy ra khi đăng xuất' },
       { status: 500 }
     );
   }
