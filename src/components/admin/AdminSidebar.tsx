@@ -17,6 +17,7 @@ import {
   FiTag,
   FiShield,
 } from "react-icons/fi";
+import { useAuthorities } from "@/hooks/useAuthorities";
 
 /**
  * Admin Sidebar - Navigation
@@ -26,6 +27,7 @@ import {
 export default function AdminSidebar() {
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const { authorities } = useAuthorities();
 
   const ICONS = {
     FiHome,
@@ -42,17 +44,41 @@ export default function AdminSidebar() {
   };
 
   const menuItems = [
-    { href: "/admin/dashboard", label: "Dashboard", icon: "FiHome" },
-    { href: "/admin/products", label: "Sản phẩm", icon: "FiPackage" },
-    { href: "/admin/inventory/low-stock", label: "Kho hàng", icon: "FiBox" },
-    { href: "/admin/orders", label: "Đơn hàng", icon: "FiShoppingCart" },
-    { href: "/admin/categories", label: "Danh mục", icon: "FiList" },
-    { href: "/admin/brands", label: "Thương hiệu", icon: "FiTag" },
-    { href: "/admin/users", label: "Người dùng", icon: "FiUsers" },
-    { href: "/admin/roles", label: "Vai trò & Quyền", icon: "FiShield" },
-    { href: "/admin/promotions", label: "Khuyến mãi", icon: "FiTag" },
-    { href: "/admin/settings", label: "Cài đặt", icon: "FiSettings" },
+    { href: "/admin/dashboard", label: "Dashboard", icon: "FiHome", module: null, adminOnly: true },
+    { href: "/admin/products", label: "Sản phẩm", icon: "FiPackage", module: "PRODUCT" },
+    { href: "/admin/inventory/low-stock", label: "Kho hàng", icon: "FiBox", module: "INVENTORY" },
+    { href: "/admin/orders", label: "Đơn hàng", icon: "FiShoppingCart", module: "ORDER" },
+    { href: "/admin/categories", label: "Danh mục", icon: "FiList", module: "PRODUCT", requiredPermissions: ["PRODUCT:READ", "PRODUCT:WRITE", "PRODUCT:UPDATE"] },
+    { href: "/admin/brands", label: "Thương hiệu", icon: "FiTag", module: "PRODUCT", requiredPermissions: ["PRODUCT:READ", "PRODUCT:WRITE", "PRODUCT:UPDATE"] },
+    { href: "/admin/users", label: "Người dùng", icon: "FiUsers", module: "USER" },
+    { href: "/admin/roles", label: "Vai trò & Quyền", icon: "FiShield", module: null, adminOnly: true },
+    { href: "/admin/promotions", label: "Khuyến mãi", icon: "FiTag", module: "PROMOTION" },
+    { href: "/admin/settings", label: "Cài đặt", icon: "FiSettings", module: null, adminOnly: true },
   ];
+
+  const filteredMenuItems = menuItems.filter(item => {
+    // Nếu item yêu cầu adminOnly, chỉ hiện cho ROLE_ADMIN
+    if (item.adminOnly && !authorities?.roles?.includes('ROLE_ADMIN')) {
+      return false;
+    }
+    
+    // Nếu có requiredPermissions, kiểm tra xem user có ít nhất 1 trong các quyền đó
+    if (item.requiredPermissions && item.requiredPermissions.length > 0) {
+      const hasAnyPermission = item.requiredPermissions.some(
+        permission => authorities?.permissions?.includes(permission)
+      );
+      if (!hasAnyPermission) return false;
+    }
+    
+    // Nếu không có module (free access) và không adminOnly
+    if (!item.module) return true;
+    
+    // Nếu là admin thì hiện tất cả
+    if (authorities?.roles?.includes('ROLE_ADMIN')) return true;
+    
+    // Check module permission
+    return authorities?.accessibleModules?.includes(item.module);
+  });
 
   return (
     <div
@@ -64,7 +90,7 @@ export default function AdminSidebar() {
           <Menu size={24} />
         </button>
         <nav className="mt-8 flex-grow">
-          {menuItems.map((item) => {
+          {filteredMenuItems.map((item) => {
             const IconComponent = ICONS[item.icon as keyof typeof ICONS];
 
             if (!IconComponent) return null;

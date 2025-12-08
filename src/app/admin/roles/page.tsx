@@ -11,8 +11,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/UI/tabs";
 import { Skeleton } from "@/components/UI/skeleton";
 import { Shield, Key, Settings } from "lucide-react";
+import RouteGuard from "@/components/RouteGuard";
 
 export default function RolesPage() {
+  return (
+    <RouteGuard requireAuth requiredRoles={['ROLE_ADMIN']}>
+      <RolesPageContent />
+    </RouteGuard>
+  );
+}
+
+function RolesPageContent() {
   const [selectedRole, setSelectedRole] = useState<RoleResponse | null>(null);
   const [permissionDialogOpen, setPermissionDialogOpen] = useState(false);
 

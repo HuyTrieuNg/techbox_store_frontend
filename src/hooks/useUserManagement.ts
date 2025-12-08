@@ -40,7 +40,7 @@ export const useUserManagement = () => {
     firstName: "",
     lastName: "",
     phone: "",
-    roles: ["ROLE_STAFF"], // Default role
+    roleNames: ["ROLE_STAFF"], // Default role
   });
 
   // Reset form khi đóng modal
@@ -51,7 +51,7 @@ export const useUserManagement = () => {
       firstName: "",
       lastName: "",
       phone: "",
-      roles: ["ROLE_STAFF"],
+      roleNames: ["ROLE_STAFF"],
     });
   };
 

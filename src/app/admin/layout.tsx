@@ -8,7 +8,7 @@ import { Toaster } from "@/components/UI/sonner";
  * Admin Layout - Server Component
  * 
  * Layout cho tất cả trang admin
- * - RouteGuard: Kiểm tra quyền ROLE_ADMIN
+ * - RouteGuard: Chặn ROLE_CUSTOMER, cho phép tất cả role khác (ADMIN, STAFF, custom roles)
  * - AdminSidebar: Navigation bên trái
  * - AdminHeader: Header phía trên
  * - Main: Content area
@@ -17,7 +17,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <RouteGuard
       requireAuth
-      requiredRoles={['ROLE_ADMIN']}
+      excludeRoles={['ROLE_CUSTOMER']}
       fallback={
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
           <div className="text-center">

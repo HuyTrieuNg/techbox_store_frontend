@@ -19,7 +19,7 @@ const UserAddPage = () => {
         lastName: "",
         phone: "",
         dateOfBirth: new Date(),
-        roles: [],
+        roleNames: [],
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -36,9 +36,9 @@ const UserAddPage = () => {
     const handleRoleChange = (role: string, checked: boolean) => {
         setForm((prev) => ({
             ...prev,
-            roles: checked
-                ? [...prev.roles, role]
-                : prev.roles.filter((r) => r !== role),
+            roleNames: checked
+                ? [...prev.roleNames, role]
+                : prev.roleNames.filter((r) => r !== role),
         }));
     };
 
@@ -160,7 +160,7 @@ console.log("Payload gửi lên:", payload);
                                     <label key={role} className="flex items-center gap-2 text-gray-300">
                                         <input
                                             type="checkbox"
-                                            checked={form.roles.includes(role)}
+                                            checked={form.roleNames.includes(role)}
                                             onChange={(e) => handleRoleChange(role, e.target.checked)}
                                             className="w-4 h-4 text-blue-600 bg-gray-700 border-gray-600 rounded"
                                         />

@@ -46,7 +46,7 @@ export interface UserCreateRequest {
   lastName: string;
   phone: string;
   dateOfBirth: Date;
-  roles: string[];
+  roleNames: string[]; // Backend expects 'roleNames', not 'roles'
 }
 
 export interface UpdatePasswordData {

@@ -1,4 +1,5 @@
 import React from "react";
+import { useRoles } from "@/hooks/useRoles";
 
 interface UserFiltersProps {
   searchTerm: string;
@@ -21,6 +22,8 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
   pageSize,
   handlePageSizeChange,
 }) => {
+  const { data: roles, isLoading: rolesLoading } = useRoles();
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6">
       <div className="flex gap-4 items-center flex-wrap">
@@ -37,11 +40,18 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
         <select
           value={selectedRole}
           onChange={(e) => handleRoleChange(e.target.value)}
-          className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+          disabled={rolesLoading}
+          className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <option value="CUSTOMER">Khách hàng</option>
-          <option value="STAFF">Nhân viên</option>
-          <option value="ADMIN">Quản trị viên</option>
+          {rolesLoading ? (
+            <option value="">Đang tải...</option>
+          ) : (
+            roles.map((role) => (
+              <option key={role.id} value={role.name.replace('ROLE_', '')}>
+                {role.name.replace('ROLE_', '')}
+              </option>
+            ))
+          )}
         </select>
 
         {/* Status Filter: 'active' or 'all' (include deleted) */}

@@ -21,7 +21,7 @@ export type UserRole = 'ROLE_ADMIN' | 'ROLE_STAFF' | 'ROLE_CUSTOMER';
 
 /**
  * Lấy redirect path mặc định theo role của user
- * Priority: Admin > Staff > Customer
+ * Logic: Chỉ ROLE_CUSTOMER về trang chủ (/), tất cả role khác đều vào /admin
  * 
  * @param user - User object hoặc null
  * @returns Redirect path string
@@ -31,21 +31,18 @@ export const getRedirectPathByRole = (user: User | null | undefined): string => 
     return '/';
   }
 
-  // Priority: Admin > Staff > Customer
-  if (user.roles.includes('ROLE_ADMIN')) {
-    return '/admin';
-  }
+  // Nếu user CHỈ có role CUSTOMER → về trang chủ
+  // Tất cả các role khác (ADMIN, STAFF, custom roles) → về /admin
+  const hasOnlyCustomerRole = 
+    user.roles.length === 1 && 
+    user.roles[0] === 'ROLE_CUSTOMER';
   
-  if (user.roles.includes('ROLE_STAFF')) {
-    return '/staff';
-  }
-  
-  if (user.roles.includes('ROLE_CUSTOMER')) {
+  if (hasOnlyCustomerRole) {
     return '/';
   }
 
-  // Default fallback
-  return '/';
+  // Default: tất cả role khác đều vào trang admin
+  return '/admin';
 };
 
 /**

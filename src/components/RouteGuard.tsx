@@ -8,7 +8,8 @@ interface RouteGuardProps {
   children: React.ReactNode;
   requireAuth?: boolean;
   requireGuest?: boolean;
-  requiredRoles?: UserRole[]; // Roles cần thiết để access
+  requiredRoles?: UserRole[]; // Roles cần thiết để access (whitelist)
+  excludeRoles?: UserRole[]; // Roles KHÔNG được access (blacklist)
   redirectTo?: string;
   fallback?: React.ReactNode;
 }
@@ -20,7 +21,8 @@ interface RouteGuardProps {
  * 
  * @param requireAuth - Route yêu cầu phải đăng nhập
  * @param requireGuest - Route chỉ dành cho người chưa đăng nhập
- * @param requiredRoles - Danh sách roles được phép truy cập
+ * @param requiredRoles - Danh sách roles được phép truy cập (whitelist)
+ * @param excludeRoles - Danh sách roles KHÔNG được truy cập (blacklist)
  * @param redirectTo - URL để redirect khi không đủ quyền
  * @param fallback - Component hiển thị trong lúc loading
  */
@@ -29,6 +31,7 @@ export default function RouteGuard({
   requireAuth = false,
   requireGuest = false,
   requiredRoles = [],
+  excludeRoles = [],
   redirectTo,
   fallback = <div className="flex items-center justify-center min-h-screen">Đang tải...</div>,
 }: RouteGuardProps) {
@@ -88,6 +91,20 @@ export default function RouteGuard({
     const hasRequiredRole = requiredRoles.some(role => hasRole(role));
     if (!hasRequiredRole) {
       // Không có quyền → hiển thị unauthorized page ngay
+      return <UnauthorizedContent />;
+    }
+  }
+
+  // Check excludeRoles (blacklist)
+  if (excludeRoles.length > 0) {
+    if (!user) {
+      // Chưa login → redirect về login
+      return null;
+    }
+    
+    const hasExcludedRole = excludeRoles.some(role => hasRole(role));
+    if (hasExcludedRole) {
+      // Có role bị chặn → hiển thị unauthorized page
       return <UnauthorizedContent />;
     }
   }
