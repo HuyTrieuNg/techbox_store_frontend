@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import { Package, CheckCircle, FileText, Star } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/UI/card';
 import { StatsCard } from './StatsCard';
-import { BarChart } from '@/components/charts/BarChart';
-import { EmptyChartState } from '@/components/charts/EmptyChartState';
+import { BarChart } from '@/components/common/manage/charts/BarChart';
+import { EmptyChartState } from '@/components/common/manage/charts/EmptyChartState';
 import { ProductStatsDTO, getProductStats } from '@/services/reportsService';
 
 export function ProductStatsSection() {

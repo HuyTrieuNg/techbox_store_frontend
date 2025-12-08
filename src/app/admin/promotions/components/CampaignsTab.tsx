@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { FiPlus, FiEdit2, FiTrash2, FiRefreshCw, FiCalendar, FiImage, FiSearch } from 'react-icons/fi';
+import Link from 'next/link';
 import { campaignService } from '@/services/promotionService';
 import { Campaign, StandardPaginatedResponse } from '@/types';
 import CampaignModal from './CampaignModal';
@@ -213,6 +214,12 @@ export default function CampaignsTab() {
                     <FiEdit2 className="w-4 h-4" />
                     Sửa
                   </button>
+                  <Link
+                    href={`/admin/promotions/${campaign.id}`}
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-colors"
+                  >
+                    Quản lý khuyến mãi
+                  </Link>
                   {campaign.deleted ? (
                     <button
                       onClick={() => handleRestore(campaign.id)}

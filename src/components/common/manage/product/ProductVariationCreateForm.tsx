@@ -10,7 +10,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/UI/button';
 import { Input } from '@/components/UI/input';
+import { SuggestionInput } from '@/components/UI/recommend-input';
+import { searchAttributeValues } from '@/services/productManagementService';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/UI/select';
+import { ComboboxWithCreate } from '@/components/UI/ComboboxWithCreate';
 import { Label } from '@/components/UI/label';
 import { useProductVariationCreate } from '@/hooks/useProductVariationCreate';
 import { Plus, Trash2, X, Upload, Image as ImageIcon } from 'lucide-react';
@@ -19,14 +22,13 @@ import { Plus, Trash2, X, Upload, Image as ImageIcon } from 'lucide-react';
 const variationSchema = z.object({
   variationName: z.string().min(1, 'Tên biến thể là bắt buộc'),
   price: z.number().min(0, 'Giá phải >= 0'),
-  sku: z.string().min(1, 'SKU là bắt buộc'),
   avgCostPrice: z.number().min(0, 'Giá vốn trung bình phải >= 0'),
   stockQuantity: z.number().min(0, 'Số lượng tồn kho phải >= 0'),
   reservedQuantity: z.number().min(0, 'Số lượng đặt trước phải >= 0'),
   variationAttributes: z.array(z.object({
     attributeId: z.number().min(1, 'ID thuộc tính là bắt buộc'),
     value: z.string().min(1, 'Giá trị thuộc tính là bắt buộc'),
-  })).min(1, 'Phải có ít nhất một thuộc tính biến thể'),
+  })).optional(),
 });
 
 type VariationFormData = z.infer<typeof variationSchema>;
@@ -52,6 +54,8 @@ export default function ProductVariationCreateForm({ productId, onVariationCreat
     addVariationAttribute,
     removeVariationAttribute,
     onSubmit,
+    appendAvailableAttribute,
+    initialLoading,
   } = useProductVariationCreate(productId);
 
   const { control, handleSubmit, formState: { errors }, watch } = form;
@@ -66,7 +70,8 @@ export default function ProductVariationCreateForm({ productId, onVariationCreat
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full max-w-7xl mx-auto">
+      {/* Create forms don't need a blocking loading overlay; user can continue filling while data fetches */}
       <div className="mb-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Tạo Biến Thể Sản Phẩm</h3>
       </div>
@@ -112,51 +117,55 @@ export default function ProductVariationCreateForm({ productId, onVariationCreat
               {errors.price && <p className="text-red-500 text-sm">{errors.price.message}</p>}
             </div>
 
-            {/* SKU */}
-            <div>
-              <Label htmlFor="sku">SKU</Label>
-              <Controller
-                name="sku"
-                control={control}
-                render={({ field }) => (
-                  <Input id="sku" {...field} placeholder="Nhập SKU" />
-                )}
-              />
-              {errors.sku && <p className="text-red-500 text-sm">{errors.sku.message}</p>}
-            </div>
+            {/* SKU removed per request */}
           </div>
 
           {/* Variation Attributes */}
           <div>
             <Label>Thuộc tính biến thể</Label>
-            {watch('variationAttributes').map((_, index) => (
-              <div key={index} className="flex items-center space-x-2 mt-2">
+            {(watch('variationAttributes') || []).map((_, index) => (
+              <div key={index} className="flex items-center space-x-2 mt-2 min-w-0">
                 <Controller
                   name={`variationAttributes.${index}.attributeId`}
                   control={control}
                   render={({ field }) => (
-                    <Select onValueChange={(value) => field.onChange(Number(value))} value={field.value.toString()}>
-                      <SelectTrigger className="w-1/2">
-                        <SelectValue placeholder="--chọn thuộc tính--" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {attributes.map((attr) => (
-                          <SelectItem key={`attr-${attr.id}`} value={attr.id.toString()}>
-                            {attr.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <div className="flex-none w-40 md:w-1/3 min-w-[150px]">
+                      <ComboboxWithCreate
+                        value={field.value ? Number(field.value) : null}
+                        onChange={(id) => field.onChange(id ?? undefined)}
+                        placeholder="Chọn thuộc tính"
+                        className="w-full"
+                        items={attributes}
+                        onCreate={appendAvailableAttribute}
+                      />
+                    </div>
                   )}
                 />
-                <Controller
+                <div className="flex-1 min-w-0">
+                  <Controller
                   name={`variationAttributes.${index}.value`}
                   control={control}
-                  render={({ field }) => (
-                    <Input {...field} placeholder="Giá trị" className="flex-1" />
-                  )}
+                  render={({ field }) => {
+                    const attributeId = watch(`variationAttributes.${index}.attributeId`);
+                    return (
+                      <SuggestionInput
+                        data={[]}
+                        value={field.value || ''}
+                        onChange={field.onChange}
+                        placeholder="Giá trị"
+                        fetchSuggestions={(val) => {
+                          if (!attributeId || attributeId === 0) return Promise.resolve([]);
+                          return searchAttributeValues(Number(attributeId), val);
+                        }}
+                        minQueryLength={1}
+                        debounceMs={250}
+                        className="w-full"
+                      />
+                    )
+                  }}
                 />
-                {watch('variationAttributes').length > 1 && (
+                </div>
+                {(watch('variationAttributes') || []).length > 0 && (
                   <Button type="button" variant="outline" size="sm" onClick={() => removeVariationAttribute(index)}>
                     <Trash2 className="h-4 w-4" />
                   </Button>

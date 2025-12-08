@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { FiPlus, FiEdit2, FiTrash2, FiRefreshCw, FiSearch, FiPercent, FiDollarSign, FiClock, FiAlertCircle } from 'react-icons/fi';
 import { voucherService } from '@/services/promotionService';
+import { useToast } from '@/hooks/use-toast';
 import { Voucher, StandardPaginatedResponse } from '@/types';
 import VoucherModal from './VoucherModal';
 
@@ -18,6 +19,7 @@ export default function VouchersTab() {
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const { toast } = useToast();
 
   useEffect(() => {
     loadVouchers();
@@ -48,7 +50,7 @@ export default function VouchersTab() {
       }
     } catch (error) {
       console.error('Error loading vouchers:', error);
-      alert('Không thể tải danh sách voucher');
+      toast({ title: 'Không thể tải danh sách voucher', variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -59,22 +61,22 @@ export default function VouchersTab() {
 
     try {
       await voucherService.delete(code);
-      alert('Đã xóa voucher');
+      toast({ title: 'Đã xóa voucher' });
       loadVouchers();
     } catch (error) {
       console.error('Error deleting voucher:', error);
-      alert('Không thể xóa voucher');
+      toast({ title: 'Không thể xóa voucher', variant: 'destructive' });
     }
   };
 
   const handleRestore = async (code: string) => {
     try {
       await voucherService.restore(code);
-      alert('Đã khôi phục voucher');
+      toast({ title: 'Đã khôi phục voucher' });
       loadVouchers();
     } catch (error) {
       console.error('Error restoring voucher:', error);
-      alert('Không thể khôi phục voucher');
+      toast({ title: 'Không thể khôi phục voucher', variant: 'destructive' });
     }
   };
 

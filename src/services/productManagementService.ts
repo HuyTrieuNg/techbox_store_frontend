@@ -49,6 +49,36 @@ export const getAttributes = async (): Promise<Attribute[]> => {
   return response as Attribute[];
 };
 
+export const searchAttributes = async (keyword: string): Promise<Attribute[]> => {
+  const response = await axios.get(`/attributes/search?keyword=${encodeURIComponent(keyword)}`) as any;
+  return response as Attribute[];
+};
+
+export const searchAttributeValues = async (attributeId: number, value: string): Promise<string[]> => {
+  // Simple in-memory cache to reduce repeated searches for same attribute+query
+  const cacheKey = `${attributeId}:${value}`.toLowerCase();
+  const cacheTtlMs = 60 * 1000; // 60 seconds
+  if ((searchAttributeValues as any)._cache == null) {
+    (searchAttributeValues as any)._cache = new Map<string, { data: string[]; ts: number }>();
+  }
+  const cache: Map<string, { data: string[]; ts: number }> = (searchAttributeValues as any)._cache;
+  const cached = cache.get(cacheKey);
+  const now = Date.now();
+  if (cached && (now - cached.ts) < cacheTtlMs) {
+    return cached.data;
+  }
+  const response = await axios.get(`/attributes/search-value?id=${encodeURIComponent(attributeId)}&value=${encodeURIComponent(value)}`) as any;
+  const data = response as string[];
+  try { cache.set(cacheKey, { data, ts: now }); } catch (e) { /* ignore cache set failure */ }
+  return data;
+}
+
+export const createAttribute = async (name: string): Promise<Attribute> => {
+  const response = await axios.post('/attributes', { name }) as any;
+  return response as Attribute;
+}
+
+
 // Publish product (DRAFT/DELETED -> PUBLISHED)
 export const publishProduct = async (productId: number): Promise<ProductManagementItem> => {
   const response = await axios.put(`/products/${productId}/publish`) as any;
@@ -156,3 +186,6 @@ export const createProductWithAttributes = async (productData: any): Promise<any
   const response = await axios.post('/products', productData);
   return response;
 };
+
+// Re-export some critical helpers explicitly for runtime imports
+export { searchAttributeValues };

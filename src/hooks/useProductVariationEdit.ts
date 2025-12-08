@@ -16,17 +16,17 @@ import { Attribute } from '@/types/productCreate';
 const variationEditSchema = z.object({
   variationName: z.string().max(255, 'Tên biến thể không được vượt quá 255 ký tự'),
   price: z.number().int().min(0, 'Giá phải >= 0'),
-  sku: z.string().max(255, 'SKU không được vượt quá 255 ký tự'),
   variationAttributes: z.array(z.object({
     attributeId: z.number().min(1, 'ID thuộc tính là bắt buộc'),
     value: z.string().min(1, 'Giá trị thuộc tính là bắt buộc'),
-  })).min(1, 'Phải có ít nhất một thuộc tính biến thể'),
+  })).optional(),
 });
 
 type VariationEditFormData = z.infer<typeof variationEditSchema>;
 
 export const useProductVariationEdit = (variation: ProductVariation) => {
   const [attributes, setAttributes] = useState<Attribute[]>([]);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [existingImages, setExistingImages] = useState<VariationImage[]>([]);
   const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
@@ -39,7 +39,7 @@ export const useProductVariationEdit = (variation: ProductVariation) => {
     defaultValues: {
       variationName: variation.variationName,
       price: variation.price,
-      sku: variation.sku,
+      // sku intentionally omitted in update payload
       variationAttributes: variation.attributes?.map(attr => ({
         attributeId: attr.attributeId,
         value: attr.attributeValue,
@@ -61,6 +61,9 @@ export const useProductVariationEdit = (variation: ProductVariation) => {
       } catch (error) {
         console.error('Failed to fetch attributes:', error);
       }
+      finally {
+        setInitialLoading(false);
+      }
     };
     fetchAttributes();
   }, []);
@@ -73,13 +76,13 @@ export const useProductVariationEdit = (variation: ProductVariation) => {
   }, [imagePreviews]);
 
   const addVariationAttribute = () => {
-    const currentAttributes = form.getValues('variationAttributes');
+    const currentAttributes = form.getValues('variationAttributes') || [];
     form.setValue('variationAttributes', [...currentAttributes, { attributeId: 0, value: '' }]);
   };
 
   const removeVariationAttribute = (index: number) => {
-    const currentAttributes = form.getValues('variationAttributes');
-    if (currentAttributes.length > 1) {
+    const currentAttributes = form.getValues('variationAttributes') || [];
+    if (currentAttributes.length > 0) {
       form.setValue('variationAttributes', currentAttributes.filter((_, i) => i !== index));
     }
   };
@@ -152,14 +155,14 @@ export const useProductVariationEdit = (variation: ProductVariation) => {
       }
 
       // Step 2: Prepare update data according to the DTO
-      const updateData = {
+      const updateData: any = {
         variationName: data.variationName,
         price: data.price,
-        sku: data.sku,
+        // sku intentionally omitted in update payload
         imageUrls: uploadedImages.map(img => img.url), // New image URLs
         imagePublicIds: uploadedImages.map(img => img.publicId), // New Cloudinary public IDs
         deleteImageIds: imagesToDelete, // Public IDs of images to delete
-        variationAttributes: data.variationAttributes,
+        ...(data.variationAttributes && data.variationAttributes.length > 0 && { variationAttributes: data.variationAttributes }),
       };
 
       console.log('Update data:', updateData);
@@ -249,5 +252,7 @@ export const useProductVariationEdit = (variation: ProductVariation) => {
     addVariationAttribute,
     removeVariationAttribute,
     onSubmit,
+    appendAvailableAttribute: (attr: Attribute) => setAttributes(prev => [attr, ...prev.filter(a => a.id !== attr.id)]),
+    initialLoading,
   };
 };

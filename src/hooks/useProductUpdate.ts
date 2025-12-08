@@ -33,6 +33,7 @@ export const useProductUpdate = (productId: number, onSuccess?: () => void) => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [flattenedCategories, setFlattenedCategories] = useState<Category[]>([]);
   const [attributes, setAttributes] = useState<Attribute[]>([]);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -44,7 +45,7 @@ export const useProductUpdate = (productId: number, onSuccess?: () => void) => {
       categoryId: 0,
       brandId: 0,
       warrantyMonths: 0,
-      attributes: [{ attributeId: 0, value: '' }],
+      attributes: [],
     },
   });
 
@@ -65,6 +66,9 @@ export const useProductUpdate = (productId: number, onSuccess?: () => void) => {
         console.error('Failed to fetch data:', error);
         // Toast error is handled globally in axios interceptor
       }
+      finally {
+        setInitialLoading(false);
+      }
     };
     fetchData();
   }, []);
@@ -76,7 +80,7 @@ export const useProductUpdate = (productId: number, onSuccess?: () => void) => {
 
   const removeAttribute = (index: number) => {
     const currentAttributes = form.getValues('attributes') || [];
-    if (currentAttributes.length > 1) {
+    if (currentAttributes.length > 0) {
       form.setValue('attributes', currentAttributes.filter((_, i) => i !== index));
     }
   };
@@ -91,7 +95,7 @@ export const useProductUpdate = (productId: number, onSuccess?: () => void) => {
         ...(data.categoryId !== undefined && { categoryId: data.categoryId }),
         ...(data.brandId !== undefined && { brandId: data.brandId }),
         ...(data.warrantyMonths !== undefined && { warrantyMonths: data.warrantyMonths }),
-        ...(data.attributes !== undefined && { attributes: data.attributes }),
+        ...(data.attributes !== undefined && data.attributes.length > 0 && { attributes: data.attributes }),
       };
 
       // PUT request to update product
@@ -133,5 +137,7 @@ export const useProductUpdate = (productId: number, onSuccess?: () => void) => {
     addAttribute,
     removeAttribute,
     onSubmit,
+    appendAvailableAttribute: (attr: Attribute) => setAttributes(prev => [attr, ...prev.filter(a => a.id !== attr.id)]),
+    initialLoading,
   };
 };

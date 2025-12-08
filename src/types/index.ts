@@ -32,6 +32,23 @@ export interface Promotion {
   active: boolean;
 }
 
+// Response for GET /promotions/campaign/{id}
+export interface CampaignPromotion {
+  promotionId: number;
+  campaignId: number;
+  campaignName: string;
+  productId: number;
+  productName: string;
+  productSpu?: string;
+  variationId: number;
+  sku?: string;
+  variationName?: string;
+  originalPrice?: number;
+  discountedPrice?: number;
+  discountType: 'PERCENTAGE' | 'FIXED';
+  discountValue: number;
+}
+
 export interface Voucher {
   id: number;
   code: string;

@@ -34,7 +34,6 @@ export interface ProductVariationWithImagesRequest {
   variationName: string;
   productId: number;
   price: number;
-  sku: string;
   avgCostPrice: number;
   stockQuantity: number;
   reservedQuantity: number;
@@ -45,7 +44,6 @@ export interface ProductVariationCreateRequest {
   variationName: string;
   productId: number;
   price: number;
-  sku: string;
   avgCostPrice: number;
   stockQuantity: number;
   reservedQuantity: number;

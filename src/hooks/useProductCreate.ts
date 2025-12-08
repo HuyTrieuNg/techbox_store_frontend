@@ -23,7 +23,7 @@ const productSchema = z.object({
   attributes: z.array(z.object({
     attributeId: z.number().min(1, 'ID thuộc tính là bắt buộc'),
     value: z.string().min(1, 'Giá trị thuộc tính là bắt buộc'),
-  })).min(1, 'Phải có ít nhất một thuộc tính'),
+  })).optional(),
 });
 
 type ProductFormData = z.infer<typeof productSchema>;
@@ -33,6 +33,7 @@ export const useProductCreate = (onSuccess?: (productId: number) => void) => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [flattenedCategories, setFlattenedCategories] = useState<Category[]>([]);
   const [attributes, setAttributes] = useState<Attribute[]>([]);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const router = useRouter();
@@ -45,7 +46,7 @@ export const useProductCreate = (onSuccess?: (productId: number) => void) => {
       categoryId: 0,
       brandId: 0,
       warrantyMonths: 0,
-      attributes: [{ attributeId: 0, value: '' }],
+      attributes: [],
     },
   });
 
@@ -66,18 +67,21 @@ export const useProductCreate = (onSuccess?: (productId: number) => void) => {
         console.error('Failed to fetch data:', error);
         // Toast error is handled globally in axios interceptor
       }
+      finally {
+        setInitialLoading(false);
+      }
     };
     fetchData();
   }, []);
 
   const addAttribute = () => {
-    const currentAttributes = form.getValues('attributes');
+    const currentAttributes = form.getValues('attributes') || [];
     form.setValue('attributes', [...currentAttributes, { attributeId: 0, value: '' }]);
   };
 
   const removeAttribute = (index: number) => {
-    const currentAttributes = form.getValues('attributes');
-    if (currentAttributes.length > 1) {
+    const currentAttributes = form.getValues('attributes') || [];
+    if (currentAttributes.length > 0) {
       form.setValue('attributes', currentAttributes.filter((_, i) => i !== index));
     }
   };
@@ -107,7 +111,7 @@ export const useProductCreate = (onSuccess?: (productId: number) => void) => {
         warrantyMonths: data.warrantyMonths,
         imageUrl: uploadedImage?.url || null,
         imagePublicId: uploadedImage?.publicId || null,
-        attributes: data.attributes,
+        ...(data.attributes && data.attributes.length > 0 && { attributes: data.attributes }),
       };
 
       const response = await createProductWithAttributes(productData);
@@ -153,5 +157,8 @@ export const useProductCreate = (onSuccess?: (productId: number) => void) => {
     addAttribute,
     removeAttribute,
     onSubmit,
+    // Append attribute to local list (so comboboxes receive new option)
+    appendAvailableAttribute: (attr: Attribute) => setAttributes(prev => [attr, ...prev.filter(a => a.id !== attr.id)]),
+    initialLoading,
   };
 };

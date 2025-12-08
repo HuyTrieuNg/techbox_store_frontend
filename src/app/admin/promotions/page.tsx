@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from 'react';
-import { FiCalendar, FiTag, FiGift } from 'react-icons/fi';
+import { FiCalendar, FiGift } from 'react-icons/fi';
 import CampaignsTab from './components/CampaignsTab';
-import PromotionsTab from './components/PromotionsTab';
 import VouchersTab from './components/VouchersTab';
 
 type Tab = 'campaigns' | 'promotions' | 'vouchers';
@@ -25,12 +24,6 @@ export default function PromotionsPage() {
       label: 'Chiến dịch',
       icon: FiCalendar,
       description: 'Quản lý các chiến dịch khuyến mãi',
-    },
-    {
-      key: 'promotions' as Tab,
-      label: 'Khuyến mãi sản phẩm',
-      icon: FiTag,
-      description: 'Khuyến mãi theo sản phẩm',
     },
     {
       key: 'vouchers' as Tab,

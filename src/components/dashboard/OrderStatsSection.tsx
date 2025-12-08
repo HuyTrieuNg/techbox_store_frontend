@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 import { ShoppingCart, DollarSign, TrendingUp, Package } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/UI/card';
 import { StatsCard } from './StatsCard';
-import { AreaChart } from '@/components/charts/AreaChart';
-import { PieChart } from '@/components/charts/PieChart';
-import { EmptyChartState } from '@/components/charts/EmptyChartState';
+import { AreaChart } from '@/components/common/manage/charts/AreaChart';
+import { PieChart } from '@/components/common/manage/charts/PieChart';
+import { EmptyChartState } from '@/components/common/manage/charts/EmptyChartState';
 import { OrderStatsDTO, getOrderStats } from '@/services/reportsService';
 
 export function OrderStatsSection() {

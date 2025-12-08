@@ -15,17 +15,17 @@ import axios from '@/lib/axios';
 const variationSchema = z.object({
   variationName: z.string().min(1, 'Tên biến thể là bắt buộc'),
   price: z.number().int().min(0, 'Giá phải >= 0'),
-  sku: z.string().min(1, 'SKU là bắt buộc'),
   variationAttributes: z.array(z.object({
     attributeId: z.number().min(1, 'ID thuộc tính là bắt buộc'),
     value: z.string().min(1, 'Giá trị thuộc tính là bắt buộc'),
-  })).min(1, 'Phải có ít nhất một thuộc tính biến thể'),
+  })).optional(),
 });
 
 type VariationFormData = z.infer<typeof variationSchema>;
 
 export const useProductVariationCreate = (productId: number) => {
   const [attributes, setAttributes] = useState<Attribute[]>([]);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
@@ -36,8 +36,8 @@ export const useProductVariationCreate = (productId: number) => {
     defaultValues: {
       variationName: '',
       price: 0,
-      sku: '',
-      variationAttributes: [{ attributeId: 0, value: '' }],
+      // SKU removed from form/payload
+      variationAttributes: [],
     },
   });
 
@@ -49,6 +49,9 @@ export const useProductVariationCreate = (productId: number) => {
         setAttributes(data);
       } catch (error) {
         console.error('Failed to fetch attributes:', error);
+      }
+      finally {
+        setInitialLoading(false);
       }
     };
     fetchAttributes();
@@ -62,13 +65,13 @@ export const useProductVariationCreate = (productId: number) => {
   }, [imagePreviews]);
 
   const addVariationAttribute = () => {
-    const currentAttributes = form.getValues('variationAttributes');
+    const currentAttributes = form.getValues('variationAttributes') || [];
     form.setValue('variationAttributes', [...currentAttributes, { attributeId: 0, value: '' }]);
   };
 
   const removeVariationAttribute = (index: number) => {
-    const currentAttributes = form.getValues('variationAttributes');
-    if (currentAttributes.length > 1) {
+    const currentAttributes = form.getValues('variationAttributes') || [];
+    if (currentAttributes.length > 0) {
       form.setValue('variationAttributes', currentAttributes.filter((_, i) => i !== index));
     }
   };
@@ -132,14 +135,14 @@ export const useProductVariationCreate = (productId: number) => {
       }
 
       // Step 2: Create variation with image URLs
-      const variationData = {
+      const variationData: any = {
         variationName: data.variationName,
         productId,
         price: data.price,
-        sku: data.sku,
+        // sku intentionally omitted per request
         imageUrls: uploadedImages.map(img => img.url),
         imagePublicIds: uploadedImages.map(img => img.publicId),
-        variationAttributes: data.variationAttributes,
+        ...(data.variationAttributes && data.variationAttributes.length > 0 && { variationAttributes: data.variationAttributes }),
       };
 
       const response = await createProductVariationWithImages(variationData);
@@ -222,5 +225,7 @@ export const useProductVariationCreate = (productId: number) => {
     addVariationAttribute,
     removeVariationAttribute,
     onSubmit,
+    appendAvailableAttribute: (attr: Attribute) => setAttributes(prev => [attr, ...prev.filter(a => a.id !== attr.id)]),
+    initialLoading,
   };
 };

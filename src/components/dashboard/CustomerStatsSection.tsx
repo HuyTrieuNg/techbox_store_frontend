@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 import { Users, UserPlus, TrendingUp, Calendar } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/UI/card';
 import { StatsCard } from './StatsCard';
-import { LineChart } from '@/components/charts/LineChart';
-import { BarChart } from '@/components/charts/BarChart';
-import { EmptyChartState } from '@/components/charts/EmptyChartState';
+import { LineChart } from '@/components/common/manage/charts/LineChart';
+import { BarChart } from '@/components/common/manage/charts/BarChart';
+import { EmptyChartState } from '@/components/common/manage/charts/EmptyChartState';
 import { CustomerStatsDTO, getCustomerStats } from '@/services/reportsService';
 
 export function CustomerStatsSection() {

@@ -25,6 +25,12 @@ export const getProductVariations = async (
 };
 
 // Delete a variation (soft delete)
+
+// Get a single variation by id
+export const getProductVariationById = async (variationId: number) => {
+  const response = await api.get(`/product-variations/${variationId}`) as any;
+  return response as any;
+};
 export const deleteVariation = async (variationId: number) => {
   const response = await api.delete(`/product-variations/${variationId}`);
   return response.data;

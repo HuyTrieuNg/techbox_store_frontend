@@ -187,7 +187,7 @@ export default function ProductManagementContainer() {
           onClick={() => setShowCreateModal(false)}
         >
           <div 
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto m-4"
+            className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-7xl w-full max-h-[90vh] overflow-y-auto m-4"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-6">

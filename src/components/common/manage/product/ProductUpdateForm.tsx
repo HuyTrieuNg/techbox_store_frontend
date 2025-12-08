@@ -10,10 +10,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/UI/button';
 import { Input } from '@/components/UI/input';
+import { SuggestionInput } from '@/components/UI/recommend-input';
+import { searchAttributeValues } from '@/services/productManagementService';
 import { Textarea } from '@/components/UI/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/UI/select';
+import { ComboboxWithCreate } from '@/components/UI/ComboboxWithCreate';
 import { Label } from '@/components/UI/label';
 import { useProductUpdate } from '@/hooks/useProductUpdate';
+import { LoadingOverlay } from '@/components/UI/loading-overlay';
 import { Plus, Trash2, Sparkles, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import CategoryTree from './CategoryTree';
@@ -53,6 +57,8 @@ export default function ProductUpdateForm({ product, onSuccess }: ProductUpdateF
     addAttribute,
     removeAttribute,
     onSubmit,
+    appendAvailableAttribute,
+    initialLoading,
   } = useProductUpdate(product.id, onSuccess);
 
   const { control, handleSubmit, formState: { errors }, watch, setValue, reset } = form;
@@ -109,7 +115,7 @@ export default function ProductUpdateForm({ product, onSuccess }: ProductUpdateF
             attributeId: attr.attributeId,
             value: attr.attributeValue,
           }))
-          : [{ attributeId: 0, value: '' }]
+          : []
       };
 
       // Reset form with all values at once
@@ -118,7 +124,8 @@ export default function ProductUpdateForm({ product, onSuccess }: ProductUpdateF
   }, [product, brands, attributes, reset]);
 
   return (
-    <div className="w-full">
+    <div className="w-full max-w-7xl mx-auto">
+      <LoadingOverlay show={initialLoading} message="Đang tải dữ liệu..." fullScreen={false} />
       <div className="mb-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Chỉnh Sửa Sản Phẩm</h3>
       </div>
@@ -226,47 +233,57 @@ export default function ProductUpdateForm({ product, onSuccess }: ProductUpdateF
         {/* Attributes */}
         <div>
           <Label>Thuộc tính</Label>
-          {watch('attributes')!.map((_, index) => (
-            <div key={`attribute-${index}`} className="flex items-center space-x-2 mt-2">
+          {(watch('attributes') || []).map((_, index) => (
+            <div key={`attribute-${index}`} className="flex items-center space-x-2 mt-2 min-w-0">
               <Controller
                 name={`attributes.${index}.attributeId`}
                 control={control}
                 render={({ field }) => (
-                  <Select onValueChange={(value) => field.onChange(Number(value))} value={field.value?.toString()}>
-                    <SelectTrigger className="w-1/2">
-                      <SelectValue placeholder="Chọn thuộc tính" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {attributes.map((attr) => (
-                        <SelectItem key={`attr-${attr.id}`} value={attr.id.toString()}>
-                          {attr.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <div className="flex-none w-40 md:w-1/3 min-w-[150px]">
+                    <ComboboxWithCreate
+                      value={field.value ? Number(field.value) : null}
+                      onChange={(id) => field.onChange(id ?? undefined)}
+                      placeholder="Chọn thuộc tính"
+                      className="w-full"
+                      items={attributes}
+                      onCreate={appendAvailableAttribute}
+                    />
+                  </div>
                 )}
               />
-              <Controller
-                name={`attributes.${index}.value`}
-                control={control}
-                render={({ field }) => (
-                  <Input {...field} placeholder="Giá trị" className="flex-1" />
-                )}
-              />
-              {watch('attributes')!.length > 1 && (
+              <div className="flex-1 min-w-0">
+                <Controller
+                  name={`attributes.${index}.value`}
+                  control={control}
+                  render={({ field }) => {
+                    const attributeId = watch(`attributes.${index}.attributeId`);
+                    return (
+                      <SuggestionInput
+                        data={[]}
+                        value={field.value || ''}
+                        onChange={field.onChange}
+                        placeholder="Giá trị"
+                        fetchSuggestions={(val) => {
+                          if (!attributeId || attributeId === 0) return Promise.resolve([]);
+                          return searchAttributeValues(Number(attributeId), val);
+                        }}
+                        minQueryLength={1}
+                        debounceMs={250}
+                        onlyFetchOnFocus={true}
+                        className="w-full"
+                      />
+                    );
+                  }}
+                />
+              </div>
+              {(watch('attributes') || []).length > 0 && (
                 <Button type="button" variant="outline" size="sm" onClick={() => removeAttribute(index)}>
                   <Trash2 className="h-4 w-4" />
                 </Button>
               )}
             </div>
           ))}
-          <Button type="button" variant="outline" onClick={addAttribute} className="mt-2">
-            <Plus className="h-4 w-4 mr-2" />
-            Thêm thuộc tính
-          </Button>
-          {errors.attributes && <p className="text-red-500 text-sm">{errors.attributes.message}</p>}
         </div>
-
         {/* Category */}
         <div>
           <Label htmlFor="categoryId">Danh mục</Label>
@@ -276,7 +293,7 @@ export default function ProductUpdateForm({ product, onSuccess }: ProductUpdateF
             render={({ field }) => (
               <CategoryTree
                 categories={categories}
-                selectedId={field.value!}
+                selectedId={field.value}
                 onSelect={field.onChange}
               />
             )}

@@ -152,7 +152,7 @@ export default function ProductSelectionModal({
 
   return (
     <div className="fixed inset-0 bg-black/30 bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-6xl w-full mx-4 max-h-[100vh] overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-7xl w-full mx-4 max-h-[100vh] overflow-hidden">
         <div className="flex items-center justify-between p-6 border-b">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">
             Chọn sản phẩm để kiểm kho
