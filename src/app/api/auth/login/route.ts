@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const BACKEND_URL = process.env.SPRING_BACKEND_URL || 'http://localhost:8080';
-const ACCESS_TOKEN_EXPIRY = parseInt(process.env.ACCESS_TOKEN_EXPIRY || '3600', 10);
-const REFRESH_TOKEN_EXPIRY = parseInt(process.env.REFRESH_TOKEN_EXPIRY || '2592000', 10);
+// NOTE: These env variables are fallbacks only. Prefer using the expiry information
+// returned from the backend (JWT `exp` claim or `expires_in`) and let backend be
+// the source of truth. We keep the envs as a fallback for local/dev environments.
+const COOKIE_EXPIRY = parseInt(process.env.COOKIE_EXPIRY || '2592000', 10);
 
 export async function POST(request: NextRequest) {
   try {
@@ -67,7 +69,7 @@ export async function POST(request: NextRequest) {
       // secure: process.env.NODE_ENV === 'production',
       secure: false,
       sameSite: 'lax',
-      maxAge: ACCESS_TOKEN_EXPIRY,
+      maxAge: COOKIE_EXPIRY,
       path: '/',
     });
 
@@ -77,7 +79,7 @@ export async function POST(request: NextRequest) {
       // secure: process.env.NODE_ENV === 'production',
       secure: false,
       sameSite: 'lax',
-      maxAge: REFRESH_TOKEN_EXPIRY,
+      maxAge: COOKIE_EXPIRY,
       path: '/',
     });
 

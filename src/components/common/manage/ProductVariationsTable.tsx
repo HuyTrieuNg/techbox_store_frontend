@@ -191,7 +191,11 @@ export default function ProductVariationsTable({
                         </span>
                         <span>ID: #{variation.id}</span>
                         <span>Product ID: #{variation.productId}</span>
+                        <span className={`font-medium px-2 py-1 rounded-full text-xs ${variation.availableQuantity === 0 ? 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400' : variation.availableQuantity < 10 ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400' : 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400'}`}>
+                          {variation.availableQuantity === 0 ? 'Hết hàng' : variation.availableQuantity < 10 ? 'Sắp hết' : 'Còn hàng'}
+                        </span>
                       </div>
+                       
                     </div>
 
                     {/* Action Button */}
@@ -231,50 +235,85 @@ export default function ProductVariationsTable({
                   </div>
 
                   {/* Price Information */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                    <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
-                      <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Giá gốc</div>
-                      <div className="text-sm font-medium text-gray-900 dark:text-white">
-                        {variation.price.toLocaleString('vi-VN')}đ
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-4">
+                    {/* 1. GIÁ NHẬP - MÀU CAM (Cost/Expense) */}
+                    <div className="bg-orange-50 dark:bg-orange-900/20 p-3 rounded-lg border border-orange-100 dark:border-orange-800">
+                      <div className="text-xs text-orange-600 dark:text-orange-400 mb-1">
+                        Giá nhập trung bình
+                      </div>
+                      <div className="text-sm font-medium text-orange-700 dark:text-orange-300">
+                        {variation.costPrice.toLocaleString("vi-VN")}đ
                       </div>
                     </div>
-                    <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg">
-                      <div className="text-xs text-blue-600 dark:text-blue-400 mb-1">Giá bán</div>
-                      <div className="text-sm font-semibold text-blue-700 dark:text-blue-300">
-                        {variation.salePrice.toLocaleString('vi-VN')}đ
+
+                    {/* 2. GIÁ GỐC - MÀU TÍM (Reference) */}
+                    <div className="bg-purple-50 dark:bg-purple-900/20 p-3 rounded-lg border border-purple-100 dark:border-purple-800">
+                      <div className="text-xs text-purple-600 dark:text-purple-400 mb-1">
+                        Giá gốc
+                      </div>
+                      <div className="text-sm font-medium text-purple-700 dark:text-purple-300">
+                        {variation.price.toLocaleString("vi-VN")}đ
                       </div>
                     </div>
-                    <div className="bg-green-50 dark:bg-green-900/20 p-3 rounded-lg">
-                      <div className="text-xs text-green-600 dark:text-green-400 mb-1">Giảm giá</div>
-                      <div className="text-sm font-medium text-green-700 dark:text-green-300">
+
+                    {/* 3. GIÁ BÁN - MÀU XANH DƯƠNG (Primary Revenue) */}
+                    <div className="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-100 dark:border-blue-800">
+                      <div className="text-xs text-blue-600 dark:text-blue-400 mb-1">
+                        Giá bán
+                      </div>
+                      <div className="text-sm font-bold text-blue-700 dark:text-blue-300">
+                        {variation.salePrice.toLocaleString("vi-VN")}đ
+                      </div>
+                    </div>
+
+                    {/* 4. GIẢM GIÁ - MÀU XANH NGỌC (Deal/Info) */}
+                    <div className="bg-teal-50 dark:bg-teal-900/20 p-3 rounded-lg border border-teal-100 dark:border-teal-800">
+                      <div className="text-xs text-teal-600 dark:text-teal-400 mb-1">
+                        Giảm giá
+                      </div>
+                      <div className="text-sm font-medium text-teal-700 dark:text-teal-300">
                         {variation.price > variation.salePrice
                           ? `${((1 - variation.salePrice / variation.price) * 100).toFixed(1)}%`
-                          : '0%'
-                        }
+                          : "0%"}
                       </div>
                     </div>
-                    <div className={`p-3 rounded-lg ${variation.availableQuantity === 0 ? 'bg-red-50 dark:bg-red-900/20' : variation.availableQuantity < 10 ? 'bg-yellow-50 dark:bg-yellow-900/20' : 'bg-green-50 dark:bg-green-900/20'}`}>
-                      <div className={`text-xs mb-1 ${variation.availableQuantity === 0 ? 'text-red-600 dark:text-red-400' : variation.availableQuantity < 10 ? 'text-yellow-600 dark:text-yellow-400' : 'text-green-600 dark:text-green-400'}`}>
+
+                      {/* 5. TỒN KHO - LOGIC ĐỎ/VÀNG/XANH LÁ (Status) */}
+                    <div
+                      className={`p-3 rounded-lg border ${
+                        variation.availableQuantity === 0
+                          ? "bg-red-50 dark:bg-red-900/20 border-red-100 dark:border-red-800"
+                          : variation.availableQuantity < 10
+                          ? "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-100 dark:border-yellow-800"
+                          : "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-100 dark:border-emerald-800"
+                      }`}
+                    >
+                      <div
+                        className={`text-xs mb-1 ${
+                          variation.availableQuantity === 0
+                            ? "text-red-600 dark:text-red-400"
+                            : variation.availableQuantity < 10
+                            ? "text-yellow-600 dark:text-yellow-400"
+                            : "text-emerald-600 dark:text-emerald-400"
+                        }`}
+                      >
                         Tồn kho
                       </div>
-                      <div className={`text-sm font-medium ${variation.availableQuantity === 0 ? 'text-red-700 dark:text-red-300' : variation.availableQuantity < 10 ? 'text-yellow-700 dark:text-yellow-300' : 'text-green-700 dark:text-green-300'}`}>
+                      <div
+                        className={`text-sm font-bold ${
+                          variation.availableQuantity === 0
+                            ? "text-red-700 dark:text-red-300"
+                            : variation.availableQuantity < 10
+                            ? "text-yellow-700 dark:text-yellow-300"
+                            : "text-emerald-700 dark:text-emerald-300"
+                        }`}
+                      >
                         {variation.availableQuantity}/{variation.stock}
                       </div>
                     </div>
                   </div>
 
-                  {/* Stock Details */}
-                  <div className="flex items-center gap-6 mb-4 text-sm">
-                    <span className="text-gray-600 dark:text-gray-400">
-                      Tổng: <span className="font-medium text-gray-900 dark:text-white">{variation.stock}</span>
-                    </span>
-                    <span className="text-gray-600 dark:text-gray-400">
-                      Đặt trước: <span className={`font-medium ${variation.reservedQuantity > 0 ? 'text-orange-600' : 'text-gray-500'}`}>{variation.reservedQuantity}</span>
-                    </span>
-                    <span className={`font-medium px-2 py-1 rounded-full text-xs ${variation.availableQuantity === 0 ? 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400' : variation.availableQuantity < 10 ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400' : 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400'}`}>
-                      {variation.availableQuantity === 0 ? 'Hết hàng' : variation.availableQuantity < 10 ? 'Sắp hết' : 'Còn hàng'}
-                    </span>
-                  </div>
+                 
 
                   {/* Attributes */}
                   {variation.attributes && variation.attributes.length > 0 && (

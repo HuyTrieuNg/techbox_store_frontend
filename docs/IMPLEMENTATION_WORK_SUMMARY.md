@@ -301,7 +301,7 @@ export async function middleware(request: NextRequest) {
         httpOnly: true,
         secure: true,
         sameSite: 'lax',
-        maxAge: 60 * 60 * 24,
+        // maxAge: 60 * 60 * 24,
       });
       console.log('[Middleware] Token refreshed proactively');
       return response;
@@ -430,14 +430,14 @@ export async function POST(request: NextRequest) {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
-    maxAge: 60 * 60 * 24, // 1 day
+    // maxAge: 60 * 60 * 24, // 1 day
     path: '/',
   });
   res.cookies.set('refreshToken', refresh, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
-    maxAge: 60 * 60 * 24 * 7, // 7 days
+    // maxAge: 60 * 60 * 24 * 7, // 7 days
     path: '/',
   });
 
@@ -480,7 +480,7 @@ export async function POST(request: NextRequest) {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',
-    maxAge: 60 * 60 * 24,
+    // maxAge: 60 * 60 * 24,
     path: '/',
   });
 

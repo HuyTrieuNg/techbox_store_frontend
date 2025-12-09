@@ -53,6 +53,7 @@ export interface ProductVariation {
   variationName: string;
   price: number;
   salePrice: number;
+  costPrice: number;
   stock: number;
   reservedQuantity: number;
   availableQuantity: number;

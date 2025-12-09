@@ -22,7 +22,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   if (!showConfirmModal || !confirmAction) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div className="bg-white dark:bg-gray-800 rounded-lg p-8 max-w-md w-full mx-4">
         <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
           {confirmAction.type === "delete" ? "Xác nhận xóa" : "Xác nhận khôi phục"}

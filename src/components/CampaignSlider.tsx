@@ -100,11 +100,7 @@ export default function CampaignSlider({ campaigns }: CampaignSliderProps) {
                                             className="object-cover rounded-md"
                                             priority
                                         />
-                                        {/* <div className="absolute inset-0 bg-black bg-opacity-20 rounded-lg" /> */}
-                                        {/* <div className="absolute bottom-4 left-4 text-black bg-white bg-opacity-60 px-3 py-2 rounded-md">
-                    <h3 className="text-lg md:text-2xl font-bold">{campaign.name}</h3>
-                    <p className="text-sm md:text-base opacity-90">{campaign.promotionCount} khuyến mãi</p>
-                  </div> */}
+                                      
                                     </div>
 
                                 ) : (

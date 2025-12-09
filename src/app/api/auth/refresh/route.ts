@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const BACKEND_URL = process.env.SPRING_BACKEND_URL || 'http://localhost:8080';
+const COOKIE_EXPIRY = parseInt(process.env.COOKIE_EXPIRY || '2592000', 10);
 
 /**
  * Refresh Token Endpoint
@@ -68,7 +69,7 @@ export async function POST(request: NextRequest) {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: Math.floor((expiresIn || 900000) / 1000), // Convert ms to seconds
+      maxAge: COOKIE_EXPIRY,
       path: '/',
     });
 
@@ -78,8 +79,7 @@ export async function POST(request: NextRequest) {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
-        maxAge: 60 * 60 * 24 * 7, // 7 ngày
-        path: '/',
+        maxAge: COOKIE_EXPIRY,
       });
     }
 

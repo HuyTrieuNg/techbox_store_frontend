@@ -1,26 +1,36 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/UI/button";
+import { useAuthContext } from "@/contexts/AuthContext";
 
 /**
- * Client Component: Interactive button cho unauthorized page
+ * Client Component: Interactive buttons cho unauthorized page
  * 
- * Chỉ có nút "Quay lại" để back về trang trước
+ * - Luôn hiển thị nút "Quay lại"
+ * - Hiển thị nút "Đăng nhập" nếu chưa đăng nhập
+ * - Hiển thị nút "Đăng xuất" nếu đã đăng nhập
  */
 export default function UnauthorizedButtons() {
   const router = useRouter();
+  const { user, isLoading, handleLogout } = useAuthContext();
 
-  const handleGoBack = () => {
-    // Quay về trang trước
-    router.back();
+  const handleGoBack = () => router.back();
+  const handleLogin = () => router.push('/login');
+  const handleLogoutClick = async () => {
+    await handleLogout();
+    router.push('/login');
   };
 
   return (
-    <button
-      onClick={handleGoBack}
-      className="inline-block px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-    >
-      ← Quay lại trang trước
-    </button>
+    <div className="flex items-center justify-center gap-3 flex-wrap">
+      <Button variant="outline" onClick={handleGoBack}>← Quay lại</Button>
+      {!isLoading && !user && (
+        <Button onClick={handleLogin}>Đăng nhập</Button>
+      )}
+      {!isLoading && user && (
+        <Button variant="destructive" onClick={handleLogoutClick}>Đăng xuất</Button>
+      )}
+    </div>
   );
 }

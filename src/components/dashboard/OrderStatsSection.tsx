@@ -7,15 +7,24 @@ import { StatsCard } from './StatsCard';
 import { AreaChart } from '@/components/common/manage/charts/AreaChart';
 import { PieChart } from '@/components/common/manage/charts/PieChart';
 import { EmptyChartState } from '@/components/common/manage/charts/EmptyChartState';
-import { OrderStatsDTO, getOrderStats } from '@/services/reportsService';
+import { DateRangePicker } from './DateRangePicker';
+import { OrderStatsDTO, getOrderStats, getRevenueTrends } from '@/services/reportsService';
+import { getStartOfMonth, getEndOfMonth, formatToISODateStart, formatToISODateEnd } from '@/utils/dateUtils';
 
 export function OrderStatsSection() {
     const [stats, setStats] = useState<OrderStatsDTO | null>(null);
     const [loading, setLoading] = useState(true);
+    const [startDate, setStartDate] = useState<string>(
+        formatToISODateStart(getStartOfMonth())
+    );
+    const [endDate, setEndDate] = useState<string>(
+        formatToISODateEnd(getEndOfMonth())
+    );
 
     useEffect(() => {
         const fetchStats = async () => {
             try {
+                setLoading(true);
                 const data = await getOrderStats();
                 setStats(data);
             } catch (error) {
@@ -27,6 +36,27 @@ export function OrderStatsSection() {
 
         fetchStats();
     }, []);
+
+    const handleDateRangeChange = async (newStartDate: string, newEndDate: string) => {
+        setStartDate(newStartDate);
+        setEndDate(newEndDate);
+
+        try {
+            setLoading(true);
+            // Fetch revenue trends for the selected date range
+            const trends = await getRevenueTrends(newStartDate, newEndDate, 'day');
+            if (stats) {
+                setStats({
+                    ...stats,
+                    revenueTrends: trends,
+                });
+            }
+        } catch (error) {
+            console.error('Failed to fetch revenue trends:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     if (loading) {
         return <div className="text-center py-8">Loading order statistics...</div>;
@@ -50,7 +80,14 @@ export function OrderStatsSection() {
 
     return (
         <div className="space-y-4">
-            <h2 className="text-2xl font-bold">Thống kê đơn hàng</h2>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <h2 className="text-2xl font-bold">Thống kê đơn hàng</h2>
+                <DateRangePicker 
+                    onDateRangeChange={handleDateRangeChange}
+                    defaultRange="month"
+                    showPresets={true}
+                />
+            </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <StatsCard

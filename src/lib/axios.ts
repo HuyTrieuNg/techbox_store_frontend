@@ -52,7 +52,7 @@ axiosInstance.interceptors.response.use(
         
         if (status === 403) {
           window.alert(`[Axios] Redirecting to login due to 403 Forbidden ${config?.url}`);
-          window.location.href = '/login';
+          window.location.href = '/unauthorized';
         }
 
         console.error(`[Axios] Error ${status}`, config?.url);

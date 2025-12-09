@@ -175,7 +175,6 @@ export default function LowStockPage() {
                                                     setConfig((prev) => ({ ...(prev ?? {}), minStockThreshold: newThreshold } as InventoryConfigDTO));
                                                     setEditingThreshold(false);
                                                     setPage(0);
-                                                    toast({ title: 'Cập nhật ngưỡng (local)', description: 'Ngưỡng chỉ cập nhật ở front-end cho lần lọc hiện tại.' });
                                                 } catch (error) {
                                                     console.error('Failed to update config', error);
                                                     const message = (error as any)?.message || 'Không thể cập nhật ngưỡng.';

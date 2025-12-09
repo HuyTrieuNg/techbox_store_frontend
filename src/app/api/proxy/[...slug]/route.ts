@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const BACKEND_URL = process.env.SPRING_BACKEND_URL || 'http://localhost:8080';
-
+const COOKIE_EXPIRY = parseInt(process.env.COOKIE_EXPIRY || '2592000', 10);
 /**
  * Proxy handler cho tất cả API requests
  * Tự động gắn accessToken từ cookie vào header Authorization
@@ -154,7 +154,7 @@ async function handleRequest(
                 httpOnly: true,
                 secure: false,
                 sameSite: 'lax',
-                maxAge: 60 * 15, // 15 phút
+                maxAge: COOKIE_EXPIRY,
                 path: '/',
               });
               
@@ -163,7 +163,7 @@ async function handleRequest(
                   httpOnly: true,
                   secure: false,
                   sameSite: 'lax',
-                  maxAge: 60 * 60 * 24 * 7, // 7 ngày
+                  maxAge: COOKIE_EXPIRY,
                   path: '/',
                 });
               }

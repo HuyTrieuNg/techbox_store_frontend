@@ -7,8 +7,8 @@ import {
   restoreUser,
 } from "@/services/userService";
 import {
+  User,
   UserResponse,
-  PagedUserResponse,
   UserCreateRequest,
 } from "@/features/user";
 import { toast } from "sonner";
@@ -22,7 +22,7 @@ interface ErrorResponse {
 }
 
 export const useAdminUsers = () => {
-  const [users, setUsers] = useState<UserResponse[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [totalPages, setTotalPages] = useState(0);
@@ -45,7 +45,7 @@ export const useAdminUsers = () => {
       setLoading(true);
       setError(null);
       try {
-        const response: PagedUserResponse = await getUsersByRole(
+        const response: UserResponse = await getUsersByRole(
           role,
           page,
           size,
@@ -56,7 +56,7 @@ export const useAdminUsers = () => {
         setUsers(response.content);
         setTotalPages(response.totalPages);
         setTotalElements(response.totalElements);
-        setCurrentPage(response.number);
+        setCurrentPage(response.page);
         setPageSize(response.size);
       } catch (err) {
         const error = err as ErrorResponse;
@@ -72,7 +72,7 @@ export const useAdminUsers = () => {
   );
 
   // Lấy thông tin một người dùng
-  const fetchUserById = async (id: number): Promise<UserResponse | null> => {
+  const fetchUserById = async (id: number): Promise<User | null> => {
     setLoading(true);
     setError(null);
     try {

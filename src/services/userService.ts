@@ -3,9 +3,7 @@ import {
   Address, 
   User, 
   UserResponse, 
-  PagedUserResponse, 
-  UserCreateRequest, 
-  UserUpdateRequest 
+  UserCreateRequest 
 } from "@/features/user";
 
 // Lấy thông tin người dùng hiện tại
@@ -29,8 +27,8 @@ export const getUsers = async (
   sortBy: string = "id",
   sortDir: "asc" | "desc" = "asc",
   includeDeleted: boolean = false
-): Promise<PagedUserResponse> => {
-  return api.get<PagedUserResponse>("/users", {
+): Promise<UserResponse> => {
+  return api.get<UserResponse>("/users", {
     params: { page, size, sortBy, sortDir, includeDeleted }
   });
 };
@@ -43,30 +41,30 @@ export const getUsersByRole = async (
   sortBy: string = "id",
   sortDir: "asc" | "desc" = "asc",
   includeDeleted: boolean = false
-): Promise<PagedUserResponse> => {
-  return api.get<PagedUserResponse>(`/users/by-role/${roleName}`, {
+): Promise<UserResponse> => {
+  return api.get<UserResponse>(`/users/by-role/${roleName}`, {
     params: { page, size, sortBy, sortDir, includeDeleted }
   });
 };
 
 // Lấy thông tin một người dùng theo ID
-export const getUserById = async (id: number): Promise<UserResponse> => {
-  return api.get<UserResponse>(`/users/${id}`);
+export const getUserById = async (id: number): Promise<User> => {
+  return api.get<User>(`/users/${id}`);
 };
 
 // Tạo người dùng mới
 export const createUser = async (
   userData: UserCreateRequest
-): Promise<UserResponse> => {
-  return api.post<UserResponse>("/users", userData);
+): Promise<User> => {
+  return api.post<User>("/users", userData);
 };
 
 // Cập nhật thông tin người dùng
 export const updateUser = async (
   id: number,
-  userData: UserUpdateRequest
-): Promise<UserResponse> => {
-  return api.patch<UserResponse>(`/users/${id}`, userData);
+  userData: Partial<UserCreateRequest>
+): Promise<User> => {
+  return api.patch<User>(`/users/${id}`, userData);
 };
 
 // Xóa người dùng (soft delete)
@@ -75,8 +73,8 @@ export const deleteUser = async (id: number): Promise<void> => {
 };
 
 // Khôi phục người dùng đã xóa
-export const restoreUser = async (id: number): Promise<UserResponse> => {
-  return api.patch<UserResponse>(`/users/${id}/restore`);
+export const restoreUser = async (id: number): Promise<User> => {
+  return api.patch<User>(`/users/${id}/restore`);
 };
 
 // ===== ADDRESS MANAGEMENT =====

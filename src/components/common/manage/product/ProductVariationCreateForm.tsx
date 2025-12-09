@@ -22,9 +22,6 @@ import { Plus, Trash2, X, Upload, Image as ImageIcon } from 'lucide-react';
 const variationSchema = z.object({
   variationName: z.string().min(1, 'Tên biến thể là bắt buộc'),
   price: z.number().min(0, 'Giá phải >= 0'),
-  avgCostPrice: z.number().min(0, 'Giá vốn trung bình phải >= 0'),
-  stockQuantity: z.number().min(0, 'Số lượng tồn kho phải >= 0'),
-  reservedQuantity: z.number().min(0, 'Số lượng đặt trước phải >= 0'),
   variationAttributes: z.array(z.object({
     attributeId: z.number().min(1, 'ID thuộc tính là bắt buộc'),
     value: z.string().min(1, 'Giá trị thuộc tính là bắt buộc'),

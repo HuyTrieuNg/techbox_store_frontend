@@ -1,15 +1,8 @@
 import React from "react";
 import { useRouter } from "next/navigation";
+import { User } from "@/features/user";
 
-interface User {
-  id: number;
-  email: string;
-  firstName: string;
-  lastName: string;
-  phone: string;
-  roles: string[];
-  isActive: boolean;
-}
+
 
 interface UserTableProps {
   users: User[];
