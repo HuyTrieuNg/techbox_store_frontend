@@ -174,8 +174,8 @@ export function RolePermissionManager({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
-        <DialogHeader>
+      <DialogContent className="max-w-4xl h-[90vh] flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle>Quản lý quyền - {role.name}</DialogTitle>
           <DialogDescription>
             Chọn các quyền cho vai trò này. Các quyền đã chọn:{" "}
@@ -217,9 +217,9 @@ export function RolePermissionManager({
           </div>
 
           {/* Permissions List */}
-          <div className="flex-1 overflow-hidden">
-            <ScrollArea className="h-full pr-4">
-              <div className="space-y-4 pb-4">
+          <div className="flex-1 min-h-0">
+            <ScrollArea className="h-full">
+              <div className="space-y-4 pr-4 pb-4">
                 {Object.entries(
                   selectedModule === "all"
                     ? searchQuery

@@ -9,11 +9,15 @@ import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 import InvoicePdfDownload from '@/components/pdf/InvoicePdfDownload';
 import { useOrders } from "@/hooks/useOrder";
+import axiosInstance from '@/lib/axios';
 
 export default function ManageOrderPage() {
-  const { orders, isLoading, isError } = useOrders(0, 10);
+  const { orders, isLoading, isError, mutate } = useOrders(0, 10);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [cancellingOrderId, setCancellingOrderId] = useState<number | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const mappedOrders = orders.map((o: any) => ({
     id: o.id,
@@ -43,6 +47,45 @@ export default function ManageOrderPage() {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedOrder(null);
+  };
+
+  const handleCancelOrder = (orderId: number) => {
+    setCancellingOrderId(orderId);
+    setShowCancelConfirm(true);
+  };
+
+  const confirmCancelOrder = async () => {
+    if (!cancellingOrderId) return;
+    
+    setIsSubmitting(true);
+    try {
+      const response = await axiosInstance.put(`/orders/${cancellingOrderId}/cancel`);
+      
+      // Chỉ hiện alert thành công nếu response OK
+      if (response) {
+        alert('Hủy đơn hàng thành công!');
+        setShowCancelConfirm(false);
+        setCancellingOrderId(null);
+        setIsModalOpen(false);
+        setSelectedOrder(null);
+        // Refresh danh sách đơn hàng
+        mutate();
+      }
+    } catch (error: any) {
+      console.error('Cancel order error:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Không thể hủy đơn hàng. Vui lòng thử lại!';
+      alert(errorMessage);
+      // Vẫn đóng modal và refresh nếu lỗi 4xx (đã hủy rồi hoặc không hợp lệ)
+      if (error.response?.status >= 400 && error.response?.status < 500) {
+        setShowCancelConfirm(false);
+        setCancellingOrderId(null);
+        setIsModalOpen(false);
+        setSelectedOrder(null);
+        mutate();
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -288,6 +331,76 @@ export default function ManageOrderPage() {
                   <div className="border-t border-gray-300 mt-4 pt-3 text-gray-700">
                     <p><strong>Phương thức thanh toán:</strong> {selectedOrder?.paymentMethod}</p>
                     <p><strong>Trạng thái thanh toán:</strong> {getStatusPaymentText(selectedOrder?.paymentStatus)}</p>
+                  </div>
+
+                  {/* Nút hủy đơn hàng */}
+                  {(selectedOrder?.status === 'PENDING' || selectedOrder?.status === 'CONFIRMED') && (
+                    <div className="border-t border-gray-300 mt-4 pt-4">
+                      <button
+                        onClick={() => handleCancelOrder(selectedOrder.id)}
+                        className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-3 rounded-lg transition"
+                      >
+                        Hủy đơn hàng
+                      </button>
+                    </div>
+                  )}
+                </Dialog.Panel>
+              </Transition.Child>
+            </div>
+          </div>
+        </Dialog>
+      </Transition>
+
+      {/* Modal xác nhận hủy đơn */}
+      <Transition appear show={showCancelConfirm} as={Fragment}>
+        <Dialog as="div" className="relative z-50" onClose={() => !isSubmitting && setShowCancelConfirm(false)}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-200"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-150"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black/30" />
+          </Transition.Child>
+
+          <div className="fixed inset-0 overflow-y-auto">
+            <div className="flex min-h-full items-center justify-center p-6">
+              <Transition.Child
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 translate-y-4 scale-95"
+                enterTo="opacity-100 translate-y-0 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 translate-y-0 scale-100"
+                leaveTo="opacity-0 translate-y-4 scale-95"
+              >
+                <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                  <Dialog.Title as="h3" className="text-lg font-bold text-gray-900 mb-4">
+                    Xác nhận hủy đơn hàng
+                  </Dialog.Title>
+                  
+                  <p className="text-gray-600 mb-6">
+                    Bạn có chắc chắn muốn hủy đơn hàng này không? Hành động này không thể hoàn tác.
+                  </p>
+
+                  <div className="flex gap-3 justify-end">
+                    <button
+                      onClick={() => setShowCancelConfirm(false)}
+                      disabled={isSubmitting}
+                      className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      Không
+                    </button>
+                    <button
+                      onClick={confirmCancelOrder}
+                      disabled={isSubmitting}
+                      className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-50"
+                    >
+                      {isSubmitting ? 'Đang xử lý...' : 'Xác nhận hủy'}
+                    </button>
                   </div>
                 </Dialog.Panel>
               </Transition.Child>

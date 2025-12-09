@@ -18,6 +18,22 @@ import { Label } from "@/components/UI/label";
 import { Textarea } from "@/components/UI/textarea";
 import { Plus } from "lucide-react";
 
+// Hàm chuyển text sang SCREAMING_SNAKE_CASE và thêm prefix ROLE_
+function formatRoleName(input: string): string {
+  // Loại bỏ khoảng trắng thừa ở đầu cuối
+  const trimmed = input.trim();
+  
+  if (!trimmed) return '';
+  
+  // Chuyển thành SCREAMING_SNAKE_CASE
+  const snakeCase = trimmed
+    .replace(/\s+/g, '_')  // Thay khoảng trắng bằng underscore
+    .toUpperCase();        // Chuyển thành chữ hoa
+  
+  // Thêm ROLE_ nếu chưa có
+  return snakeCase.startsWith('ROLE_') ? snakeCase : `ROLE_${snakeCase}`;
+}
+
 export function CreateRoleDialog() {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState<RoleCreateRequest>({
@@ -34,8 +50,14 @@ export function CreateRoleDialog() {
       return;
     }
 
+    // Format role name trước khi gửi
+    const formattedData = {
+      ...formData,
+      name: formatRoleName(formData.name)
+    };
+
     try {
-      await createRoleMutation.mutateAsync(formData);
+      await createRoleMutation.mutateAsync(formattedData);
       setFormData({ name: "", description: "" });
       setOpen(false);
     } catch {
@@ -76,15 +98,20 @@ export function CreateRoleDialog() {
               <Input
                 id="name"
                 name="name"
-                placeholder="VD: ROLE_MANAGER"
+                placeholder="VD: Manager, Sales Manager, Warehouse Staff"
                 value={formData.name}
                 onChange={handleChange}
                 required
                 maxLength={50}
               />
               <p className="text-sm text-muted-foreground">
-                Tối đa 50 ký tự. Nên bắt đầu với ROLE_
+                Tối đa 50 ký tự. Hệ thống tự động thêm tiền tố ROLE_ và chuyển sang chữ hoa
               </p>
+              {formData.name && (
+                <p className="text-sm font-medium text-primary">
+                  Kết quả: {formatRoleName(formData.name)}
+                </p>
+              )}
             </div>
             <div className="grid gap-2">
               <Label htmlFor="description">Mô tả</Label>

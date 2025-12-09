@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import InvoicePdfDownload from '@/components/pdf/InvoicePdfDownload';
 import { useAdminOrders } from "@/hooks/useAdminOrders";
 import { OrderResponse } from "@/features/order";
 import { Button } from "@/components/UI/button";
-import { FaFileInvoice } from "react-icons/fa";
+import { FaFileInvoice, FaEdit } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -69,6 +69,10 @@ export default function AdminOrders() {
     orderId: number;
     newStatus: string;
   } | null>(null);
+  const [showStatusDropdown, setShowStatusDropdown] = useState(false);
+  const [dropdownOrderId, setDropdownOrderId] = useState<number | null>(null);
+  const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+  const buttonRefs = useRef<{ [key: number]: HTMLButtonElement | null }>({});
 
   // Format currency
   const formatCurrency = (amount: number) => {
@@ -117,6 +121,23 @@ export default function AdminOrders() {
   const handleUpdateStatus = (orderId: number, newStatus: string) => {
     setConfirmAction({ orderId, newStatus });
     setShowConfirmModal(true);
+    setDropdownOrderId(null); // Đóng dropdown khi chọn
+  };
+
+  const toggleStatusDropdown = (orderId: number) => {
+    if (dropdownOrderId === orderId) {
+      setDropdownOrderId(null);
+    } else {
+      const button = buttonRefs.current[orderId];
+      if (button) {
+        const rect = button.getBoundingClientRect();
+        setDropdownPosition({
+          top: rect.bottom + window.scrollY + 4,
+          left: rect.right + window.scrollX - 180 // Lệch sang trái, 180 là width của dropdown
+        });
+      }
+      setDropdownOrderId(orderId);
+    }
   };
 
   const confirmUpdateStatus = async () => {
@@ -212,8 +233,8 @@ export default function AdminOrders() {
 
       {/* Orders Table */}
       {!loading && (
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
+        <div className="bg-white rounded-lg shadow">
+          <div className="overflow-x-auto overflow-y-visible">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
@@ -288,18 +309,33 @@ export default function AdminOrders() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {formatDate(order.createdAt)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex flex-row items-center">
-                        <button
-                          onClick={() => handleViewDetail(order)}
-                          className="text-blue-600 hover:text-blue-900 mr-4"
-                        >
-                          Chi tiết
-                        </button>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex items-center gap-3">
+                          <button
+                            onClick={() => handleViewDetail(order)}
+                            className="text-blue-600 hover:text-blue-900"
+                          >
+                            Chi tiết
+                          </button>
 
-                        <Link href={`/admin/orders/${order.id}`}>
-                            <FaFileInvoice className="w-5 h-5" />
-                        </Link>
+                          <Link href={`/admin/orders/${order.id}`}>
+                            <FaFileInvoice className="w-5 h-5 text-gray-600 hover:text-gray-900" />
+                          </Link>
 
+                          {/* Icon Edit với Dropdown */}
+                          {STATUS_TRANSITIONS[order.status]?.filter(s => s !== 'CANCELLED').length > 0 && (
+                            <div className="relative">
+                              <button
+                                ref={(el) => { buttonRefs.current[order.id] = el; }}
+                                onClick={() => toggleStatusDropdown(order.id)}
+                                className="text-green-600 hover:text-green-900 p-1"
+                                title="Cập nhật trạng thái"
+                              >
+                                <FaEdit className="w-5 h-5" />
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -564,25 +600,20 @@ export default function AdminOrders() {
                 </div>
               </div>
 
-              {/* Actions */}
-              <div className="border-t pt-4">
-                <h3 className="font-semibold mb-2">Cập nhật trạng thái</h3>
-                <div className="flex gap-2 flex-wrap">
-                  {STATUS_TRANSITIONS[selectedOrder.status]?.map((status) => (
-                    <button
-                      key={status}
-                      onClick={() => handleUpdateStatus(selectedOrder.id, status)}
-                      className={`px-4 py-2 rounded-lg text-white ${
-                        status === "CANCELLED" || status === "RETURNED"
-                          ? "bg-red-600 hover:bg-red-700"
-                          : "bg-blue-600 hover:bg-blue-700"
-                      }`}
-                    >
-                      Chuyển sang: {ORDER_STATUS_MESSAGES[status]}
-                    </button>
-                  ))}
+              {/* Nút hủy đơn hàng */}
+              {selectedOrder.status !== 'CANCELLED' && selectedOrder.status !== 'DELIVERED' && selectedOrder.status !== 'RETURNED' && (
+                <div className="border-t pt-4 mt-4">
+                  <button
+                    onClick={() => {
+                      handleUpdateStatus(selectedOrder.id, 'CANCELLED');
+                      setShowDetailModal(false);
+                    }}
+                    className="w-full px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition font-semibold"
+                  >
+                    Hủy đơn hàng
+                  </button>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
@@ -590,7 +621,7 @@ export default function AdminOrders() {
 
       {/* Confirm Modal */}
       {showConfirmModal && confirmAction && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <h3 className="text-lg font-bold mb-4">Xác nhận cập nhật</h3>
             <p className="text-gray-600 mb-6">
@@ -616,6 +647,43 @@ export default function AdminOrders() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Dropdown Status Menu (Portal-like) */}
+      {dropdownOrderId && (
+        <>
+          {/* Overlay để đóng dropdown khi click bên ngoài */}
+          <div 
+            className="fixed inset-0 z-[100]" 
+            onClick={() => setDropdownOrderId(null)}
+          />
+          
+          <div 
+            className="fixed bg-white border border-gray-200 rounded-lg shadow-lg z-[101] min-w-[180px]"
+            style={{
+              top: `${dropdownPosition.top}px`,
+              left: `${dropdownPosition.left}px`
+            }}
+          >
+            {filteredOrders
+              .find(o => o.id === dropdownOrderId)
+              ?.status && 
+              STATUS_TRANSITIONS[
+                filteredOrders.find(o => o.id === dropdownOrderId)!.status
+              ]
+                .filter(status => status !== 'CANCELLED')
+                .map((status) => (
+                  <button
+                    key={status}
+                    onClick={() => handleUpdateStatus(dropdownOrderId, status)}
+                    className="w-full text-left px-4 py-2 hover:bg-gray-50 first:rounded-t-lg last:rounded-b-lg transition text-gray-700"
+                  >
+                    {ORDER_STATUS_MESSAGES[status]}
+                  </button>
+                ))
+            }
+          </div>
+        </>
       )}
     </div>
   );
