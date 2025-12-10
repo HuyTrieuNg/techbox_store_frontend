@@ -44,7 +44,7 @@ export const campaignService = {
 
   // Lấy campaign theo ID
   getById: async (id: number): Promise<Campaign> => {
-    return axiosInstance.get(`/campaigns/${id}`);
+    return axiosInstance.get(`/campaigns/${id}/admin`);
   },
 
   // Lấy campaigns đang hoạt động
@@ -118,7 +118,7 @@ export const promotionService = {
 
   // Lấy promotions theo campaign (trả về chi tiết sản phẩm/variation)
   getByCampaign: async (campaignId: number): Promise<import('@/types').CampaignPromotion[]> => {
-    return axiosInstance.get(`/promotions/campaign/${campaignId}`);
+    return axiosInstance.get(`/promotions/campaign/${campaignId}/admin`);
   },
 
   // Lấy promotions theo sản phẩm

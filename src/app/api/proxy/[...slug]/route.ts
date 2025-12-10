@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const BACKEND_URL = process.env.SPRING_BACKEND_URL || 'http://localhost:8080';
 const COOKIE_EXPIRY = parseInt(process.env.COOKIE_EXPIRY || '2592000', 10);
+
 /**
  * Proxy handler cho tất cả API requests
  * Tự động gắn accessToken từ cookie vào header Authorization
@@ -12,41 +13,119 @@ const COOKIE_EXPIRY = parseInt(process.env.COOKIE_EXPIRY || '2592000', 10);
  * - POST /api/proxy/orders -> POST http://backend:8080/api/orders
  */
 
+// In-memory lock để prevent concurrent refresh attempts
+// Key: refreshToken, Value: Promise đang refresh
+const refreshLocks = new Map<string, Promise<{ accessToken: string; refreshToken?: string } | null>>();
+
+// Cache tokens mới sau khi refresh thành công
+// Key: old refreshToken, Value: { accessToken, refreshToken (new), expiresAt }
+interface TokenCache {
+  accessToken: string;
+  refreshToken?: string;
+  expiresAt: number; // timestamp khi cache hết hạn
+}
+const tokenCache = new Map<string, TokenCache>();
+
+// Clean up expired cache entries mỗi 5 phút
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, value] of tokenCache.entries()) {
+    if (value.expiresAt < now) {
+      tokenCache.delete(key);
+    }
+  }
+}, 5 * 60 * 1000);
+
 /**
  * Refresh access token bằng cách gọi internal refresh endpoint
  * Returns null nếu refresh thất bại (401) → trigger logout
+ * Sử dụng lock để prevent race condition khi nhiều requests cùng refresh
  */
 async function refreshAccessToken(request: NextRequest): Promise<{ accessToken: string; refreshToken?: string } | null> {
-  try {
-    const response = await fetch(`${request.nextUrl.origin}/api/auth/refresh`, {
-      method: 'POST',
-      headers: {
-        cookie: request.headers.get('cookie') || '',
-      },
-    });
-
-    // Nếu refresh endpoint trả về 401 → refresh token không hợp lệ → return null để trigger logout
-    if (!response.ok) {
-      if (response.status === 401) {
-        console.log('❌ [Proxy] Refresh token invalid/expired (401) → will trigger logout');
-      }
-      return null;
-    }
-    
-    // Lấy tokens mới từ cookie trong response
-    const accessTokenCookie = response.headers.get('set-cookie')?.match(/accessToken=([^;]+)/)?.[1];
-    const refreshTokenCookie = response.headers.get('set-cookie')?.match(/refreshToken=([^;]+)/)?.[1];
-    
-    if (!accessTokenCookie) return null;
-
-    return {
-      accessToken: accessTokenCookie,
-      refreshToken: refreshTokenCookie,
-    };
-  } catch (error) {
-    console.error('❌ [Proxy] Refresh token failed:', error);
+  const currentRefreshToken = request.cookies.get('refreshToken')?.value;
+  if (!currentRefreshToken) {
+    console.log('⚠️ [Proxy] No refresh token found in cookies');
     return null;
   }
+
+  // Kiểm tra cache trước - nếu token này đã được refresh gần đây
+  const cached = tokenCache.get(currentRefreshToken);
+  if (cached && cached.expiresAt > Date.now()) {
+    console.log('💾 [Proxy] Using cached tokens from recent refresh');
+    return {
+      accessToken: cached.accessToken,
+      refreshToken: cached.refreshToken,
+    };
+  }
+
+  // Kiểm tra xem có refresh request nào đang chạy với token này không
+  const existingRefresh = refreshLocks.get(currentRefreshToken);
+  if (existingRefresh) {
+    console.log('⏳ [Proxy] Refresh already in progress, waiting for result...');
+    return existingRefresh;
+  }
+
+  // Tạo promise cho refresh request này
+  const refreshPromise = (async () => {
+    try {
+      const response = await fetch(`${request.nextUrl.origin}/api/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          cookie: request.headers.get('cookie') || '',
+        },
+      });
+
+      // Nếu refresh endpoint trả về 401 → refresh token không hợp lệ → return null để trigger logout
+      if (!response.ok) {
+        if (response.status === 401) {
+          console.log('❌ [Proxy] Refresh token invalid/expired (401) → will trigger logout');
+        }
+        return null;
+      }
+      
+      // Lấy tokens mới từ cookie trong response
+      const setCookieHeader = response.headers.get('set-cookie') || '';
+      const accessTokenCookie = setCookieHeader.match(/accessToken=([^;]+)/)?.[1];
+      const refreshTokenCookie = setCookieHeader.match(/refreshToken=([^;]+)/)?.[1];
+      
+      if (!accessTokenCookie) return null;
+
+      const newTokens = {
+        accessToken: accessTokenCookie,
+        refreshToken: refreshTokenCookie,
+      };
+
+      // Cache tokens mới để các requests đang chờ có thể dùng
+      // Cache trong 5 giây (đủ để các concurrent requests dùng chung)
+      tokenCache.set(currentRefreshToken, {
+        ...newTokens,
+        expiresAt: Date.now() + 5000,
+      });
+
+      // Nếu có refresh token mới, cũng cache với key mới
+      if (refreshTokenCookie) {
+        tokenCache.set(refreshTokenCookie, {
+          ...newTokens,
+          expiresAt: Date.now() + 5000,
+        });
+      }
+
+      return newTokens;
+    } catch (error) {
+      console.error('❌ [Proxy] Refresh token failed:', error);
+      // Xóa cache nếu có lỗi
+      tokenCache.delete(currentRefreshToken);
+      return null;
+    } finally {
+      // Clean up lock sau khi hoàn thành (success hoặc fail)
+      refreshLocks.delete(currentRefreshToken);
+    }
+  })();
+
+  // Lưu promise vào lock map
+  refreshLocks.set(currentRefreshToken, refreshPromise);
+
+  return refreshPromise;
 }
 
 async function handleRequest(
@@ -93,6 +172,32 @@ async function handleRequest(
       headers['Authorization'] = `Bearer ${accessToken}`;
     }
 
+    // Cache body content để có thể retry
+    let bodyContent: BodyInit | null = null;
+    if (['POST', 'PUT', 'PATCH'].includes(method) && request.body) {
+      // Đọc và cache body content
+      const reader = request.body.getReader();
+      const chunks: Uint8Array[] = [];
+      let totalLength = 0;
+      
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        chunks.push(value);
+        totalLength += value.length;
+      }
+      
+      // Combine chunks thành single Uint8Array
+      const combinedArray = new Uint8Array(totalLength);
+      let offset = 0;
+      for (const chunk of chunks) {
+        combinedArray.set(chunk, offset);
+        offset += chunk.length;
+      }
+      
+      bodyContent = combinedArray;
+    }
+
     // Chuẩn bị request options
     const requestOptions: RequestInit = {
       method,
@@ -101,12 +206,8 @@ async function handleRequest(
     };
 
     // Thêm body cho POST, PUT, PATCH
-    if (['POST', 'PUT', 'PATCH'].includes(method)) {
-      if (request.body) {
-        requestOptions.body = request.body;
-        // @ts-expect-error - duplex is needed for streaming body
-        requestOptions.duplex = 'half';
-      }
+    if (bodyContent) {
+      requestOptions.body = bodyContent;
     }
 
     // Gửi request đến backend
@@ -114,11 +215,15 @@ async function handleRequest(
 
     // Nếu nhận 401 và có requiresRefresh = true, thử refresh token
     if (response.status === 401) {
+      // Clone response để tránh body bị consume
+      const clonedResponse = response.clone();
+      
       try {
-        const errorData = await response.json();
+        const errorData = await clonedResponse.json();
+        console.log('🔍 [Proxy] 401 Response body:', JSON.stringify(errorData, null, 2));
         
-        if (errorData.requiresRefresh) {
-          console.log('🔄 [Proxy] Token expired, attempting refresh...');
+        if (errorData.requiresRefresh === true) {
+          console.log('🔄 [Proxy] Token expired (requiresRefresh=true), attempting refresh...');
           
           // Thử refresh token
           const refreshResult = await refreshAccessToken(request);
@@ -136,7 +241,7 @@ async function handleRequest(
             });
             
             // Nếu retry thành công, trả về response với cookies mới
-            if (response.ok) {
+            if (response.ok || response.status !== 401) {
               const respHeaders: Record<string, string> = {};
               for (const [key, value] of response.headers.entries()) {
                 const lower = key.toLowerCase();
@@ -176,7 +281,7 @@ async function handleRequest(
             // Refresh thất bại (refresh token không hợp lệ/hết hạn)
             // → Tự động logout: xóa cookies, không cần gọi backend vì token đã không hợp lệ
             const nextResponse = NextResponse.json(
-              { error: 'REFRESH_FAILED', message: 'Session expired. Please login again.' },
+              { error: 'REFRESH_FAILED', message: 'Session expired. Please login again.', shouldRedirect: true },
               { status: 401 }
             );
             
@@ -185,14 +290,25 @@ async function handleRequest(
             
             return nextResponse;
           }
+        } else {
+          console.log('ℹ️ [Proxy] 401 without requiresRefresh, returning original error');
         }
         
         // Không phải lỗi requiresRefresh, trả về lỗi gốc
         return NextResponse.json(errorData, { status: 401 });
-      } catch {
-        // Không parse được JSON, trả về response gốc
+      } catch (parseError) {
+        console.error('⚠️ [Proxy] Cannot parse 401 response as JSON:', parseError);
+        // Không parse được JSON, trả về response gốc (sử dụng response chưa bị consume)
+        const respHeaders: Record<string, string> = {};
+        for (const [key, value] of response.headers.entries()) {
+          const lower = key.toLowerCase();
+          if (hopByHop.has(lower)) continue;
+          respHeaders[key] = value;
+        }
+        
         return new NextResponse(response.body, {
           status: response.status,
+          headers: respHeaders,
         });
       }
     }

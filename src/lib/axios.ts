@@ -40,7 +40,14 @@ axiosInstance.interceptors.response.use(
   (response) => response.data,
   (error) => {
     if (error.response) {
-      const { status, config } = error.response;
+      const { status, config, data } = error.response;
+      
+      // Kiểm tra nếu backend yêu cầu redirect đến login
+      if (status === 401 && data?.shouldRedirect) {
+        console.log('🔄 [Axios] Session expired, redirecting to login...');
+        window.location.href = '/login';
+        return Promise.reject(error);
+      }
       
       // Không log 401/403 cho các endpoint này (normal behavior)
       const silentEndpoints = ['/users/me', '/cart', '/reviews/me', '/orders/recent-products'];

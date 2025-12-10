@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { FiX } from 'react-icons/fi';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose } from '@/components/UI/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/UI/dialog';
 import { Button } from '@/components/UI/button';
 import { promotionService } from '@/services/promotionService';
 import { getProductVariations } from '@/services/productManagementService';
@@ -143,21 +143,16 @@ export default function PromotionModal({ promotion, campaigns, onClose }: Promot
 
   return (
     <Dialog open={true} onOpenChange={() => { onClose(); }}>
-      <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <DialogHeader className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-900">
+        <DialogHeader className="p-6 border-b border-gray-200 flex-shrink-0">
+          <DialogTitle className="text-2xl font-bold text-gray-900">
             {promotion ? 'Sửa khuyến mãi' : 'Tạo khuyến mãi mới'}
-          </h2>
-          <DialogClose asChild>
-            <button className="text-gray-400 hover:text-gray-600 transition-colors">
-              <FiX className="w-6 h-6" />
-            </button>
-          </DialogClose>
+          </DialogTitle>
         </DialogHeader>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        {/* Form - scrollable */}
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-6 min-h-0">
           {/* Campaign */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -319,13 +314,13 @@ export default function PromotionModal({ promotion, campaigns, onClose }: Promot
           </div>
 
           {/* Active status removed per request; keeping active value in data for creation/editing */}
-
-          {/* Actions */}
-          <DialogFooter className="flex gap-3 pt-4 border-t border-gray-200">
-            <Button type="button" variant="outline" onClick={onClose}>Hủy</Button>
-            <Button type="submit" disabled={loading}>{loading ? 'Đang lưu...' : promotion ? 'Cập nhật' : 'Tạo mới'}</Button>
-          </DialogFooter>
         </form>
+
+        {/* Actions - fixed at bottom */}
+        <DialogFooter className="flex gap-3 p-6 border-t border-gray-200 flex-shrink-0">
+          <Button type="button" variant="outline" onClick={onClose}>Hủy</Button>
+          <Button type="submit" onClick={(e) => { e.preventDefault(); handleSubmit(e as any); }} disabled={loading}>{loading ? 'Đang lưu...' : promotion ? 'Cập nhật' : 'Tạo mới'}</Button>
+        </DialogFooter>
 
         {/* Product selection is implemented inline above; no external modal */}
       </DialogContent>

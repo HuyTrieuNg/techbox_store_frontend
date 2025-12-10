@@ -102,6 +102,8 @@ export default function AdminUsersPage() {
       <UserPagination
         currentPage={currentPage}
         totalPages={totalPages}
+        totalElements={totalElements}
+        pageSize={pageSize}
         handlePageChange={handlePageChange}
       />
 

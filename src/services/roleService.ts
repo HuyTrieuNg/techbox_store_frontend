@@ -61,6 +61,50 @@ export const deletePermission = async (permissionId: number): Promise<void> => {
   return api.delete<void>(`/roles/permissions/${permissionId}`);
 };
 
+// Create new permission
+export const createPermission = async (data: {
+  name: string;
+  description?: string;
+}): Promise<PermissionResponse> => {
+  return api.post<PermissionResponse>("/roles/permissions", data);
+};
+
+// ===== MODULE PERMISSION MANAGEMENT =====
+
+export interface ModulePermissionResponse {
+  moduleName: string;
+  description?: string;
+  permissions: PermissionResponse[];
+  totalPermissions: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Get all module permissions
+export const getAllModules = async (): Promise<ModulePermissionResponse[]> => {
+  return api.get<ModulePermissionResponse[]>("/roles/modules");
+};
+
+// Get module permission by name
+export const getModuleByName = async (
+  moduleName: string
+): Promise<ModulePermissionResponse> => {
+  return api.get<ModulePermissionResponse>(`/roles/modules/${moduleName}`);
+};
+
+// Create new module permission
+export const createModule = async (data: {
+  moduleName: string;
+  description?: string;
+}): Promise<ModulePermissionResponse> => {
+  return api.post<ModulePermissionResponse>("/roles/modules", data);
+};
+
+// Delete module permission
+export const deleteModule = async (moduleName: string): Promise<void> => {
+  return api.delete<void>(`/roles/modules/${moduleName}`);
+};
+
 // ===== ROLE-PERMISSION ASSIGNMENT =====
 
 // Assign permissions to role (replace all)

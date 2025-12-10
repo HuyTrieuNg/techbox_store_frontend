@@ -183,61 +183,57 @@ export default function CampaignsTab() {
                 </div>
               )}
 
-              {/* Content */}
-              <div className="p-4 space-y-3">
-                <div className="flex items-start justify-between">
-                  <h3 className="font-semibold text-lg text-gray-900">{campaign.name}</h3>
-                  {getStatusBadge(campaign)}
-                </div>
-
-                {campaign.description && (
-                  <p className="text-sm text-gray-600 line-clamp-2">{campaign.description}</p>
-                )}
-
-                <div className="space-y-1 text-sm text-gray-600">
-                  <div className="flex items-center gap-2">
-                    <FiCalendar className="w-4 h-4" />
-                    <span>Bắt đầu: {new Date(campaign.startDate).toLocaleDateString('vi-VN')}</span>
+              {/* Content - clickable */}
+              <Link href={`/admin/promotions/${campaign.id}`} className="block">
+                <div className="p-4 space-y-3">
+                  <div className="flex items-start justify-between">
+                    <h3 className="font-semibold text-lg text-gray-900">{campaign.name}</h3>
+                    {getStatusBadge(campaign)}
                   </div>
-                  <div className="flex items-center gap-2">
-                    <FiCalendar className="w-4 h-4" />
-                    <span>Kết thúc: {new Date(campaign.endDate).toLocaleDateString('vi-VN')}</span>
-                  </div>
-                </div>
 
-                {/* Actions */}
-                <div className="flex gap-2 pt-2">
-                  <button
-                    onClick={() => handleEdit(campaign)}
-                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
-                  >
-                    <FiEdit2 className="w-4 h-4" />
-                    Sửa
-                  </button>
-                  <Link
-                    href={`/admin/promotions/${campaign.id}`}
-                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-indigo-50 text-indigo-600 rounded-lg hover:bg-indigo-100 transition-colors"
-                  >
-                    Quản lý khuyến mãi
-                  </Link>
-                  {campaign.deleted ? (
-                    <button
-                      onClick={() => handleRestore(campaign.id)}
-                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors"
-                    >
-                      <FiRefreshCw className="w-4 h-4" />
-                      Khôi phục
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => handleDelete(campaign.id)}
-                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
-                    >
-                      <FiTrash2 className="w-4 h-4" />
-                      Xóa
-                    </button>
+                  {campaign.description && (
+                    <p className="text-sm text-gray-600 line-clamp-2">{campaign.description}</p>
                   )}
+
+                  <div className="space-y-1 text-sm text-gray-600">
+                    <div className="flex items-center gap-2">
+                      <FiCalendar className="w-4 h-4" />
+                      <span>Bắt đầu: {new Date(campaign.startDate).toLocaleDateString('vi-VN')}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <FiCalendar className="w-4 h-4" />
+                      <span>Kết thúc: {new Date(campaign.endDate).toLocaleDateString('vi-VN')}</span>
+                    </div>
+                  </div>
                 </div>
+              </Link>
+
+              {/* Actions */}
+              <div className="p-4 pt-0 flex gap-2">
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleEdit(campaign); }}
+                  className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+                >
+                  <FiEdit2 className="w-4 h-4" />
+                  Sửa
+                </button>
+                {campaign.deleted ? (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleRestore(campaign.id); }}
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100 transition-colors"
+                  >
+                    <FiRefreshCw className="w-4 h-4" />
+                    Khôi phục
+                  </button>
+                ) : (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handleDelete(campaign.id); }}
+                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+                  >
+                    <FiTrash2 className="w-4 h-4" />
+                    Xóa
+                  </button>
+                )}
               </div>
             </div>
           ))}

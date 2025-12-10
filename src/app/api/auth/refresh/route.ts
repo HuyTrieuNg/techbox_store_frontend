@@ -31,10 +31,24 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({ refreshToken }),
     });
 
+    console.log('🔍 [Refresh] Response status:', response.status);
+
     if (!response.ok) {
+      const clonedResponse = response.clone();
+      try {
+        const errorData = await clonedResponse.json();
+        console.log('🔍 [Refresh] Error response body:', JSON.stringify(errorData, null, 2));
+        
+        if (errorData.requiresRefresh === false) {
+          console.log('ℹ️ [Refresh] requiresRefresh is false, not a token expiry issue');
+        }
+      } catch (e) {
+        console.log('⚠️ [Refresh] Cannot parse error response as JSON');
+      }
+
       // Refresh token không hợp lệ hoặc hết hạn → xóa cookies
       const res = NextResponse.json(
-        { error: 'REFRESH_FAILED', message: 'Refresh token không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.' },
+        { error: 'REFRESH_FAILED', message: 'Refresh token không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.', shouldRedirect: true },
         { status: 401 }
       );
       

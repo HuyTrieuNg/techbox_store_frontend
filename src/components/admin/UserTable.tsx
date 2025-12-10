@@ -1,5 +1,4 @@
 import React from "react";
-import { useRouter } from "next/navigation";
 import { User } from "@/features/user";
 
 
@@ -25,7 +24,6 @@ export const UserTable: React.FC<UserTableProps> = ({
   handleSort,
   handleDeleteUser,
   handleRestoreUser,
-  handleViewOrderHistory,
 }) => {
   if (loading) {
     return (
@@ -85,46 +83,26 @@ export const UserTable: React.FC<UserTableProps> = ({
             ) : (
               users.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-medium">
                     #{user.id}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                      <div className="w-10 h-10 bg-blue-500 dark:bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
                         {user.firstName.charAt(0)}
                         {user.lastName.charAt(0)}
                       </div>
                       <div className="ml-4">
-                        {selectedRole === "CUSTOMER" && user.isActive !== false ? (
-                          <button
-                            onClick={() => handleViewOrderHistory(user.id)}
-                            className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 hover:underline text-left"
-                            title="Xem lịch sử mua hàng"
-                          >
-                            {user.firstName} {user.lastName}
-                          </button>
-                        ) : (
-                          <div className="text-sm font-medium text-gray-900 dark:text-white">
-                            {user.firstName} {user.lastName}
-                          </div>
-                        )}
+                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {user.firstName} {user.lastName}
+                        </div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    {selectedRole === "CUSTOMER" && user.isActive !== false ? (
-                      <button
-                        onClick={() => handleViewOrderHistory(user.id)}
-                        className="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 hover:underline"
-                        title="Xem lịch sử mua hàng"
-                      >
-                        {user.email}
-                      </button>
-                    ) : (
-                      user.email
-                    )}
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                    {user.email}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
                     {user.phone}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
