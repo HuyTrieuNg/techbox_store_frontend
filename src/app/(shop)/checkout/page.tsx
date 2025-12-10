@@ -10,7 +10,7 @@ import { useUser } from "@/hooks/useUser";               // <-- NEW
 import { useRouter } from "next/navigation";
 import { CartService } from "@/services/cartService";
 
-const baseUrl = (process.env.SPRING_BACKEND_URL || 'http://localhost:8080') + '/api';
+const baseUrl = (process.env.NEXT_PUBLIC_SPRING_BACKEND_URL || 'http://localhost:8080') + '/api';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -25,10 +25,10 @@ export default function CheckoutPage() {
 
   /* ------------------- STATE ------------------- */
   const [paymentMethod, setPaymentMethod] = useState<"COD" | "VNPAY">("COD");
-  const [shippingFee, setShippingFee] = useState(30000);
+  const shippingFee = 30000; // Cố định 30k
 
   const [voucherCode, setVoucherCode] = useState("");
-  const [discountInfo, setDiscountInfo] = useState<any>(null);
+  const [discountInfo, setDiscountInfo] = useState<{ voucherDiscount: number; voucherDetails: { valid: boolean } } | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [voucherError, setVoucherError] = useState("");
 
@@ -45,7 +45,6 @@ export default function CheckoutPage() {
     shippingCity: "",
     shippingPostalCode: "",
     shippingCountry: "Việt Nam",
-    shippingMethod: "STANDARD",
     deliveryInstructions: "",
   });
 
@@ -65,19 +64,6 @@ export default function CheckoutPage() {
   }, [user, userLoading]);
 
   // 2. Điền sẵn địa chỉ mặc định (hoặc địa chỉ đầu tiên)
-  const defaultAddress = addresses.find((a) => a.isDefault) ?? addresses[0];
-  // useEffect(() => {
-  //   if (defaultAddress) {
-  //     setFormData((prev) => ({
-  //       ...prev,
-  //       shippingAddress: defaultAddress.streetAddress || prev.shippingAddress,
-  //       shippingWard: defaultAddress.ward || prev.shippingWard,
-  //       shippingDistrict: defaultAddress.district || prev.shippingDistrict,
-  //       shippingCity: defaultAddress.city || prev.shippingCity,
-  //       shippingPostalCode: defaultAddress.postalCode || prev.shippingPostalCode,
-  //     }));
-  //   }
-  // }, [defaultAddress]);
   useEffect(() => {
     if (!addresses.length) return;
 
@@ -104,30 +90,7 @@ export default function CheckoutPage() {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-
-    // Cập nhật phí vận chuyển khi thay đổi shippingMethod
-    if (name === "shippingMethod") {
-      handleShippingChange(value);
-    }
   };
-
-  const handleShippingChange = (method: string) => {
-    switch (method) {
-      case "STANDARD":
-        setShippingFee(30000);
-        break;
-      case "EXPRESS":
-        setShippingFee(60000);
-        break;
-      case "SAME_DAY":
-        setShippingFee(100000);
-        break;
-      default:
-        setShippingFee(0);
-    }
-  };
-
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -161,11 +124,6 @@ export default function CheckoutPage() {
       quantity: item.quantity,
     }));
 
-    const subtotal = cart.subtotal;
-    const shipping = shippingFee;
-    const voucherDiscount = discountInfo?.voucherDiscount || 0;
-    const totalAmount = subtotal + shipping - voucherDiscount;
-
     const shippingInfo = {
       shippingName: formData.shippingName,
       shippingPhone: formData.shippingPhone,
@@ -176,7 +134,7 @@ export default function CheckoutPage() {
       shippingCity: formData.shippingCity,
       shippingPostalCode: formData.shippingPostalCode,
       shippingCountry: formData.shippingCountry,
-      shippingMethod: formData.shippingMethod,
+      shippingMethod: "STANDARD",
       deliveryInstructions: formData.deliveryInstructions || undefined,
     };
 
@@ -211,8 +169,9 @@ export default function CheckoutPage() {
       await CartService.clearCart();
       refreshCart();
       router.push(`/account/orders`);
-    } catch (err: any) {
-      alert(err.message || "Đặt hàng thất bại");
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Đặt hàng thất bại';
+      alert(errorMessage);
     }
   };
 
@@ -233,8 +192,6 @@ export default function CheckoutPage() {
       </div>
     );
   }
-
-  const total = cart.subtotal + shippingFee;
 
   const subtotal = cart.subtotal;
   const shipping = shippingFee;
@@ -277,7 +234,7 @@ export default function CheckoutPage() {
         setVoucherError("");
         
       }
-    } catch (err) {
+    } catch {
       setVoucherError("Lỗi kết nối, thử lại sau");
       setDiscountInfo(null);
     } finally {
@@ -506,34 +463,19 @@ export default function CheckoutPage() {
                   />
                 </div>
 
-                {/* Phương thức vận chuyển */}
+                {/* Phí vận chuyển cố định */}
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-3">Phương thức vận chuyển</label>
-                  <div className="space-y-3 bg-gray-50 p-4 rounded-lg border border-gray-200">
-                    {[
-                      { value: "STANDARD", label: "Tiêu chuẩn (3–5 ngày)", price: "30.000 ₫" },
-                      { value: "EXPRESS", label: "Nhanh (1–2 ngày)", price: "60.000 ₫" },
-                      { value: "SAME_DAY", label: "Trong ngày (trước 24h)", price: "100.000 ₫" },
-                    ].map((method) => (
-                      <label
-                        key={method.value}
-                        className="flex items-center justify-between p-3 rounded-lg border border-gray-300 bg-white hover:bg-blue-50 cursor-pointer transition-all duration-200 has-[:checked]:border-blue-200 has-[:checked]:bg-blue-50"
-                      >
-                        <div className="flex items-center gap-3">
-                          <input
-                            required
-                            type="radio"
-                            name="shippingMethod"
-                            value={method.value}
-                            checked={formData.shippingMethod === method.value}
-                            onChange={handleInputChange}
-                            className="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500"
-                          />
-                          <span className="font-medium text-gray-800">{method.label}</span>
-                        </div>
-                        <span className="text-sm font-semibold text-gray-700">{method.price}</span>
-                      </label>
-                    ))}
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                            d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                        </svg>
+                        <span className="font-medium text-gray-800">Vận chuyển tiêu chuẩn (3–5 ngày)</span>
+                      </div>
+                      <span className="text-lg font-semibold text-blue-600">30.000 ₫</span>
+                    </div>
                   </div>
                 </div>
 
@@ -659,7 +601,7 @@ export default function CheckoutPage() {
                 {cart.items.map((item) => (
                   <div key={item.id} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <img
+                      <Image
                         src={item.productImage || "/no-image.png"}
                         alt={item.productName}
                         width={50}

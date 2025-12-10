@@ -180,7 +180,7 @@ export default function ManageOrderPage() {
                     <th className="p-3 font-semibold text-gray-700 border-b border-gray-200">Sản phẩm</th>
                     <th className="p-3 font-semibold text-gray-700 border-b border-gray-200">Ngày đặt</th>
                     <th className="p-3 font-semibold text-gray-700 border-b border-gray-200">Tổng tiền</th>
-                    <th className="p-3 font-semibold text-gray-700 border-b border-gray-200">Trạng thái</th>
+                    <th className="p-3 font-semibold text-gray-700 border-b border-gray-200 min-w-[160px]">Trạng thái</th>
                   </tr>
                 </thead>
                 <tbody>

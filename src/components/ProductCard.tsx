@@ -206,11 +206,17 @@ const ProductCard: React.FC<Props> = ({ product }) => {
         </h3>
 
         <div className="min-h-[50px] flex flex-col justify-center">
-          {product.displaySalePrice ? (
+          {product.displaySalePrice && product.displayOriginalPrice !== product.displaySalePrice ? (
             <>
-              <p className="text-gray-400 dark:text-gray-500 line-clamp-1 text-xs mt-1 line-through">
-                {formatPrice(product.displayOriginalPrice)}
-              </p>
+              <div className="flex items-center gap-2">
+                <p className="text-gray-400 dark:text-gray-500 line-clamp-1 text-xs mt-1 line-through">
+                  {formatPrice(product.displayOriginalPrice)}
+                </p>
+                {/* Hiển thị % giảm giá */}
+                <span className="bg-red-100 text-red-600 text-xs font-bold px-2 py-0.5 rounded">
+                  -{Math.round(((product.displayOriginalPrice - product.displaySalePrice) / product.displayOriginalPrice) * 100)}%
+                </span>
+              </div>
               <p className="text-[#E61E4D] font-bold mt-1">
                 {formatPrice(product.displaySalePrice)}
               </p>

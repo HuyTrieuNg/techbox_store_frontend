@@ -100,6 +100,52 @@ export default function AdminOrders() {
     }
   };
 
+  // Generate pagination numbers with ellipsis
+  const getPaginationRange = () => {
+    const delta = 2; // Số trang hiển thị xung quanh trang hiện tại
+    const range: (number | string)[] = [];
+    const rangeWithDots: (number | string)[] = [];
+
+    for (
+      let i = Math.max(0, currentPage - delta);
+      i <= Math.min(totalPages - 1, currentPage + delta);
+      i++
+    ) {
+      range.push(i);
+    }
+
+    let prev = -1;
+    for (const i of range) {
+      if (typeof i === 'number') {
+        if (i - prev === 2) {
+          rangeWithDots.push(prev + 1);
+        } else if (i - prev !== 1) {
+          rangeWithDots.push('...');
+        }
+        rangeWithDots.push(i);
+        prev = i;
+      }
+    }
+
+    // Luôn thêm trang đầu
+    if (!rangeWithDots.includes(0)) {
+      rangeWithDots.unshift(0);
+      if (rangeWithDots[1] !== 1) {
+        rangeWithDots.splice(1, 0, '...');
+      }
+    }
+
+    // Luôn thêm trang cuối
+    if (!rangeWithDots.includes(totalPages - 1)) {
+      if (rangeWithDots[rangeWithDots.length - 1] !== totalPages - 2) {
+        rangeWithDots.push('...');
+      }
+      rangeWithDots.push(totalPages - 1);
+    }
+
+    return rangeWithDots;
+  };
+
   // Handle page size change
   const handlePageSizeChange = (newSize: number) => {
     setPageSize(newSize);
@@ -387,18 +433,27 @@ export default function AdminOrders() {
                     >
                       Trước
                     </button>
-                    {[...Array(totalPages)].map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handlePageChange(index)}
-                        className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                          currentPage === index
-                            ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
-                            : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
-                        }`}
-                      >
-                        {index + 1}
-                      </button>
+                    {getPaginationRange().map((pageNum, idx) => (
+                      pageNum === '...' ? (
+                        <span
+                          key={`ellipsis-${idx}`}
+                          className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700"
+                        >
+                          ...
+                        </span>
+                      ) : (
+                        <button
+                          key={pageNum}
+                          onClick={() => handlePageChange(pageNum as number)}
+                          className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                            currentPage === pageNum
+                              ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
+                              : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
+                          }`}
+                        >
+                          {(pageNum as number) + 1}
+                        </button>
+                      )
                     ))}
                     <button
                       onClick={() => handlePageChange(currentPage + 1)}
@@ -600,8 +655,8 @@ export default function AdminOrders() {
                 </div>
               </div>
 
-              {/* Nút hủy đơn hàng */}
-              {selectedOrder.status !== 'CANCELLED' && selectedOrder.status !== 'DELIVERED' && selectedOrder.status !== 'RETURNED' && (
+              {/* Nút hủy đơn hàng - CHỈ PENDING hoặc CONFIRMED */}
+              {(selectedOrder.status === 'PENDING' || selectedOrder.status === 'CONFIRMED') && (
                 <div className="border-t pt-4 mt-4">
                   <button
                     onClick={() => {
