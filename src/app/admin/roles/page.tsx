@@ -7,11 +7,10 @@ import { CreateRoleDialog } from "@/components/admin/roles/CreateRoleDialog";
 import { RoleList } from "@/components/admin/roles/RoleList";
 import { PermissionList } from "@/components/admin/roles/PermissionList";
 import { RolePermissionManager } from "@/components/admin/roles/RolePermissionManager";
-import { ModulePermissionManager } from "@/components/admin/roles/ModulePermissionManager";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/UI/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/UI/tabs";
 import { Skeleton } from "@/components/UI/skeleton";
-import { Shield, Key, Settings, FolderTree } from "lucide-react";
+import { Shield, Key, Settings } from "lucide-react";
 import RouteGuard from "@/components/RouteGuard";
 
 export default function RolesPage() {
@@ -69,10 +68,6 @@ function RolesPageContent() {
           <TabsTrigger value="permissions">
             <Key className="mr-2 h-4 w-4" />
             Quyền hạn
-          </TabsTrigger>
-          <TabsTrigger value="modules">
-            <FolderTree className="mr-2 h-4 w-4" />
-            Module & Quyền
           </TabsTrigger>
         </TabsList>
 
@@ -159,11 +154,6 @@ function RolesPageContent() {
               {permissions && <PermissionList permissions={permissions} />}
             </CardContent>
           </Card>
-        </TabsContent>
-
-        {/* Modules Tab */}
-        <TabsContent value="modules" className="space-y-4">
-          <ModulePermissionManager />
         </TabsContent>
       </Tabs>
 
