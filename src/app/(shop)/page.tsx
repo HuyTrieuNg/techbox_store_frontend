@@ -28,30 +28,11 @@ const HomePage = () => {
       <section className="mb-10">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
-            <h2 className="text-2xl font-bold">Laptop gaming bán chạy</h2>
+            <h2 className="text-2xl font-bold">Laptop bán chạy</h2>
             <div className="flex items-center text-gray-700 text-lg font-medium">
               <span className="mx-2 text-gray-300">|</span>
               <FaTruck className="text-[#E61E4D] mr-3 ml-3" />
               <span>Miễn phí giao hàng</span>
-            </div>
-          </div>
-          <div className="flex gap-8 text-gray-600 font-semibold">
-            <Link href="/products/2" className="text-blue-500 hover:text-[#E61E4D] transition">
-              Xem tất cả
-            </Link>
-          </div>
-        </div>
-        <ProductSection categoryId={2} />
-      </section>
-
-      <section className="mb-10">
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-3">
-            <h2 className="text-2xl font-bold">Điện thoại bán chạy</h2>
-            <div className="flex items-center text-gray-700 text-lg font-medium">
-              <span className="mx-2 text-gray-300">|</span>
-              <FaTruck className="text-[#E61E4D] mr-3 ml-3" />
-              <span>Giao hàng toàn quốc</span>
             </div>
           </div>
           <div className="flex gap-8 text-gray-600 font-semibold">
@@ -66,7 +47,7 @@ const HomePage = () => {
       <section className="mb-10">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-3">
-            <h2 className="text-2xl font-bold">Tai nghe bán chạy</h2>
+            <h2 className="text-2xl font-bold">Bàn phím bán chạy</h2>
             <div className="flex items-center text-gray-700 text-lg font-medium">
               <span className="mx-2 text-gray-300">|</span>
               <FaTruck className="text-[#E61E4D] mr-3 ml-3" />
@@ -74,12 +55,31 @@ const HomePage = () => {
             </div>
           </div>
           <div className="flex gap-8 text-gray-600 font-semibold">
-            <Link href="/products/4" className="text-blue-500 hover:text-[#E61E4D] transition">
+            <Link href="/products/25" className="text-blue-500 hover:text-[#E61E4D] transition">
               Xem tất cả
             </Link>
           </div>
         </div>
-        <ProductSection categoryId={4} />
+        <ProductSection categoryId={25} />
+      </section>
+
+      <section className="mb-10">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-3">
+            <h2 className="text-2xl font-bold">Chuột bán chạy</h2>
+            <div className="flex items-center text-gray-700 text-lg font-medium">
+              <span className="mx-2 text-gray-300">|</span>
+              <FaTruck className="text-[#E61E4D] mr-3 ml-3" />
+              <span>Giao hàng toàn quốc</span>
+            </div>
+          </div>
+          <div className="flex gap-8 text-gray-600 font-semibold">
+            <Link href="/products/42" className="text-blue-500 hover:text-[#E61E4D] transition">
+              Xem tất cả
+            </Link>
+          </div>
+        </div>
+        <ProductSection categoryId={42} />
       </section>
 
       <section className="mb-10">

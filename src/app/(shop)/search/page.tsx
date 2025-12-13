@@ -37,6 +37,44 @@ export default async function SearchPage({
     const totalPages = data.page?.totalPages || 1;
     const totalElements = data.page?.totalElements || 0;
 
+    const getPageNumbers = () => {
+        if (totalPages <= 5) {
+            return Array.from({ length: totalPages }, (_, i) => i);
+        }
+
+        const delta = 2;
+        const pages: (number | string)[] = [];
+
+        // Trang đầu
+        pages.push(0);
+
+        let start = Math.max(1, page - delta);
+        let end = Math.min(totalPages - 2, page + delta);
+
+        // Gần đầu
+        if (page <= delta + 1) {
+            end = 1 + delta * 2;
+        }
+
+        // Gần cuối
+        if (page >= totalPages - delta - 2) {
+            start = totalPages - delta * 2 - 2;
+        }
+
+        if (start > 1) pages.push("...");
+
+        for (let i = start; i <= end; i++) {
+            pages.push(i);
+        }
+
+        if (end < totalPages - 2) pages.push("...");
+
+        // Trang cuối
+        pages.push(totalPages - 1);
+
+        return pages;
+    };
+
     return (
         <>
             <div className="flex items-center text-gray-600 text-base mb-6">
@@ -91,8 +129,20 @@ export default async function SearchPage({
                     )}
 
                     <div className="flex gap-1">
-                        {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                            const pageNum = i;
+                        {getPageNumbers().map((item, index) => {
+                            if (item === "...") {
+                                return (
+                                    <span
+                                        key={`ellipsis-${index}`}
+                                        className="px-3 py-1.5 text-gray-500"
+                                    >
+                                        ...
+                                    </span>
+                                );
+                            }
+
+                            const pageNum = item as number;
+
                             return (
                                 <Link
                                     key={pageNum}
@@ -106,9 +156,6 @@ export default async function SearchPage({
                                 </Link>
                             );
                         })}
-                        {totalPages > 5 && (
-                            <span className="px-3 py-1.5 text-gray-500">...</span>
-                        )}
                     </div>
 
                     {page >= totalPages - 1 ? (
